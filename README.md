@@ -207,62 +207,69 @@ The analytical engine (`analysis/`) operates independently from the web interfac
 
 ## The ScrumIt Team
 
-<div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
 
   <div style="text-align: center;">
     <a href="https://github.com/adjicisse1">
-      <img src="https://github.com/adjicisse1.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/adjicisse1.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Adji Bousso</strong>
+    <strong style="font-size: 0.9em;">Adji Bousso</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/atulbharti1">
-      <img src="https://github.com/atulbharti1.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/atulbharti1.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Atul Bharti</strong>
+    <strong style="font-size: 0.9em;">Atul Bharti</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/ngpbruno">
-      <img src="https://github.com/ngpbruno.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/ngpbruno.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Bruno Galvao</strong>
+    <strong style="font-size: 0.9em;">Bruno Galvao</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/sbreganni">
-      <img src="https://github.com/sbreganni.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/sbreganni.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Sofia Breganni</strong>
+    <strong style="font-size: 0.9em;">Sofia Breganni</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/ecassibry">
-      <img src="https://github.com/ecassibry.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/ecassibry.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Elizabeth Cassibry</strong>
+    <strong style="font-size: 0.9em;">Elizabeth Cassibry</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/fenja-klockgether">
-      <img src="https://github.com/fenja-klockgether.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/fenja-klockgether.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Fenja Klockgether</strong>
+    <strong style="font-size: 0.9em;">Fenja Klockgether</strong>
   </div>
 
   <div style="text-align: center;">
     <a href="https://github.com/Jishnu-Verma">
-      <img src="https://github.com/Jishnu-Verma.png" width="110" style="border-radius: 50%;" />
+      <img src="https://github.com/Jishnu-Verma.png"
+           style="width:80px; height:80px; border-radius:50%; object-fit:cover;" />
     </a>
     <br>
-    <strong>Jishnu Verma</strong>
+    <strong style="font-size: 0.9em;">Jishnu Verma</strong>
   </div>
 
 </div>
