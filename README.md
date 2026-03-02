@@ -1,13 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/D69TCBIW)
 
----
-output:
-  html_document:
-    toc: true
-    toc_depth: 3
-    theme: flatly
----
-
 # Project Name (tbd?)
 
 This project aims to create an easy-to-access, interactive web platform for exploring and analyzing data from the OpenSanctions database. Our product will allow businesses to make informed business decisions before going to a new market.
@@ -215,32 +207,62 @@ The analytical engine (`analysis/`) operates independently from the web interfac
 
 ## The ScrumIt Team
 
-:::::::::: {style="display: flex; gap: 40px; flex-wrap: wrap;"}
-::: {style="text-align: center;"}
-<a href="https://github.com/adjicisse1"> <img src="https://github.com/adjicisse1.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Adji Bousso</b>
-:::
+<div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
 
-::: {style="text-align: center;"}
-<a href="https://github.com/atulbharti1"> <img src="https://github.com/atulbharti1.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Atul Bharti</b>
-:::
+  <div style="text-align: center;">
+    <a href="https://github.com/adjicisse1">
+      <img src="https://github.com/adjicisse1.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Adji Bousso</strong>
+  </div>
 
-::: {style="text-align: center;"}
-<a href="https://github.com/ngpbruno"> <img src="https://github.com/ngpbruno.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Bruno Galvao</b>
-:::
+  <div style="text-align: center;">
+    <a href="https://github.com/atulbharti1">
+      <img src="https://github.com/atulbharti1.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Atul Bharti</strong>
+  </div>
 
-::: {style="text-align: center;"}
-<a href="https://github.com/sbreganni"> <img src="https://github.com/sbreganni.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Sofia Breganni</b>
-:::
+  <div style="text-align: center;">
+    <a href="https://github.com/ngpbruno">
+      <img src="https://github.com/ngpbruno.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Bruno Galvao</strong>
+  </div>
 
-::: {style="text-align: center;"}
-<a href="https://github.com/ecassibry"> <img src="https://github.com/ecassibry.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Elizabeth Cassibry</b>
-:::
+  <div style="text-align: center;">
+    <a href="https://github.com/sbreganni">
+      <img src="https://github.com/sbreganni.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Sofia Breganni</strong>
+  </div>
 
-::: {style="text-align: center;"}
-<a href="https://github.com/fenja-klockgether"> <img src="https://github.com/fenja-klockgether.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Fenja Klockgether</b>
-:::
+  <div style="text-align: center;">
+    <a href="https://github.com/ecassibry">
+      <img src="https://github.com/ecassibry.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Elizabeth Cassibry</strong>
+  </div>
 
-::: {style="text-align: center;"}
-<a href="https://github.com/Jishnu-Verma"> <img src="https://github.com/Jishnu-Verma.png" width="120" style="border-radius: 50%;"/> </a> <br> <b>Jishnu Verma</b>
-:::
-::::::::::
+  <div style="text-align: center;">
+    <a href="https://github.com/fenja-klockgether">
+      <img src="https://github.com/fenja-klockgether.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Fenja Klockgether</strong>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="https://github.com/Jishnu-Verma">
+      <img src="https://github.com/Jishnu-Verma.png" width="110" style="border-radius: 50%;" />
+    </a>
+    <br>
+    <strong>Jishnu Verma</strong>
+  </div>
+
+</div>
