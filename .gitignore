@@ -17,7 +17,8 @@ Thumbs.db
 
 # Raw and processed data files
 data/raw/*
-data/processed/*
+data/processed/* 
+*.csv
 
 # Keep folder structure
 !data/raw/.gitkeep
