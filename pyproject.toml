@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "jupyter>=1.1.1",
+    "kagglehub>=1.0.0",
     "pandas>=3.0.1",
+    "pathlib>=1.0.1",
     "scikit-learn>=1.8.0",
 ]
