@@ -1018,6 +1018,7 @@ dependencies = [
     { name = "kagglehub" },
     { name = "pandas" },
     { name = "pathlib" },
+    { name = "requests" },
     { name = "scikit-learn" },
 ]
 
@@ -1027,6 +1028,7 @@ requires-dist = [
     { name = "kagglehub", specifier = ">=1.0.0" },
     { name = "pandas", specifier = ">=3.0.1" },
     { name = "pathlib", specifier = ">=1.0.1" },
+    { name = "requests", specifier = ">=2.32.5" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
 ]
 
