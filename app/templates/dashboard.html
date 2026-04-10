@@ -1,9 +1,414 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — AppName</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:      #181816;
+      --ink-2:    #6b6b65;
+      --ink-3:    #a8a8a0;
+      --bg:       #f9f8f5;
+      --surface:  #ffffff;
+      --border:   #e8e6df;
+      --accent:   #2a5f8f;
+      --accent-lt:#edf3f9;
+      --green:    #237a4b;
+      --green-bg: #edf7f2;
+      --amber:    #8f5a10;
+      --amber-bg: #fef5e7;
+      --red:      #9b2c2c;
+      --red-bg:   #fdf0f0;
+      --r:        6px;
+      --serif:    'DM Serif Display', Georgia, serif;
+      --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
+      --mono:     'Courier New', monospace;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: var(--sans); }
 
-{% block title %}Dashboard - scrumIt{% endblock %}
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; height: 52px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+    .topbar-meta { font-family: var(--mono); font-size: 10px; color: var(--ink-3); padding-left: 20px; border-left: 1px solid var(--border); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-user { font-size: 12px; color: var(--ink-2); }
+    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .btn:hover { background: var(--border); }
+    .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn-dark:hover { opacity: .85; background: var(--ink); }
 
-{% block content %}
-<section class="dashboard">
-    <h2>ML Dashboard</h2>
-</section>
-{% endblock %}
+    /* ── LAYOUT ── */
+    .layout { display: grid; grid-template-columns: 188px 1fr; min-height: calc(100vh - 52px); }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 0; position: sticky; top: 52px;
+      height: calc(100vh - 52px); overflow-y: auto;
+    }
+    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-section-label {
+      font-family: var(--mono); font-size: 8px; text-transform: uppercase;
+      letter-spacing: .16em; color: var(--ink-3); padding: 0 18px 8px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 18px; font-size: 13px; color: var(--ink-2);
+      cursor: pointer; border-left: 2px solid transparent;
+      transition: all .12s;
+    }
+    .sidebar-item:hover { background: var(--bg); color: var(--ink); }
+    .sidebar-item.active { background: var(--accent-lt); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+    .sidebar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+    .sidebar-item.active .sidebar-dot { background: var(--accent); }
+
+    /* ── MAIN ── */
+    .main { padding: 28px 32px 60px; min-width: 0; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 24px; }
+    .page-header h2 { font-family: var(--serif); font-size: 26px; letter-spacing: -.02em; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: var(--ink-3); }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .tab {
+      padding: 10px 18px; font-size: 13px; color: var(--ink-3);
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      cursor: pointer; transition: color .15s, border-color .15s;
+      background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+
+    /* ── TAB PANELS ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── KPI GRID ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 10px; }
+    .kpi-value { font-family: var(--serif); font-size: 30px; letter-spacing: -.04em; line-height: 1; color: var(--ink); }
+    .kpi-delta { font-size: 11px; margin-top: 6px; color: var(--ink-3); }
+    .delta-pos { color: var(--green); }
+    .delta-neg { color: var(--red); }
+
+    /* ── CONTENT GRID ── */
+    .content-grid { display: grid; grid-template-columns: 1fr 260px; gap: 16px; margin-bottom: 20px; }
+
+    /* ── CARD ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .card-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); }
+
+    /* ── BADGE ── */
+    .badge { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); }
+    .badge-gray  { background: var(--border);   color: var(--ink-2); }
+    .badge-red   { background: var(--red-bg);   color: var(--red); }
+    .badge-blue  { background: var(--accent-lt); color: var(--accent); }
+
+    /* ── CHART PLACEHOLDER ── */
+    .chart-wrap { display: flex; align-items: flex-end; gap: 5px; height: 110px; }
+    .chart-bar { flex: 1; border-radius: 2px 2px 0 0; }
+    .bar-done      { background: var(--accent-lt); border: 1px solid var(--accent); }
+    .bar-today     { background: var(--accent); }
+    .bar-projected { background: var(--border); opacity: .55; }
+    .chart-axis { display: flex; justify-content: space-between; margin-top: 8px; }
+    .chart-axis span { font-family: var(--mono); font-size: 9px; color: var(--ink-3); }
+
+    /* ── LIST CARD ── */
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .list-item:last-child { border-bottom: none; }
+    .list-item-name { color: var(--ink-2); flex: 1; padding-right: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
+    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--bg); }
+
+    /* ── PREDICTION CARD ── */
+    .prediction-row { display: flex; gap: 20px; align-items: center; }
+    .prediction-ring {
+      width: 68px; height: 68px; border-radius: 50%; flex-shrink: 0;
+      border: 6px solid var(--accent-lt); border-top-color: var(--accent);
+    }
+    .prediction-text strong { font-family: var(--serif); font-size: 22px; letter-spacing: -.03em; display: block; margin-bottom: 3px; }
+    .prediction-text p { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .content-grid { grid-template-columns: 1fr; }
+      .main { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="topbar-right">
+    <span class="topbar-user">[Team name]</span>
+  </div>
+  <div class="topbar-left">
+    <a href="/" class="logo">AppName</a>
+    <span class="topbar-meta">[Sprint / Period name] · Day [X] of [Y]</span>
+
+  <nav>
+  <div class="nav-right">
+    <button class="btn btn-dark">Refresh ↻</button>
+    <a href="/"><button class="btn btn-dark">← Home</button></a>
+  </div>
+  </nav>
+</header>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Views</div>
+      <div class="sidebar-item active" onclick="setView(this)"><div class="sidebar-dot"></div>[View 1]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 2]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 3]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 4]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 5]</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">More</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[Link A]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[Link B]</div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <div class="page-header">
+      <h2>[Page / View title]</h2>
+      <p>[Short description of what this view shows — replace when ready]</p>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
+      <button class="tab" onclick="switchTab(this,'tab-details')">Details</button>
+      <button class="tab" onclick="switchTab(this,'tab-predictions')">Predictions</button>
+      <button class="tab" onclick="switchTab(this,'tab-history')">History</button>
+    </div>
+
+    <!-- ╌╌ TAB: OVERVIEW ╌╌ -->
+    <div id="tab-overview" class="tab-panel active">
+
+      <!-- KPI row — replace labels & values with real data -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">[Metric label]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta delta-pos">[↑ context or delta]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Metric label]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta">[context or delta]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Metric label]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta delta-neg">[↓ context or delta]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Metric label]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta">[context or delta]</div>
+        </div>
+      </div>
+
+      <!-- Chart + list -->
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">[Chart title]</span>
+            <span class="badge badge-gray">[Period]</span>
+          </div>
+          <!-- Replace .chart-wrap with a Chart.js <canvas id="myChart"> when ready -->
+          <div class="chart-wrap" id="main-chart">
+            <div class="chart-bar bar-done"  style="height:93%"></div>
+            <div class="chart-bar bar-done"  style="height:80%"></div>
+            <div class="chart-bar bar-done"  style="height:68%"></div>
+            <div class="chart-bar bar-done"  style="height:57%"></div>
+            <div class="chart-bar bar-today" style="height:47%"></div>
+            <div class="chart-bar bar-projected" style="height:38%"></div>
+            <div class="chart-bar bar-projected" style="height:27%"></div>
+            <div class="chart-bar bar-projected" style="height:16%"></div>
+            <div class="chart-bar bar-projected" style="height:6%"></div>
+          </div>
+          <div class="chart-axis">
+            <span>[Start]</span><span>Today</span><span>[End]</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">[List title]</span>
+          </div>
+          <!-- Replace with real list items from backend -->
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-green">done</span></div>
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-amber">in progress</span></div>
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-amber">in progress</span></div>
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-gray">todo</span></div>
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-gray">todo</span></div>
+          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-red">blocked</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╌╌ TAB: DETAILS ╌╌ -->
+    <div id="tab-details" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">[Table title]</span>
+          <button class="btn">Export ↓</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>[Column A]</th>
+                <th>[Column B]</th>
+                <th>[Column C]</th>
+                <th>[Column D]</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-green">done</span></td></tr>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-amber">in progress</span></td></tr>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-amber">in progress</span></td></tr>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-gray">todo</span></td></tr>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-red">blocked</span></td></tr>
+              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-gray">todo</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╌╌ TAB: PREDICTIONS ╌╌ -->
+    <div id="tab-predictions" class="tab-panel">
+
+      <!-- KPI row for predictions -->
+      <div class="kpi-grid" style="margin-bottom:20px">
+        <div class="kpi-card">
+          <div class="kpi-label">[Prediction metric]</div>
+          <div class="kpi-value">[XX%]</div>
+          <div class="kpi-delta delta-pos">[context]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Prediction metric]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta">[context]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Risk metric]</div>
+          <div class="kpi-value">[XX]</div>
+          <div class="kpi-delta delta-neg">[context]</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">[Confidence metric]</div>
+          <div class="kpi-value">[XX%]</div>
+          <div class="kpi-delta">[context]</div>
+        </div>
+      </div>
+
+      <!-- ML prediction output — wire to POST /api/predict -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">ML Prediction · [Model version]</span>
+          <button class="btn" onclick="fetchPrediction()">Run prediction ↻</button>
+        </div>
+        <div class="prediction-row">
+          <div class="prediction-ring" id="prediction-ring"></div>
+          <div class="prediction-text">
+            <strong id="prediction-val">[XX%]</strong>
+            <p>[Short description of what this prediction represents. Replace with real model output description when ready.]</p>
+            <p style="margin-top:8px;font-size:11px;color:var(--ink-3)">[Additional model context, feature importances, or risk flags go here.]</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╌╌ TAB: HISTORY ╌╌ -->
+    <div id="tab-history" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">[Historical data title]</span>
+          <span class="badge badge-gray">[Date range]</span>
+        </div>
+        <!-- Replace with real historical chart or table -->
+        <div class="chart-wrap" style="height:130px">
+          <div class="chart-bar bar-done" style="height:60%"></div>
+          <div class="chart-bar bar-done" style="height:75%"></div>
+          <div class="chart-bar bar-done" style="height:55%"></div>
+          <div class="chart-bar bar-done" style="height:82%"></div>
+          <div class="chart-bar bar-done" style="height:70%"></div>
+          <div class="chart-bar bar-done" style="height:90%"></div>
+          <div class="chart-bar bar-done" style="height:65%"></div>
+          <div class="chart-bar bar-done" style="height:78%"></div>
+        </div>
+        <div class="chart-axis">
+          <span>[Period 1]</span><span>[Period 2]</span><span>[Period 3]</span><span>[Period N]</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function switchTab(btn, panelId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  function setView(item) {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  }
+
+  // Wire to POST /api/predict — update #prediction-val and #prediction-ring with real data
+  async function fetchPrediction() {
+    try {
+      const res = await fetch('/api/predict', { method: 'POST' });
+      const data = await res.json();
+      // TODO: document.getElementById('prediction-val').textContent = data.confidence + '%';
+      console.log('Prediction response:', data);
+    } catch (err) {
+      console.error('Prediction fetch failed:', err);
+    }
+  }
+</script>
+
+</body>
+</html>
