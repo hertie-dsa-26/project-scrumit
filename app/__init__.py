@@ -10,9 +10,11 @@ def create_app(config_class=Config):
     from app.routes.dashboard import dashboard_bp
     from app.routes.api import api_bp
     from app.routes.map import map_bp
+    from app.routes.ml import ml_bp
     
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(map_bp)
+    app.register_blueprint(ml_bp)
     
     return app
