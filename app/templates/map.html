@@ -191,6 +191,18 @@
   <span id="bc-continent" class="active" style="display:none" onclick="drillUp('continent')"></span>
   <span class="sep" id="bc-sep2" style="display:none">›</span>
   <span id="bc-country" class="active" style="display:none"></span>
+  <div style="margin-left:auto;position:relative;">
+    <input id="map-search" type="text" placeholder="Search country or continent…" autocomplete="off"
+      style="width:230px;padding:5px 12px 5px 32px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--ink);font-family:var(--sans);outline:none;transition:border-color .15s;"
+      oninput="onSearch(this.value)"
+      onfocus="this.style.borderColor='var(--accent)'"
+      onblur="this.style.borderColor='var(--border)'">
+    <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;opacity:.4;pointer-events:none" viewBox="0 0 16 16" fill="none">
+      <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div id="search-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);right:0;width:250px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);z-index:200;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);"></div>
+  </div>
 </div>
 
 <div class="layout">
@@ -551,6 +563,87 @@ const ISO_NAMES = {"4":"Afghanistan","8":"Albania","12":"Algeria","24":"Angola",
 function continentCountryName(id) {
   return ISO_NAMES[String(id)] || `Unknown (${id})`;
 }
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+const CONTINENTS = ['Africa','Asia','Europe','North America','South America','Oceania','Antarctica'];
+
+function onSearch(query) {
+  const dd = document.getElementById('search-dropdown');
+  const q  = query.trim().toLowerCase();
+  if (!q) { dd.style.display = 'none'; return; }
+
+  const results = [];
+
+  CONTINENTS.forEach(c => {
+    if (c.toLowerCase().includes(q)) results.push({ label: c, type: 'continent', value: c });
+  });
+
+  Object.entries(ISO_NAMES).forEach(([id, name]) => {
+    if (name.toLowerCase().includes(q)) results.push({ label: name, type: 'country', id: +id });
+  });
+
+  results.sort((a, b) => {
+    const ai = a.label.toLowerCase().indexOf(q);
+    const bi = b.label.toLowerCase().indexOf(q);
+    return ai - bi || a.label.localeCompare(b.label);
+  });
+
+  const top = results.slice(0, 8);
+  if (!top.length) {
+    dd.innerHTML = `<div style="padding:10px 14px;font-size:12px;color:var(--ink-3)">No results for "${query}"</div>`;
+    dd.style.display = 'block';
+    return;
+  }
+
+  dd.innerHTML = top.map(r => {
+    const continent = r.type === 'country' ? (COUNTRY_CONTINENT[String(r.id)] || '') : '';
+    const tag = r.type === 'continent'
+      ? `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:var(--accent-lt);color:var(--accent);border-radius:3px;flex-shrink:0">continent</span>`
+      : `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:var(--border);color:var(--ink-2);border-radius:3px;flex-shrink:0">${continent}</span>`;
+    const hi = r.label.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<strong>$1</strong>');
+    return `<div onclick="selectResult(${JSON.stringify(r).replace(/"/g,'&quot;')})"
+      style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;"
+      onmouseover="this.style.background='var(--bg)'"
+      onmouseout="this.style.background=''">${hi}${tag}</div>`;
+  }).join('');
+
+  dd.style.display = 'block';
+}
+
+function selectResult(r) {
+  document.getElementById('map-search').value = r.label;
+  document.getElementById('search-dropdown').style.display = 'none';
+
+  if (r.type === 'continent') {
+    drillUp('world');
+    setTimeout(() => drillToContinent(r.value), 100);
+  } else {
+    const continent = COUNTRY_CONTINENT[String(r.id)];
+    if (!continent) return;
+    if (currentLevel !== 'continent' || selectedContinent !== continent) {
+      drillUp('world');
+      setTimeout(() => {
+        drillToContinent(continent);
+        setTimeout(() => drillToCountry(r.id, continent), 600);
+      }, 100);
+    } else {
+      drillToCountry(r.id, continent);
+    }
+  }
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#map-search') && !e.target.closest('#search-dropdown')) {
+    document.getElementById('search-dropdown').style.display = 'none';
+  }
+});
+
+document.getElementById('map-search').addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('search-dropdown').style.display = 'none';
+    e.target.value = '';
+  }
+});
 
 // ── RESIZE ────────────────────────────────────────────────────────────────────
 window.addEventListener('resize', () => { if (worldData) drawMap(worldData); });
