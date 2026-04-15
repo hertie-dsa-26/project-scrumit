@@ -29,15 +29,14 @@
     nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 52px;
+      padding: 0 40px; height: 56px;
       background: var(--surface); border-bottom: 1px solid var(--border);
     }
     .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-    .nav-links { display: flex; gap: 24px; }
-    .nav-links a { font-size: 13px; color: var(--ink-3); transition: color .15s; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
     .nav-links a:hover { color: var(--ink); }
-    .nav-links a.active { color: var(--ink); font-weight: 500; }
-    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
@@ -111,6 +110,8 @@
   </style>
 </head>
 <body>
+
+<!-- ── TOPBAR ── -->
 
 <nav>
   <a href="/" class="logo">AppName</a>
