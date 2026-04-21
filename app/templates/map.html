@@ -273,6 +273,7 @@ const COUNTRY_CONTINENT = {"10":"Antarctica","44":"North America","260":"Africa"
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentLevel = 'world';
 let selectedContinent = null;
+let selectedCountryId = null; 
 let projection, pathGen, svg, g, currentTransform = d3.zoomIdentity;
 let worldData = null;
 let zoomBehavior;
@@ -310,15 +311,16 @@ function drawMap(data) {
   g = svg.append('g');
 
   g.append('path')
-    .datum({type:'Sphere'})
-    .attr('class','sphere')
-    .attr('d', pathGen);
+  .datum({type:'Sphere'})
+  .attr('class','sphere')
+  .attr('d', pathGen)
+  .on('click', () => drillUp(currentLevel === 'country' ? 'continent' : 'world'));  // ← add this
 
   g.append('path')
     .datum(d3.geoGraticule()())
     .attr('class','graticule')
     .attr('d', pathGen);
-
+  
   const countries = topojson.feature(data, data.objects.countries);
   const borders   = topojson.mesh(data, data.objects.countries, (a,b) => a !== b);
 
@@ -398,6 +400,12 @@ function onCountryClick(event, d) {
     drillToContinent(continent);
   } else if (currentLevel === 'continent' && continent === selectedContinent) {
     drillToCountry(id, continent);
+  } else if (currentLevel === 'country') {
+    if (id === selectedCountryId) {
+      drillUp('continent');  // click same country → go back
+    } else if (continent === selectedContinent) {
+      drillToCountry(id, continent);  // click different country in same continent
+    }
   }
 }
 
@@ -425,6 +433,7 @@ function drillToContinent(continent) {
 }
 
 function drillToCountry(id, continent) {
+  selectedCountryId = id;
   currentLevel = 'country';
 
   d3.selectAll('.country-path')
