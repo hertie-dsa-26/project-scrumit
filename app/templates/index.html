@@ -71,7 +71,7 @@
     /* DIVIDER */
     .divider { border: none; border-top: 1px solid var(--border); margin: 0 40px; }
 
-    /* FEATURES */
+    /*FEATURES */
     .features { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); padding: 48px 40px 72px; }
     .feature { padding-right: 40px; }
     .feature + .feature { padding-left: 40px; border-left: 1px solid var(--border); }
@@ -104,7 +104,7 @@
     <a href="/map">Map</a>
     <a href="/ml" class="active">ML</a>
   </div>
-  <a href="/dashboard"><button class="btn btn-dark">Dashboard →</button></a>
+  <div style="width:120px"></div>
 </nav>
 
 <section class="hero">
@@ -114,26 +114,45 @@
     <p>An interactive platform that helps compliance teams explore transaction data, uncover hidden laundering patterns, and predict suspicious activity — all in one place.</p>
     <div class="actions">
       <a href="/dashboard"><button class="btn btn-dark">Go to Dashboard →</button></a>
-      <a href="/map"><button class="btn">World Map</button></a>
-      <a href="/ml"><button class="btn">ML Model</button></a>
-      <button class="btn">Learn more</button>
     </div>
   </div>
 
-  <div class="preview-card">
-    <div class="card-top">
-      <span class="card-label">[Card title]</span>
-      <span class="badge badge-green">[Status]</span>
-    </div>
-    <div class="sparkline">
-      <span style="height:28%"></span><span style="height:44%"></span>
-      <span style="height:36%"></span><span class="hi" style="height:66%"></span>
-      <span class="hi2" style="height:90%"></span><span class="hi" style="height:70%"></span>
-      <span style="height:78%"></span><span style="height:52%"></span>
-    </div>
-    <div class="stat">[XX%]</div>
-    <div class="stat-sub">[Metric label — replace when data is ready]</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+
+<a href="/map" id="map-preview-link" 
+   style="display:block;max-width:700px;margin:40px auto;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:box-shadow .2s;"
+   onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'"
+   onmouseout="this.style.boxShadow='none'">
+  <svg id="preview-map" style="width:100%;display:block;background:#eaf3fb;"></svg>
+  <div style="text-align:center;padding:10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-3);background:var(--surface);border-top:1px solid var(--border)">
+    CLICK TO EXPLORE MAP →
   </div>
+</a>
+
+<script>
+(async () => {
+  const svg  = d3.select('#preview-map').attr('viewBox','0 0 960 500');
+  const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+  const proj = d3.geoNaturalEarth1().scale(153).translate([480,250]);
+  const path = d3.geoPath().projection(proj);
+  const g    = svg.append('g');
+
+  g.append('path')
+    .datum({type:'Sphere'})
+    .attr('d', path)
+    .attr('fill','#eaf3fb');
+
+  g.selectAll('path.country')
+    .data(topojson.feature(data, data.objects.countries).features)
+    .enter().append('path')
+    .attr('class','country')
+    .attr('d', path)
+    .attr('fill','#dde8d0')
+    .attr('stroke','#fff')
+    .attr('stroke-width','0.5');
+})();
+</script> 
 </section>
 
 <hr class="divider">

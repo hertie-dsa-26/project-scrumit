@@ -187,7 +187,7 @@
     <a href="/map">Map</a>
     <a href="/ml" class="active">ML</a>
   </div>
-  <a href="/dashboard"><button class="btn btn-dark">Dashboard →</button></a>
+  <div style="width:120px"></div>
 </nav>
 
 <div class="breadcrumb">
@@ -550,6 +550,13 @@ function renderContinentSidebar(continent) {
     });
   }
 
+    html += `<a href="/dashboard?continent=${encodeURIComponent(continent)}"
+    style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
+    border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
+    text-decoration:none;transition:opacity .15s;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+    View in Dashboard →
+  </a>`;
   document.getElementById('sidebar-body').innerHTML = html;
 }
 
@@ -571,6 +578,13 @@ function renderCountrySidebar(id, name) {
     html += `<div class="list-item"><span class="list-name">${label}</span><span class="list-val">${val}</span></div>`;
   });
 
+    html += `<a href="/dashboard?country=${encodeURIComponent(name)}"
+    style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
+    border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
+    text-decoration:none;transition:opacity .15s;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+    View in Dashboard →
+  </a>`;
   document.getElementById('sidebar-body').innerHTML = html;
 }
 
