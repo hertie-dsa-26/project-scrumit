@@ -469,6 +469,27 @@
       console.log('Assessment inputs ready:', inputs);
     }
   }
+  // Read filter param from map
+  const params = new URLSearchParams(window.location.search);
+  const country = params.get('country');
+  const continent = params.get('continent');
+  const filterLabel = country || continent;
+  if (filterLabel) {
+    const isContinent = !!continent;
+    const banner = document.createElement('div');
+    banner.style.cssText = `
+      display:flex;justify-content:space-between;align-items:center;
+      background:#edf3f9;border-bottom:1px solid #b5d4f4;
+      padding:10px 32px;font-size:13px;color:#2a5f8f;
+    `;
+    banner.innerHTML = `
+      <span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span>
+      <a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>
+    `;
+    document.querySelector('.main').prepend(banner);
+    document.querySelector('.page-header h2').textContent = filterLabel;
+    document.querySelector('.page-header p').textContent  = isContinent ? 'Continent view · filtered from map' : 'Country view · filtered from map';
+  }
 </script>
 
 </body>
