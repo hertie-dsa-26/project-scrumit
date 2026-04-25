@@ -2,79 +2,74 @@
 
 # Project Name (tbd?)
 
-This project aims to create an easy-to-access, interactive web platform for exploring and analyzing data from the OpenSanctions database. Our product will allow businesses to make informed business decisions before going to a new market.
+This project aims to build an interactive web platform that enables banks and financial institutions to predict and detect money laundering activities using synthetic financial transaction data. By combining data exploration tools with machine learning, our product helps compliance teams identify suspicious transactions and understand laundering patterns, ultimately reducing false positives and catching more illicit activity.
 
-### What is OpenSanctions?
+### What Is Money Laundering?
 
-OpenSanctions is an open-source global sanctions dataset that aggregates information on sanctioned individuals, companies, organizations, and political entities from governments and international bodies around the world. It includes:
+Money laundering is the process by which criminals disguise the origins of illegally obtained funds through a series of financial transactions. It typically follows three stages:
 
--   Names of sanctioned individuals and organizations
--   Associated countries
--   Sanction programs
--   Dates of designation
--   Entity types (person, company, vessel, etc.)
--   Relationships between entities
+Placement - Introducing illicit funds into the financial system (e.g., cash deposits from smuggling or illegal gambling).
+Layering - Moving and mixing funds across accounts, banks, and entities to obscure their origin.
+Integration - Spending the now-disguised funds as though they were legitimate.
 
-Sanctions datasets are critical for compliance, financial risk management, investigative journalism, and policy research.
+Detection is extremely challenging: automated systems suffer from high false-positive rates (legitimate transactions flagged as suspicious) and high false-negative rates (actual laundering going undetected). Criminals continuously adapt their methods to evade detection.
+
 
 ### What is /projectname/?
 
-We are building a mini data science platform that allows users to:
+We are building a data science platform that allows users to:
 
--   Interact with sanctions data through a web interface
--   Explore trends and patterns
--   Investigate entity relationships
--   Generate insights using machine learning
+Interact with synthetic AML transaction data through a web interface
 
-The application will be built using Flask and designed with clean architecture, modular code, and strong software engineering principles.
+Explore transaction trends, patterns, and anomalies
+
+Investigate relationships between accounts, entities, and laundering patterns
+
+Predict the likelihood that a given transaction is laundering using machine learning.
+
 
 #### Motivation
 
-Sanctions data plays a major role in:
+Anti-money laundering (AML) compliance is a critical concern for banks, regulators, and law enforcement worldwide. However, several challenges make AML research difficult:
 
--   Financial compliance
--   Anti-money laundering (AML)
--   Risk assessment
--   Corporate due diligence
--   International policy analysis
+Data access is restricted — Real financial transaction data is proprietary and privacy-sensitive, making it nearly impossible to obtain for research.
 
-However, raw sanctions data is difficult to explore and analyze without technical expertise.
+Labelling is unreliable — Even when real data is available, correctly tagging each transaction as laundering or legitimate is extremely difficult.
+
+Models have limited scope — A single bank only sees its own transactions, missing the broader network of cross-institution laundering activity.
+
 
 **This project aims to:**
 
--   Make sanctions data more accessible and understandable
--   Provide interactive exploration tools
--   Help businesses and researchers identify trends
--   Predict potential repeat sanctions using machine learning
--   Support better decision-making through data-driven insights
+Train and evaluate detection models on reliably labelled data
+
+Study laundering patterns across an entire financial ecosystem (not just one bank's view)
+
+Build models that understand the broad sweep of transactions across institutions, then apply those models to a single bank's transaction stream
+
+Make AML insights accessible to non-technical compliance teams through interactive visualisations
 
 ------------------------------------------------------------------------
 
 ## Features
 
--   Data Exploration
-    -   Interactive filtering by:
-        -   Country
-        -   Entity type
-        -   Sanction program
-        -   Date
-    -   Geographic distribution map
-    -   Timeline of sanction additions
-    -   Entity-type breakdown visualizations
-    -   Summary statistics dashboard
--   Network Insights
-    -   Exploration of entity connections
-    -   Visualization of relationship networks
-    -   Summary statistics of entity connectivity
-    -   Identification of highly connected or influential entities
+- Data Exploration
+- Interactive filtering by:
+   - Date range
+   - Transaction currency and payment format
+   - Sending/receiving bank
+   - Transaction amount range
+   - Timeline of transaction volumes and laundering activity
+   - Geographic distribution of transactions across banks
+    - Summary statistics dashboard (transaction counts, laundering rates, amount distributions)
+
 -   Machine Learning ---\> hyperlink to a section describing the ML algorithm (maybe?)
     -   We will implement a **predictive algorithm** to estimate the likelihood that an entity becomes sanctioned more than once.
     -   Custom-built ML algorithm (from scratch)
     -   Feature engineering based on:
         -   Country
-        -   Entity type
+        -   Transaction type
         -   Connectivity metrics
-        -   Historical sanction timing
     -   Prediction of “repeat offender” probability
     -   Model evaluation metrics
 
@@ -104,17 +99,12 @@ This section explains how to install, configure, and run the project locally, as
 
 ### Installation and Setup
 
-We use the OpenSanctions Sanctions dataset:
+Download the IBM AML dataset from Kaggle and place the CSV/TXT files in the data/ directory:
+data/
+├── HI-Small_Trans.csv
+├── HI-Small_Patterns.txt
+├── ...
 
-<https://www.opensanctions.org/datasets/sanctions/>
-
-#### Download Instructions
-
-1.  Download the sanctions dataset (JSON format recommended).
-2.  Download the files in the `data/raw/` folder as:
-    -   dataname_raw.json
-    -   dataname_raw.json
-3.  The elaborated data will then be saved into `data/processed/`
 
 #### Packages used
 
@@ -147,24 +137,20 @@ http://localhost:5000
 The repository follows a modular layered architecture:
 
 ```         
-analysis/
-    cleaning/         # Data ingestion & preprocessing
-    features/         # Feature engineering
-    models/           # ML algorithms (implemented from scratch)
-    orchestration/    # Coordinates data → features → model
-    visuals/          # Visualization generation logic
+anascrumit-aml/
+├── app/
+│   ├── __init__.py           # Flask app factory
+│   ├── routes/               # Route blueprints (exploration, network, ML)
+│   ├── models/               # ML model training and prediction
+│   ├── templates/            # HTML templates
+│   └── static/               # CSS, JS, images
+├── data/                     # Dataset files (not committed)
+├── notebooks/                # Exploratory analysis notebooks
+├── tests/                    # Unit and integration tests
+├── requirements.txt
+├── config.py
+└── README.md
 
-app/
-    routes/           # Flask route definitions
-    templates/        # HTML templates (presentation layer)
-    static/           # CSS and frontend assets
-
-data/
-    raw/              # Downloaded OpenSanctions dataset
-    processed/        # Cleaned and transformed data
-
-tests/                # Unit and integration tests
-```
 
 *For more information about the the layered system design please consult [our wiki](https://github.com/hertie-dsa-26/project-scrumit/wiki/Layered-System-Design)*
 
@@ -201,7 +187,7 @@ The analytical engine (`analysis/`) operates independently from the web interfac
 
 # Acknowledgements
 
--   OpenSanctions for providing the dataset
+-   IBM — For creating and releasing the synthetic AML transaction dataset
 
 ------------------------------------------------------------------------
 
