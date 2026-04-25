@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ML — AppName</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:      #181816;
+      --ink-2:    #6b6b65;
+      --ink-3:    #a8a8a0;
+      --bg:       #f9f8f5;
+      --surface:  #ffffff;
+      --border:   #e8e6df;
+      --accent:   #2a5f8f;
+      --accent-lt:#edf3f9;
+      --r:        6px;
+      --serif:    'DM Serif Display', Georgia, serif;
+      --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
+      --mono:     'Courier New', monospace;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: var(--sans); }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; height: 52px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 13px; color: var(--ink-3); transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--ink); font-weight: 500; }
+    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .btn:hover { background: var(--border); }
+    .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn-dark:hover { opacity: .85; background: var(--ink); }
+
+    .page {
+      max-width: 1000px; margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    .page-header { margin-bottom: 40px; }
+    .page-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .page-header h1 { font-family: var(--serif); font-size: 36px; letter-spacing: -.02em; margin-bottom: 12px; }
+    .page-header p { font-size: 14px; color: var(--ink-2); line-height: 1.7; max-width: 560px; font-weight: 300; }
+
+    .section { margin-bottom: 32px; }
+    .section-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); margin-bottom: 14px; }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; }
+
+    .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-label { font-size: 11px; color: var(--ink-2); font-weight: 500; }
+    .input-field {
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r);
+      font-size: 13px; font-family: var(--sans); color: var(--ink);
+      background: var(--bg); outline: none; transition: border-color .15s;
+    }
+    .input-field:focus { border-color: var(--accent); }
+    .input-hint { font-size: 11px; color: var(--ink-3); }
+
+    .input-range { display: flex; flex-direction: column; gap: 6px; }
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    .range-row input[type=range] { flex: 1; accent-color: var(--accent); }
+    .range-val { font-family: var(--mono); font-size: 12px; color: var(--ink); min-width: 28px; text-align: right; }
+
+    .run-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .run-note { font-size: 12px; color: var(--ink-3); }
+
+    .output-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi { background: var(--bg); border-radius: var(--r); padding: 14px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 8px; }
+    .kpi-val { font-family: var(--serif); font-size: 26px; letter-spacing: -.03em; color: var(--ink); }
+    .kpi-sub { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+    .chart-placeholder {
+      background: var(--bg); border: 1px dashed var(--border);
+      border-radius: var(--r); height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px; color: var(--ink-3); font-size: 13px;
+    }
+    .chart-placeholder .chart-icon { font-family: var(--mono); font-size: 22px; opacity: .3; }
+
+    .feature-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .feature-table th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
+    .feature-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
+    .feature-table tr:last-child td { border-bottom: none; }
+    .feature-table tr:hover td { background: var(--bg); }
+
+    .bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+    .bar-fill { height: 4px; background: var(--accent); border-radius: 2px; opacity: .6; }
+
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); background: var(--border); color: var(--ink-3); }
+    .status-pill.ready { background: var(--accent-lt); color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .input-grid { grid-template-columns: 1fr; }
+      .output-grid { grid-template-columns: 1fr 1fr; }
+      .page { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">AppName</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/map">Map</a>
+    <a href="/ml" class="active">ML</a>
+  </div>
+  <a href="/dashboard"><button class="btn btn-dark">Dashboard →</button></a>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <p class="page-eyebrow">[Model category · version placeholder]</p>
+    <h1>[ML page title]</h1>
+    <p>[Brief description of what this ML model does, what inputs it takes, and what predictions it produces. Replace when model is defined.]</p>
+  </div>
+
+  <!-- ── INPUTS ── -->
+  <div class="section">
+    <div class="section-title">Model inputs</div>
+    <div class="card">
+      <div class="input-grid">
+
+        <div class="input-group">
+          <label class="input-label">[Input field A]</label>
+          <input class="input-field" type="text" placeholder="[Placeholder value]">
+          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">[Input field B]</label>
+          <input class="input-field" type="number" placeholder="[Placeholder value]">
+          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">[Input field C]</label>
+          <input class="input-field" type="text" placeholder="[Placeholder value]">
+          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+        <div class="input-range">
+          <label class="input-label">[Slider input D]</label>
+          <div class="range-row">
+            <input type="range" min="0" max="100" value="50" oninput="document.getElementById('slider-d-val').textContent=this.value">
+            <span class="range-val" id="slider-d-val">50</span>
+          </div>
+          <span class="input-hint">[Helper text describing this slider]</span>
+        </div>
+
+        <div class="input-range">
+          <label class="input-label">[Slider input E]</label>
+          <div class="range-row">
+            <input type="range" min="0" max="100" value="30" oninput="document.getElementById('slider-e-val').textContent=this.value">
+            <span class="range-val" id="slider-e-val">30</span>
+          </div>
+          <span class="input-hint">[Helper text describing this slider]</span>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">[Dropdown input F]</label>
+          <select class="input-field">
+            <option>[Option 1]</option>
+            <option>[Option 2]</option>
+            <option>[Option 3]</option>
+          </select>
+          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+      </div>
+
+      <div class="run-row">
+        <button class="btn btn-dark" onclick="runPrediction()">Run prediction →</button>
+        <span class="run-note">[Note about what happens when prediction runs — e.g. estimated time, data source]</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT ── -->
+  <div class="section">
+    <div class="section-title">Prediction output</div>
+    <div class="card">
+
+      <div class="output-grid">
+        <div class="kpi">
+          <div class="kpi-label">[Output metric A]</div>
+          <div class="kpi-val" id="out-a">—</div>
+          <div class="kpi-sub">[Unit or context]</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">[Output metric B]</div>
+          <div class="kpi-val" id="out-b">—</div>
+          <div class="kpi-sub">[Unit or context]</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">[Output metric C]</div>
+          <div class="kpi-val" id="out-c">—</div>
+          <div class="kpi-sub">[Unit or context]</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">[Confidence score]</div>
+          <div class="kpi-val" id="out-conf">—</div>
+          <div class="kpi-sub">[Unit or context]</div>
+        </div>
+      </div>
+
+      <!-- Replace with real chart (Chart.js canvas) when model is ready -->
+      <div class="chart-placeholder" id="output-chart">
+        <div class="chart-icon">[ ]</div>
+        <span>Output visualisation appears here after running prediction</span>
+        <span style="font-size:11px">[Replace with Chart.js or Plotly chart]</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── FEATURE IMPORTANCE ── -->
+  <div class="section">
+    <div class="section-title">Feature importance</div>
+    <div class="card">
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Importance</th>
+            <th style="width:40%">Relative weight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>[Feature name A]</td>
+            <td>[XX%]</td>
+            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div></td>
+          </tr>
+          <tr>
+            <td>[Feature name B]</td>
+            <td>[XX%]</td>
+            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div></td>
+          </tr>
+          <tr>
+            <td>[Feature name C]</td>
+            <td>[XX%]</td>
+            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td>
+          </tr>
+          <tr>
+            <td>[Feature name D]</td>
+            <td>[XX%]</td>
+            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div></td>
+          </tr>
+          <tr>
+            <td>[Feature name E]</td>
+            <td>[XX%]</td>
+            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%"></div></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── MODEL INFO ── -->
+  <div class="section">
+    <div class="section-title">Model info</div>
+    <div class="card" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">Model type</div>
+        <div style="font-size:13px;color:var(--ink-2)">[e.g. Random Forest / XGBoost / Neural Net]</div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">Last trained</div>
+        <div style="font-size:13px;color:var(--ink-2)">[Date placeholder]</div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">Status</div>
+        <div class="status-pill">[Not connected]</div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">Training data</div>
+        <div style="font-size:13px;color:var(--ink-2)">[Dataset description placeholder]</div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">Accuracy</div>
+        <div style="font-size:13px;color:var(--ink-2)">[XX%] on test set</div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px">API endpoint</div>
+        <div style="font-size:13px;color:var(--ink-2);font-family:var(--mono)">POST /api/predict</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function runPrediction() {
+  // Wire to POST /api/predict when prediction_service.py is ready
+  // Update #out-a, #out-b, #out-c, #out-conf with real values from response
+  try {
+    const res  = await fetch('/api/predict', { method: 'POST' });
+    const data = await res.json();
+    console.log('Prediction response:', data);
+    // TODO: document.getElementById('out-a').textContent = data.metric_a;
+  } catch (err) {
+    console.error('Prediction failed:', err);
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,10 +1,165 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AppName — Tagline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:      #181816;
+      --ink-2:    #6b6b65;
+      --ink-3:    #a8a8a0;
+      --bg:       #f9f8f5;
+      --surface:  #ffffff;
+      --border:   #e8e6df;
+      --accent:   #2a5f8f;
+      --accent-lt:#edf3f9;
+      --green:    #237a4b;
+      --green-bg: #edf7f2;
+      --r:        6px;
+      --serif:    'DM Serif Display', Georgia, serif;
+      --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
+      --mono:     'Courier New', monospace;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
 
-{% block title %}Home - scrumIt{% endblock %}
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
+    .btn:hover { background: var(--border); }
+    .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn-dark:hover { opacity: .85; background: var(--ink); }
 
-{% block content %}
+    /* HERO */
+    .hero {
+      max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 320px; gap: 64px;
+      align-items: start; padding: 80px 40px 64px;
+    }
+    .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
+    h1 { font-family: var(--serif); font-size: 50px; line-height: 1.06; letter-spacing: -.02em; margin-bottom: 22px; }
+    h1 i { color: var(--accent); }
+    .hero p { font-size: 15px; color: var(--ink-2); line-height: 1.75; max-width: 420px; margin-bottom: 34px; font-weight: 300; }
+    .actions { display: flex; gap: 10px; }
+
+    /* PREVIEW CARD */
+    .preview-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-top: 8px; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .card-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); }
+    .badge { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .sparkline { display: flex; align-items: flex-end; gap: 4px; height: 50px; margin-bottom: 14px; }
+    .sparkline span { flex: 1; border-radius: 2px 2px 0 0; background: var(--border); }
+    .sparkline span.hi { background: var(--accent); opacity: .65; }
+    .sparkline span.hi2 { background: var(--accent); }
+    .stat { font-family: var(--serif); font-size: 34px; letter-spacing: -.04em; line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 40px; }
+
+    /* FEATURES */
+    .features { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); padding: 48px 40px 72px; }
+    .feature { padding-right: 40px; }
+    .feature + .feature { padding-left: 40px; border-left: 1px solid var(--border); }
+    .feat-num { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-bottom: 12px; }
+    .feature h3 { font-family: var(--serif); font-size: 18px; margin-bottom: 8px; }
+    .feature p  { font-size: 13px; color: var(--ink-2); line-height: 1.7; font-weight: 300; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 18px 40px; display: flex; justify-content: space-between; }
+    footer span { font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+
+    @media (max-width: 760px) {
+      nav { padding: 0 20px; }
+      .hero { grid-template-columns: 1fr; gap: 32px; padding: 48px 20px 40px; }
+      .features { grid-template-columns: 1fr; padding: 32px 20px 48px; gap: 0; }
+      .feature { padding: 28px 0; padding-right: 0; }
+      .feature + .feature { border-left: none; padding-left: 0; border-top: 1px solid var(--border); }
+      .divider { margin: 0 20px; }
+      footer { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">AppName</span>
+  <div class="nav-links">
+    <a href="#">Features</a>
+    <a href="#">About</a>
+    <a href="#">Docs</a>
+  </div>
+  <a href="/map"><button class="btn" style="margin-right:4px">World Map</button></a>
+  <a href="/dashboard"><button class="btn btn-dark">Open Dashboard →</button></a>
+</nav>
+
 <section class="hero">
-    <h2>Welcome to scrumIt</h2>
-    <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+  <div>
+    <p class="eyebrow">[Product category · one-line positioning]</p>
+    <h1>[Primary headline<br>goes <i>here]</i></h1>
+    <p>[Introductory sentence explaining what this product does and the core value it delivers. Replace with your copy when ready. Two to three sentences max.]</p>
+    <div class="actions">
+      <a href="/dashboard"><button class="btn btn-dark">Go to Dashboard →</button></a>
+      <a href="/map"><button class="btn">World Map</button></a>
+      <a href="/ml"><button class="btn">ML Model</button></a>
+      <button class="btn">Learn more</button>
+    </div>
+  </div>
+
+  <div class="preview-card">
+    <div class="card-top">
+      <span class="card-label">[Card title]</span>
+      <span class="badge badge-green">[Status]</span>
+    </div>
+    <div class="sparkline">
+      <span style="height:28%"></span><span style="height:44%"></span>
+      <span style="height:36%"></span><span class="hi" style="height:66%"></span>
+      <span class="hi2" style="height:90%"></span><span class="hi" style="height:70%"></span>
+      <span style="height:78%"></span><span style="height:52%"></span>
+    </div>
+    <div class="stat">[XX%]</div>
+    <div class="stat-sub">[Metric label — replace when data is ready]</div>
+  </div>
 </section>
-{% endblock %}
+
+<hr class="divider">
+
+<section class="features">
+  <div class="feature">
+    <div class="feat-num">01</div>
+    <h3>[Feature name]</h3>
+    <p>[One or two sentences describing what this feature does and why it matters. Replace with real copy.]</p>
+  </div>
+  <div class="feature">
+    <div class="feat-num">02</div>
+    <h3>[Feature name]</h3>
+    <p>[One or two sentences describing what this feature does and why it matters. Replace with real copy.]</p>
+  </div>
+  <div class="feature">
+    <div class="feat-num">03</div>
+    <h3>[Feature name]</h3>
+    <p>[One or two sentences describing what this feature does and why it matters. Replace with real copy.]</p>
+  </div>
+</section>
+
+<footer>
+  <span>AppName</span>
+  <span>© [Year]</span>
+</footer>
+
+</body>
+</html>
