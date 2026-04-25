@@ -287,6 +287,18 @@ async function init() {
   worldData = data;
   document.getElementById('loading').style.display = 'none';
   drawMap(data);
+
+  const savedLevel = sessionStorage.getItem('map_level');
+  const savedContinent = sessionStorage.getItem('map_continent');
+  const savedCountryId = sessionStorage.getItem('map_country_id');
+  if (savedLevel === 'continent' && savedContinent) {
+    setTimeout(() => drillToContinent(savedContinent), 300);
+  } else if (savedLevel === 'country' && savedContinent && savedCountryId) {
+    setTimeout(() => {
+      drillToContinent(savedContinent);
+      setTimeout(() => drillToCountry(+savedCountryId, savedContinent), 600);
+    }, 300);
+  }
 }
 
 function drawMap(data) {
@@ -412,6 +424,8 @@ function onCountryClick(event, d) {
 function drillToContinent(continent) {
   selectedContinent = continent;
   currentLevel = 'continent';
+  sessionStorage.setItem('map_continent', continent);
+  sessionStorage.setItem('map_level', 'continent');
 
   // Update paths
   d3.selectAll('.country-path')
@@ -435,6 +449,9 @@ function drillToContinent(continent) {
 function drillToCountry(id, continent) {
   selectedCountryId = id;
   currentLevel = 'country';
+  sessionStorage.setItem('map_country_id', id);
+  sessionStorage.setItem('map_continent', continent);
+  sessionStorage.setItem('map_level', 'country');
 
   d3.selectAll('.country-path')
     .classed('selected', d => +d.id === id);
@@ -452,6 +469,9 @@ function drillToCountry(id, continent) {
 
 function drillUp(level) {
   if (level === 'world') {
+    sessionStorage.removeItem('map_country_id');
+    sessionStorage.removeItem('map_continent');
+    sessionStorage.removeItem('map_level');  
     currentLevel = 'world'; selectedContinent = null;
     d3.selectAll('.country-path').classed('dimmed', false).classed('selected', false);
     resetZoom();

@@ -475,6 +475,8 @@
   const continent = params.get('continent');
   const filterLabel = country || continent;
   if (filterLabel) {
+    const param = country ? `country=${encodeURIComponent(country)}` : `continent=${encodeURIComponent(continent)}`;
+    document.querySelector('a[href="/dashboard"]').href = `/dashboard?${param}`;
     const isContinent = !!continent;
     const banner = document.createElement('div');
     banner.style.cssText = `
