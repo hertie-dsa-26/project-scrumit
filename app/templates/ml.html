@@ -21,6 +21,10 @@
       --serif:    'DM Serif Display', Georgia, serif;
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
+      --warn:     #c2553a;
+      --warn-lt:  #fdf0ed;
+      --ok:       #3a7d44;
+      --ok-lt:    #edf7ef;
     }
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
@@ -29,54 +33,78 @@
     nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 52px;
+      padding: 0 40px; height: 56px;
       background: var(--surface); border-bottom: 1px solid var(--border);
     }
     .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-    .nav-links { display: flex; gap: 24px; }
-    .nav-links a { font-size: 13px; color: var(--ink-3); transition: color .15s; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
     .nav-links a:hover { color: var(--ink); }
-    .nav-links a.active { color: var(--ink); font-weight: 500; }
-    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
 
-    .page {
-      max-width: 1000px; margin: 0 auto;
-      padding: 48px 32px 80px;
-    }
+    .page { max-width: 800px; margin: 0 auto; padding: 48px 32px 80px; }
 
-    .page-header { margin-bottom: 40px; }
-    .page-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
-    .page-header h1 { font-family: var(--serif); font-size: 36px; letter-spacing: -.02em; margin-bottom: 12px; }
-    .page-header p { font-size: 14px; color: var(--ink-2); line-height: 1.7; max-width: 560px; font-weight: 300; }
-
-    .section { margin-bottom: 32px; }
+    .section { margin-bottom: 28px; }
     .section-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); margin-bottom: 14px; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; }
 
-    .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .input-group { display: flex; flex-direction: column; gap: 6px; }
-    .input-label { font-size: 11px; color: var(--ink-2); font-weight: 500; }
-    .input-field {
-      padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r);
-      font-size: 13px; font-family: var(--sans); color: var(--ink);
-      background: var(--bg); outline: none; transition: border-color .15s;
+    /* ── FORM ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .form-field {
+      padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--r);
+      font-size: 14px; font-family: var(--sans); color: var(--ink);
+      background: var(--surface); outline: none; width: 100%;
+      transition: border-color .15s; appearance: none; -webkit-appearance: none;
     }
-    .input-field:focus { border-color: var(--accent); }
-    .input-hint { font-size: 11px; color: var(--ink-3); }
+    .form-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42,95,143,.08); }
+    .form-field::placeholder { color: var(--ink-3); }
+    select.form-field {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a8a8a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
 
-    .input-range { display: flex; flex-direction: column; gap: 6px; }
-    .range-row { display: flex; align-items: center; gap: 10px; }
-    .range-row input[type=range] { flex: 1; accent-color: var(--accent); }
-    .range-val { font-family: var(--mono); font-size: 12px; color: var(--ink); min-width: 28px; text-align: right; }
+    .form-divider {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 12px;
+      padding: 4px 0;
+    }
+    .form-divider-label {
+      font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+      letter-spacing: .14em; color: var(--ink-3); white-space: nowrap;
+    }
+    .form-divider-line { flex: 1; height: 1px; background: var(--border); }
 
-    .run-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
-    .run-note { font-size: 12px; color: var(--ink-3); }
+    .mismatch-badge {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: var(--r);
+      font-size: 13px; font-weight: 500;
+      transition: all .2s;
+    }
+    .mismatch-badge.neutral { background: var(--bg); color: var(--ink-3); border: 1px solid var(--border); }
+    .mismatch-badge.match { background: var(--ok-lt); color: var(--ok); border: 1px solid #c4e0c8; }
+    .mismatch-badge.mismatch { background: var(--warn-lt); color: var(--warn); border: 1px solid #ecc9c0; }
+    .mismatch-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    .output-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .assess-btn {
+      width: 100%; padding: 13px;
+      background: var(--accent-lt); color: var(--accent);
+      border: 1px solid #c8dff5; border-radius: var(--r);
+      font-size: 14px; font-weight: 500; font-family: var(--sans);
+      cursor: pointer; letter-spacing: .01em;
+      transition: background .15s, border-color .15s;
+    }
+    .assess-btn:hover { background: #d4e8f7; border-color: #aecfee; }
+
+    /* ── OUTPUT ── */
+    .output-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .kpi { background: var(--bg); border-radius: var(--r); padding: 14px; }
     .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 8px; }
     .kpi-val { font-family: var(--serif); font-size: 26px; letter-spacing: -.03em; color: var(--ink); }
@@ -84,33 +112,34 @@
 
     .chart-placeholder {
       background: var(--bg); border: 1px dashed var(--border);
-      border-radius: var(--r); height: 160px;
+      border-radius: var(--r); height: 150px;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 8px; color: var(--ink-3); font-size: 13px;
     }
-    .chart-placeholder .chart-icon { font-family: var(--mono); font-size: 22px; opacity: .3; }
 
+    /* ── FEATURE TABLE ── */
     .feature-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .feature-table th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
     .feature-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
     .feature-table tr:last-child td { border-bottom: none; }
     .feature-table tr:hover td { background: var(--bg); }
-
     .bar-wrap { display: flex; align-items: center; gap: 8px; }
     .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
     .bar-fill { height: 4px; background: var(--accent); border-radius: 2px; opacity: .6; }
 
-    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); background: var(--border); color: var(--ink-3); }
-    .status-pill.ready { background: var(--accent-lt); color: var(--accent); }
+    .status-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); background: var(--border); color: var(--ink-3); }
 
-    @media (max-width: 700px) {
-      .input-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
       .output-grid { grid-template-columns: 1fr 1fr; }
       .page { padding: 32px 16px 60px; }
+      .mismatch-badge { font-size: 12px; }
     }
   </style>
 </head>
 <body>
+
+<!-- ── TOPBAR ── -->
 
 <nav>
   <a href="/" class="logo">AppName</a>
@@ -120,182 +149,260 @@
     <a href="/map">Map</a>
     <a href="/ml" class="active">ML</a>
   </div>
-  <a href="/dashboard"><button class="btn btn-dark">Dashboard →</button></a>
+  <div style="width:120px"></div>
 </nav>
 
 <div class="page">
 
-  <div class="page-header">
-    <p class="page-eyebrow">[Model category · version placeholder]</p>
-    <h1>[ML page title]</h1>
-    <p>[Brief description of what this ML model does, what inputs it takes, and what predictions it produces. Replace when model is defined.]</p>
-  </div>
-
-  <!-- ── INPUTS ── -->
+  <!-- ── ASSESSMENT FORM ── -->
   <div class="section">
-    <div class="section-title">Model inputs</div>
-    <div class="card">
-      <div class="input-grid">
+    <div class="card" style="max-width:700px;margin:0 auto;">
 
-        <div class="input-group">
-          <label class="input-label">[Input field A]</label>
-          <input class="input-field" type="text" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
+      <div style="margin-bottom:20px">
+        <h1 style="font-family:var(--serif);font-size:24px;letter-spacing:-.01em;margin-bottom:6px">Transaction Risk Assessment</h1>
+        <p style="font-size:13px;color:var(--ink-3)">Enter transaction details to check for money laundering risk</p>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin-bottom:24px"></div>
+
+      <div class="form-grid">
+
+        <!-- ── PAYMENT DETAILS ── -->
+        <div class="form-divider">
+          <span class="form-divider-label">Payment details</span>
+          <div class="form-divider-line"></div>
         </div>
 
-        <div class="input-group">
-          <label class="input-label">[Input field B]</label>
-          <input class="input-field" type="number" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label">[Input field C]</label>
-          <input class="input-field" type="text" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
-        </div>
-
-        <div class="input-range">
-          <label class="input-label">[Slider input D]</label>
-          <div class="range-row">
-            <input type="range" min="0" max="100" value="50" oninput="document.getElementById('slider-d-val').textContent=this.value">
-            <span class="range-val" id="slider-d-val">50</span>
-          </div>
-          <span class="input-hint">[Helper text describing this slider]</span>
-        </div>
-
-        <div class="input-range">
-          <label class="input-label">[Slider input E]</label>
-          <div class="range-row">
-            <input type="range" min="0" max="100" value="30" oninput="document.getElementById('slider-e-val').textContent=this.value">
-            <span class="range-val" id="slider-e-val">30</span>
-          </div>
-          <span class="input-hint">[Helper text describing this slider]</span>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label">[Dropdown input F]</label>
-          <select class="input-field">
-            <option>[Option 1]</option>
-            <option>[Option 2]</option>
-            <option>[Option 3]</option>
+        <div class="form-group">
+          <label class="form-label">Payment format</label>
+          <select class="form-field" id="payment-format">
+            <option value="">Select format…</option>
+            <option>ACH</option>
+            <option>Cheque</option>
+            <option>Credit Card</option>
+            <option>Reinvestment</option>
+            <option>Wire</option>
           </select>
-          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hour of transaction (0–23)</label>
+          <input class="form-field" type="number" id="hour" placeholder="14" min="0" max="23">
+        </div>
+
+        <!-- ── SENDER / RECEIVER ── -->
+        <div class="form-divider">
+          <span class="form-divider-label">Sender</span>
+          <div class="form-divider-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sending bank</label>
+          <input class="form-field" type="text" id="sending-bank" placeholder="e.g. Bank of America">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sending account</label>
+          <input class="form-field" type="text" id="sending-account" placeholder="e.g. ACCT-00123">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sending bank type</label>
+          <select class="form-field" id="sending-bank-type">
+            <option value="">Select type…</option>
+            <option>Commercial</option>
+            <option>Investment</option>
+            <option>Central</option>
+            <option>Credit Union</option>
+            <option>Online / Neo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sending country</label>
+          <input class="form-field" type="text" id="sending-country" placeholder="e.g. US">
+        </div>
+
+        <div class="form-divider">
+          <span class="form-divider-label">Receiver</span>
+          <div class="form-divider-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving bank</label>
+          <input class="form-field" type="text" id="receiving-bank" placeholder="e.g. HSBC">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving account</label>
+          <input class="form-field" type="text" id="receiving-account" placeholder="e.g. ACCT-99871">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving bank type</label>
+          <select class="form-field" id="receiving-bank-type">
+            <option value="">Select type…</option>
+            <option>Commercial</option>
+            <option>Investment</option>
+            <option>Central</option>
+            <option>Credit Union</option>
+            <option>Online / Neo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving country</label>
+          <input class="form-field" type="text" id="receiving-country" placeholder="e.g. GB">
+        </div>
+
+        <!-- ── AMOUNTS & CURRENCIES ── -->
+        <div class="form-divider">
+          <span class="form-divider-label">Amounts &amp; currencies</span>
+          <div class="form-divider-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amount paid</label>
+          <input class="form-field" type="number" id="amount-paid" placeholder="0.00" step="0.01" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Payment currency</label>
+          <select class="form-field" id="payment-currency" onchange="checkCurrencyMismatch()">
+            <option value="">Select currency…</option>
+            <option>USD</option>
+            <option>EUR</option>
+            <option>GBP</option>
+            <option>CHF</option>
+            <option>JPY</option>
+            <option>CNY</option>
+            <option>AED</option>
+            <option>RUB</option>
+            <option>MXN</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving amount</label>
+          <input class="form-field" type="number" id="receiving-amount" placeholder="0.00" step="0.01" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Receiving currency</label>
+          <select class="form-field" id="receiving-currency" onchange="checkCurrencyMismatch()">
+            <option value="">Select currency…</option>
+            <option>USD</option>
+            <option>EUR</option>
+            <option>GBP</option>
+            <option>CHF</option>
+            <option>JPY</option>
+            <option>CNY</option>
+            <option>AED</option>
+            <option>RUB</option>
+            <option>MXN</option>
+          </select>
+        </div>
+
+        <!-- Currency mismatch indicator -->
+        <div class="mismatch-badge neutral" id="currency-mismatch">
+          <span class="mismatch-dot"></span>
+          <span id="mismatch-text">Select both currencies to check for mismatch</span>
         </div>
 
       </div>
 
-      <div class="run-row">
-        <button class="btn btn-dark" onclick="runPrediction()">Run prediction →</button>
-        <span class="run-note">[Note about what happens when prediction runs — e.g. estimated time, data source]</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── OUTPUT ── -->
-  <div class="section">
-    <div class="section-title">Prediction output</div>
-    <div class="card">
-
-      <div class="output-grid">
-        <div class="kpi">
-          <div class="kpi-label">[Output metric A]</div>
-          <div class="kpi-val" id="out-a">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Output metric B]</div>
-          <div class="kpi-val" id="out-b">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Output metric C]</div>
-          <div class="kpi-val" id="out-c">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Confidence score]</div>
-          <div class="kpi-val" id="out-conf">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
+      <div style="margin-top:28px">
+        <button class="assess-btn" onclick="runPrediction()">Assess transaction risk</button>
       </div>
 
-      <!-- Replace with real chart (Chart.js canvas) when model is ready -->
-      <div class="chart-placeholder" id="output-chart">
-        <div class="chart-icon">[ ]</div>
-        <span>Output visualisation appears here after running prediction</span>
-        <span style="font-size:11px">[Replace with Chart.js or Plotly chart]</span>
+      <!-- ── RESULT — hidden until assessment runs ── -->
+      <div id="result-panel" style="display:none">
+        <div style="height:1px;background:var(--border);margin:28px 0 24px"></div>
+        <div class="section-title" style="margin-bottom:16px">Assessment result</div>
+
+        <div class="output-grid">
+          <div class="kpi">
+            <div class="kpi-label">Risk score</div>
+            <div class="kpi-val" id="out-a">—</div>
+            <div class="kpi-sub" id="out-a-sub">0–100 scale</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Flag</div>
+            <div class="kpi-val" id="out-b">—</div>
+            <div class="kpi-sub">risk level</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Category</div>
+            <div class="kpi-val" id="out-c">—</div>
+            <div class="kpi-sub">typology</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Confidence</div>
+            <div class="kpi-val" id="out-conf">—</div>
+            <div class="kpi-sub">model output</div>
+          </div>
+        </div>
+
+        <!-- Simple custom QDA probability bar -->
+        <div class="chart-placeholder" style="margin-top:16px;align-items:stretch;justify-content:flex-start;padding:16px;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);">
+            <span>Laundering probability</span>
+            <span id="qda-prob-label">0.0%</span>
+          </div>
+          <div style="height:12px;background:var(--border);border-radius:999px;overflow:hidden;">
+            <div id="qda-prob-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3a7d44 0%, #f0ad4e 55%, #c2553a 100%);transition:width .35s ease;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);">
+            <span>Low risk</span>
+            <span>High risk</span>
+          </div>
+        </div>
+
+        <!-- Feature importance -->
+        <div style="margin-top:20px">
+          <div class="section-title" style="margin-bottom:12px">Feature importance</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Importance</th>
+                <th style="width:40%">Relative weight</th>
+              </tr>
+            </thead>
+            <tbody id="feature-importance-tbody">
+              <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--ink-3)">Loading feature importance…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+
       </div>
-
-    </div>
-  </div>
-
-  <!-- ── FEATURE IMPORTANCE ── -->
-  <div class="section">
-    <div class="section-title">Feature importance</div>
-    <div class="card">
-      <table class="feature-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Importance</th>
-            <th style="width:40%">Relative weight</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>[Feature name A]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name B]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name C]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name D]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name E]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%"></div></div></div></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
   <!-- ── MODEL INFO ── -->
-  <div class="section">
+  <div class="section" style="max-width:700px;margin:0 auto">
     <div class="section-title">Model info</div>
-    <div class="card" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+    <div class="card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Model type</div>
-        <div style="font-size:13px;color:var(--ink-2)">[e.g. Random Forest / XGBoost / Neural Net]</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-type">Quadratic Discriminant Analysis (QDA)</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Last trained</div>
-        <div style="font-size:13px;color:var(--ink-2)">[Date placeholder]</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-trained">Custom trained</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Status</div>
-        <div class="status-pill">[Not connected]</div>
+        <div class="status-pill" id="model-status">[Loading…]</div>
       </div>
       <div>
-        <div class="kpi-label" style="margin-bottom:6px">Training data</div>
-        <div style="font-size:13px;color:var(--ink-2)">[Dataset description placeholder]</div>
+        <div class="kpi-label" style="margin-bottom:6px">Preprocessor</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-preprocessor">PyCaret v3.x</div>
       </div>
       <div>
-        <div class="kpi-label" style="margin-bottom:6px">Accuracy</div>
-        <div style="font-size:13px;color:var(--ink-2)">[XX%] on test set</div>
+        <div class="kpi-label" style="margin-bottom:6px">Input features</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-features">14 features</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">API endpoint</div>
@@ -307,19 +414,181 @@
 </div>
 
 <script>
-async function runPrediction() {
-  // Wire to POST /api/predict when prediction_service.py is ready
-  // Update #out-a, #out-b, #out-c, #out-conf with real values from response
+
+// Load model info and feature importance on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadModelInfo();
+  loadFeatureImportance();
+});
+
+async function loadModelInfo() {
   try {
-    const res  = await fetch('/api/predict', { method: 'POST' });
+    const res = await fetch('/api/model-info');
     const data = await res.json();
-    console.log('Prediction response:', data);
-    // TODO: document.getElementById('out-a').textContent = data.metric_a;
+
+    if (res.ok) {
+      document.getElementById('model-type').textContent = data.model_type || 'QDA';
+      document.getElementById('model-preprocessor').textContent = data.preprocessor || 'PyCaret v3.x';
+      document.getElementById('model-features').textContent = data.input_features + ' features';
+
+      const statusEl = document.getElementById('model-status');
+      if (data.status === 'connected') {
+        statusEl.textContent = 'Connected';
+        statusEl.style.background = 'var(--ok-lt)';
+        statusEl.style.color = 'var(--ok)';
+        statusEl.style.borderColor = '#c4e0c8';
+      } else {
+        statusEl.textContent = 'Disconnected';
+        statusEl.style.background = 'var(--warn-lt)';
+        statusEl.style.color = 'var(--warn)';
+        statusEl.style.borderColor = '#ecc9c0';
+      }
+    }
   } catch (err) {
+    console.error('Error loading model info:', err);
+  }
+}
+
+async function loadFeatureImportance() {
+  try {
+    const res = await fetch('/api/feature-importance');
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      const tbody = document.getElementById('feature-importance-tbody');
+      tbody.innerHTML = '';
+
+      const features = data.features || {};
+      const maxImportance = Math.max(...Object.values(features), 1);
+
+      Object.entries(features).forEach(([feature, importance]) => {
+        const barWidth = (importance / maxImportance) * 100;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${feature}</td>
+          <td>${importance.toFixed(1)}%</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg">
+                <div class="bar-fill" style="width:${barWidth}%"></div>
+              </div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading feature importance:', err);
+  }
+}
+
+function checkCurrencyMismatch() {
+  const payC = document.getElementById('payment-currency').value;
+  const recC = document.getElementById('receiving-currency').value;
+  const badge = document.getElementById('currency-mismatch');
+  const text = document.getElementById('mismatch-text');
+
+  if (!payC || !recC) {
+    badge.className = 'mismatch-badge neutral';
+    text.textContent = 'Select both currencies to check for mismatch';
+    return;
+  }
+
+  if (payC === recC) {
+    badge.className = 'mismatch-badge match';
+    text.textContent = 'Currencies match — ' + payC;
+  } else {
+    badge.className = 'mismatch-badge mismatch';
+    text.textContent = 'Currency mismatch — ' + payC + ' → ' + recC;
+  }
+}
+
+async function runPrediction() {
+  // Validate required fields
+  const requiredFields = [
+    'payment-format', 'sending-bank', 'sending-account',
+    'sending-bank-type', 'sending-country', 'receiving-bank',
+    'receiving-account', 'receiving-bank-type', 'receiving-country',
+    'amount-paid', 'payment-currency', 'receiving-amount', 'receiving-currency'
+  ];
+
+  let missingFields = [];
+  for (const field of requiredFields) {
+    const el = document.getElementById(field);
+    if (!el || !el.value) {
+      missingFields.push(field.replace('-', ' '));
+    }
+  }
+
+  if (missingFields.length > 0) {
+    alert('Please fill in all required fields:\n- ' + missingFields.join('\n- '));
+    return;
+  }
+
+  const inputs = {
+    from_bank:          document.getElementById('sending-bank').value || 'Unknown',
+    account:            document.getElementById('sending-account').value || 'UNKNOWN-ACCOUNT',
+    to_bank:            document.getElementById('receiving-bank').value || 'Unknown',
+    'account.1':        document.getElementById('receiving-account').value || 'UNKNOWN-ACCOUNT',
+    amount_received:    parseFloat(document.getElementById('receiving-amount').value) || 0,
+    receiving_currency: document.getElementById('receiving-currency').value || 'USD',
+    amount_paid:        parseFloat(document.getElementById('amount-paid').value) || 0,
+    payment_currency:   document.getElementById('payment-currency').value || 'USD',
+    currency_mismatch:  (
+      document.getElementById('payment-currency').value &&
+      document.getElementById('receiving-currency').value &&
+      document.getElementById('payment-currency').value !== document.getElementById('receiving-currency').value
+    ) ? 'Yes' : 'No',
+    payment_format:     document.getElementById('payment-format').value || 'Wire',
+    s_country:          document.getElementById('sending-country').value || 'US',
+    r_country:          document.getElementById('receiving-country').value || 'US',
+    s_bank_type:        document.getElementById('sending-bank-type').value || 'Commercial',
+    r_bank_type:        document.getElementById('receiving-bank-type').value || 'Commercial'
+  };
+
+  // Show result panel
+  document.getElementById('result-panel').style.display = 'block';
+  document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  try {
+    const res  = await fetch('/api/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inputs)
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Prediction request failed');
+    }
+
+    const riskPercent = Number(data.probability || 0) * 100;
+    const confidencePercent = Number(data.confidence || 0) * 100;
+    const flag = riskPercent >= 50 ? 'HIGH' : 'LOW';
+    const category = riskPercent >= 70 ? 'Critical' : (riskPercent >= 40 ? 'Watch' : 'Normal');
+
+    document.getElementById('out-a').textContent = riskPercent.toFixed(1);
+    document.getElementById('out-a-sub').textContent = '0–100 scale';
+    document.getElementById('out-b').textContent = flag;
+    document.getElementById('out-c').textContent = category;
+    document.getElementById('out-conf').textContent = confidencePercent.toFixed(1) + '%';
+    document.getElementById('qda-prob-label').textContent = riskPercent.toFixed(1) + '%';
+    document.getElementById('qda-prob-bar').style.width = riskPercent.toFixed(1) + '%';
+
+    console.log('Prediction response:', data);
+
+  } catch (err) {
+    document.getElementById('out-a').textContent = 'ERR';
+    document.getElementById('out-b').textContent = 'N/A';
+    document.getElementById('out-c').textContent = 'N/A';
+    document.getElementById('out-conf').textContent = '0%';
+    document.getElementById('qda-prob-label').textContent = '0.0%';
+    document.getElementById('qda-prob-bar').style.width = '0%';
+    alert('Prediction error: ' + err.message);
     console.error('Prediction failed:', err);
   }
 }
 </script>
-
 </body>
 </html>

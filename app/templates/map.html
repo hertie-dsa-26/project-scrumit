@@ -32,15 +32,17 @@
     button { cursor: pointer; font-family: var(--sans); }
 
     /* TOPBAR */
-    nav {
-      position: sticky; top: 0; z-index: 100;
+     nav {
+      position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 52px;
+      padding: 0 40px; height: 56px;
       background: var(--surface); border-bottom: 1px solid var(--border);
     }
     .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
@@ -179,10 +181,13 @@
 
 <nav>
   <a href="/" class="logo">AppName</a>
-  <div class="nav-right">
-    <a href="/dashboard"><button class="btn">Dashboard</button></a>
-    <a href="/"><button class="btn btn-dark">← Home</button></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/map">Map</a>
+    <a href="/ml" class="active">ML</a>
   </div>
+  <div style="width:120px"></div>
 </nav>
 
 <div class="breadcrumb">
@@ -268,6 +273,7 @@ const COUNTRY_CONTINENT = {"10":"Antarctica","44":"North America","260":"Africa"
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentLevel = 'world';
 let selectedContinent = null;
+let selectedCountryId = null; 
 let projection, pathGen, svg, g, currentTransform = d3.zoomIdentity;
 let worldData = null;
 let zoomBehavior;
@@ -281,6 +287,18 @@ async function init() {
   worldData = data;
   document.getElementById('loading').style.display = 'none';
   drawMap(data);
+
+  const savedLevel = sessionStorage.getItem('map_level');
+  const savedContinent = sessionStorage.getItem('map_continent');
+  const savedCountryId = sessionStorage.getItem('map_country_id');
+  if (savedLevel === 'continent' && savedContinent) {
+    setTimeout(() => drillToContinent(savedContinent), 300);
+  } else if (savedLevel === 'country' && savedContinent && savedCountryId) {
+    setTimeout(() => {
+      drillToContinent(savedContinent);
+      setTimeout(() => drillToCountry(+savedCountryId, savedContinent), 600);
+    }, 300);
+  }
 }
 
 function drawMap(data) {
@@ -305,15 +323,16 @@ function drawMap(data) {
   g = svg.append('g');
 
   g.append('path')
-    .datum({type:'Sphere'})
-    .attr('class','sphere')
-    .attr('d', pathGen);
+  .datum({type:'Sphere'})
+  .attr('class','sphere')
+  .attr('d', pathGen)
+  .on('click', () => drillUp(currentLevel === 'country' ? 'continent' : 'world'));  // ← add this
 
   g.append('path')
     .datum(d3.geoGraticule()())
     .attr('class','graticule')
     .attr('d', pathGen);
-
+  
   const countries = topojson.feature(data, data.objects.countries);
   const borders   = topojson.mesh(data, data.objects.countries, (a,b) => a !== b);
 
@@ -393,12 +412,20 @@ function onCountryClick(event, d) {
     drillToContinent(continent);
   } else if (currentLevel === 'continent' && continent === selectedContinent) {
     drillToCountry(id, continent);
+  } else if (currentLevel === 'country') {
+    if (id === selectedCountryId) {
+      drillUp('continent');  // click same country → go back
+    } else if (continent === selectedContinent) {
+      drillToCountry(id, continent);  // click different country in same continent
+    }
   }
 }
 
 function drillToContinent(continent) {
   selectedContinent = continent;
   currentLevel = 'continent';
+  sessionStorage.setItem('map_continent', continent);
+  sessionStorage.setItem('map_level', 'continent');
 
   // Update paths
   d3.selectAll('.country-path')
@@ -420,7 +447,11 @@ function drillToContinent(continent) {
 }
 
 function drillToCountry(id, continent) {
+  selectedCountryId = id;
   currentLevel = 'country';
+  sessionStorage.setItem('map_country_id', id);
+  sessionStorage.setItem('map_continent', continent);
+  sessionStorage.setItem('map_level', 'country');
 
   d3.selectAll('.country-path')
     .classed('selected', d => +d.id === id);
@@ -438,6 +469,9 @@ function drillToCountry(id, continent) {
 
 function drillUp(level) {
   if (level === 'world') {
+    sessionStorage.removeItem('map_country_id');
+    sessionStorage.removeItem('map_continent');
+    sessionStorage.removeItem('map_level');  
     currentLevel = 'world'; selectedContinent = null;
     d3.selectAll('.country-path').classed('dimmed', false).classed('selected', false);
     resetZoom();
@@ -536,6 +570,13 @@ function renderContinentSidebar(continent) {
     });
   }
 
+    html += `<a href="/dashboard?continent=${encodeURIComponent(continent)}"
+    style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
+    border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
+    text-decoration:none;transition:opacity .15s;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+    View in Dashboard →
+  </a>`;
   document.getElementById('sidebar-body').innerHTML = html;
 }
 
@@ -557,6 +598,13 @@ function renderCountrySidebar(id, name) {
     html += `<div class="list-item"><span class="list-name">${label}</span><span class="list-val">${val}</span></div>`;
   });
 
+    html += `<a href="/dashboard?country=${encodeURIComponent(name)}"
+    style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
+    border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
+    text-decoration:none;transition:opacity .15s;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+    View in Dashboard →
+  </a>`;
   document.getElementById('sidebar-body').innerHTML = html;
 }
 
