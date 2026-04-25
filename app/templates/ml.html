@@ -41,41 +41,43 @@
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
 
-    .page {
-      max-width: 1000px; margin: 0 auto;
-      padding: 48px 32px 80px;
-    }
+    .page { max-width: 800px; margin: 0 auto; padding: 48px 32px 80px; }
 
-    .page-header { margin-bottom: 40px; }
-    .page-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
-    .page-header h1 { font-family: var(--serif); font-size: 36px; letter-spacing: -.02em; margin-bottom: 12px; }
-    .page-header p { font-size: 14px; color: var(--ink-2); line-height: 1.7; max-width: 560px; font-weight: 300; }
-
-    .section { margin-bottom: 32px; }
+    .section { margin-bottom: 28px; }
     .section-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); margin-bottom: 14px; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; }
 
-    .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .input-group { display: flex; flex-direction: column; gap: 6px; }
-    .input-label { font-size: 11px; color: var(--ink-2); font-weight: 500; }
-    .input-field {
-      padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r);
-      font-size: 13px; font-family: var(--sans); color: var(--ink);
-      background: var(--bg); outline: none; transition: border-color .15s;
+    /* ── FORM ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .form-field {
+      padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--r);
+      font-size: 14px; font-family: var(--sans); color: var(--ink);
+      background: var(--surface); outline: none; width: 100%;
+      transition: border-color .15s; appearance: none; -webkit-appearance: none;
     }
-    .input-field:focus { border-color: var(--accent); }
-    .input-hint { font-size: 11px; color: var(--ink-3); }
+    .form-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42,95,143,.08); }
+    .form-field::placeholder { color: var(--ink-3); }
+    select.form-field {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a8a8a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
 
-    .input-range { display: flex; flex-direction: column; gap: 6px; }
-    .range-row { display: flex; align-items: center; gap: 10px; }
-    .range-row input[type=range] { flex: 1; accent-color: var(--accent); }
-    .range-val { font-family: var(--mono); font-size: 12px; color: var(--ink); min-width: 28px; text-align: right; }
+    .assess-btn {
+      width: 100%; padding: 13px;
+      background: var(--accent-lt); color: var(--accent);
+      border: 1px solid #c8dff5; border-radius: var(--r);
+      font-size: 14px; font-weight: 500; font-family: var(--sans);
+      cursor: pointer; letter-spacing: .01em;
+      transition: background .15s, border-color .15s;
+    }
+    .assess-btn:hover { background: #d4e8f7; border-color: #aecfee; }
 
-    .run-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
-    .run-note { font-size: 12px; color: var(--ink-3); }
-
-    .output-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    /* ── OUTPUT ── */
+    .output-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .kpi { background: var(--bg); border-radius: var(--r); padding: 14px; }
     .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 8px; }
     .kpi-val { font-family: var(--serif); font-size: 26px; letter-spacing: -.03em; color: var(--ink); }
@@ -83,27 +85,25 @@
 
     .chart-placeholder {
       background: var(--bg); border: 1px dashed var(--border);
-      border-radius: var(--r); height: 160px;
+      border-radius: var(--r); height: 150px;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 8px; color: var(--ink-3); font-size: 13px;
     }
-    .chart-placeholder .chart-icon { font-family: var(--mono); font-size: 22px; opacity: .3; }
 
+    /* ── FEATURE TABLE ── */
     .feature-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .feature-table th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
     .feature-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
     .feature-table tr:last-child td { border-bottom: none; }
     .feature-table tr:hover td { background: var(--bg); }
-
     .bar-wrap { display: flex; align-items: center; gap: 8px; }
     .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
     .bar-fill { height: 4px; background: var(--accent); border-radius: 2px; opacity: .6; }
 
-    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); background: var(--border); color: var(--ink-3); }
-    .status-pill.ready { background: var(--accent-lt); color: var(--accent); }
+    .status-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); background: var(--border); color: var(--ink-3); }
 
-    @media (max-width: 700px) {
-      .input-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
       .output-grid { grid-template-columns: 1fr 1fr; }
       .page { padding: 32px 16px 60px; }
     }
@@ -126,161 +126,146 @@
 
 <div class="page">
 
-  <div class="page-header">
-    <p class="page-eyebrow">[Model category · version placeholder]</p>
-    <h1>[ML page title]</h1>
-    <p>[Brief description of what this ML model does, what inputs it takes, and what predictions it produces. Replace when model is defined.]</p>
-  </div>
-
-  <!-- ── INPUTS ── -->
+  <!-- ── ASSESSMENT FORM ── -->
   <div class="section">
-    <div class="section-title">Model inputs</div>
-    <div class="card">
-      <div class="input-grid">
+    <div class="card" style="max-width:700px;margin:0 auto;">
 
-        <div class="input-group">
-          <label class="input-label">[Input field A]</label>
-          <input class="input-field" type="text" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
-        </div>
+      <div style="margin-bottom:20px">
+        <h1 style="font-family:var(--serif);font-size:24px;letter-spacing:-.01em;margin-bottom:6px">Transaction Risk Assessment</h1>
+        <p style="font-size:13px;color:var(--ink-3)">Enter transaction details to check for money laundering risk</p>
+      </div>
 
-        <div class="input-group">
-          <label class="input-label">[Input field B]</label>
-          <input class="input-field" type="number" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
-        </div>
+      <div style="height:1px;background:var(--border);margin-bottom:24px"></div>
 
-        <div class="input-group">
-          <label class="input-label">[Input field C]</label>
-          <input class="input-field" type="text" placeholder="[Placeholder value]">
-          <span class="input-hint">[Helper text describing this input]</span>
-        </div>
+      <div class="form-grid">
 
-        <div class="input-range">
-          <label class="input-label">[Slider input D]</label>
-          <div class="range-row">
-            <input type="range" min="0" max="100" value="50" oninput="document.getElementById('slider-d-val').textContent=this.value">
-            <span class="range-val" id="slider-d-val">50</span>
-          </div>
-          <span class="input-hint">[Helper text describing this slider]</span>
-        </div>
-
-        <div class="input-range">
-          <label class="input-label">[Slider input E]</label>
-          <div class="range-row">
-            <input type="range" min="0" max="100" value="30" oninput="document.getElementById('slider-e-val').textContent=this.value">
-            <span class="range-val" id="slider-e-val">30</span>
-          </div>
-          <span class="input-hint">[Helper text describing this slider]</span>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label">[Dropdown input F]</label>
-          <select class="input-field">
-            <option>[Option 1]</option>
-            <option>[Option 2]</option>
-            <option>[Option 3]</option>
+        <div class="form-group">
+          <label class="form-label">Payment format</label>
+          <select class="form-field" id="payment-format">
+            <option value="">Select format…</option>
+            <option>[Format A]</option>
+            <option>[Format B]</option>
+            <option>[Format C]</option>
           </select>
-          <span class="input-hint">[Helper text describing this input]</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Payment currency</label>
+          <select class="form-field" id="payment-currency">
+            <option value="">Select currency…</option>
+            <option>[Currency A]</option>
+            <option>[Currency B]</option>
+            <option>[Currency C]</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amount (USD)</label>
+          <input class="form-field" type="number" id="amount" placeholder="0.00" step="0.01" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Conversion rate</label>
+          <input class="form-field" type="number" id="conversion-rate" placeholder="1.0" step="0.01" min="0" value="1.0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sender entity type</label>
+          <select class="form-field" id="sender-type">
+            <option value="">Select type…</option>
+            <option>[Entity type A]</option>
+            <option>[Entity type B]</option>
+            <option>[Entity type C]</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cross-border?</label>
+          <select class="form-field" id="cross-border">
+            <option value="">Select…</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Hour of transaction (0–23)</label>
+          <input class="form-field" type="number" id="hour" placeholder="14" min="0" max="23" style="max-width:100%">
         </div>
 
       </div>
 
-      <div class="run-row">
-        <button class="btn btn-dark" onclick="runPrediction()">Run prediction →</button>
-        <span class="run-note">[Note about what happens when prediction runs — e.g. estimated time, data source]</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── OUTPUT ── -->
-  <div class="section">
-    <div class="section-title">Prediction output</div>
-    <div class="card">
-
-      <div class="output-grid">
-        <div class="kpi">
-          <div class="kpi-label">[Output metric A]</div>
-          <div class="kpi-val" id="out-a">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Output metric B]</div>
-          <div class="kpi-val" id="out-b">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Output metric C]</div>
-          <div class="kpi-val" id="out-c">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">[Confidence score]</div>
-          <div class="kpi-val" id="out-conf">—</div>
-          <div class="kpi-sub">[Unit or context]</div>
-        </div>
+      <div style="margin-top:28px">
+        <button class="assess-btn" onclick="runPrediction()">Assess transaction risk</button>
       </div>
 
-      <!-- Replace with real chart (Chart.js canvas) when model is ready -->
-      <div class="chart-placeholder" id="output-chart">
-        <div class="chart-icon">[ ]</div>
-        <span>Output visualisation appears here after running prediction</span>
-        <span style="font-size:11px">[Replace with Chart.js or Plotly chart]</span>
+      <!-- ── RESULT — hidden until assessment runs ── -->
+      <div id="result-panel" style="display:none">
+        <div style="height:1px;background:var(--border);margin:28px 0 24px"></div>
+        <div class="section-title" style="margin-bottom:16px">Assessment result</div>
+
+        <div class="output-grid">
+          <div class="kpi">
+            <div class="kpi-label">[Output metric A]</div>
+            <div class="kpi-val" id="out-a">—</div>
+            <div class="kpi-sub" id="out-a-sub">[context]</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">[Output metric B]</div>
+            <div class="kpi-val" id="out-b">—</div>
+            <div class="kpi-sub">[context]</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">[Output metric C]</div>
+            <div class="kpi-val" id="out-c">—</div>
+            <div class="kpi-sub">[context]</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Confidence</div>
+            <div class="kpi-val" id="out-conf">—</div>
+            <div class="kpi-sub">[model output]</div>
+          </div>
+        </div>
+
+        <!-- Chart placeholder — replace with Chart.js canvas when model is ready -->
+        <div class="chart-placeholder" style="margin-top:16px">
+          <div style="font-family:var(--mono);font-size:18px;opacity:.2">[ ]</div>
+          <span>Output visualisation appears here</span>
+          <span style="font-size:11px">[Replace with Chart.js or Plotly chart]</span>
+        </div>
+
+        <!-- Feature importance -->
+        <div style="margin-top:20px">
+          <div class="section-title" style="margin-bottom:12px">Feature importance</div>
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Importance</th>
+                <th style="width:40%">Relative weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>[Feature A]</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div></td></tr>
+              <tr><td>[Feature B]</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div></td></tr>
+              <tr><td>[Feature C]</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td></tr>
+              <tr><td>[Feature D]</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:22%"></div></div></div></td></tr>
+              <tr><td>[Feature E]</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:12%"></div></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
-
-    </div>
-  </div>
-
-  <!-- ── FEATURE IMPORTANCE ── -->
-  <div class="section">
-    <div class="section-title">Feature importance</div>
-    <div class="card">
-      <table class="feature-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Importance</th>
-            <th style="width:40%">Relative weight</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>[Feature name A]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name B]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name C]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name D]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div></td>
-          </tr>
-          <tr>
-            <td>[Feature name E]</td>
-            <td>[XX%]</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%"></div></div></div></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
   <!-- ── MODEL INFO ── -->
-  <div class="section">
+  <div class="section" style="max-width:700px;margin:0 auto">
     <div class="section-title">Model info</div>
-    <div class="card" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+    <div class="card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Model type</div>
-        <div style="font-size:13px;color:var(--ink-2)">[e.g. Random Forest / XGBoost / Neural Net]</div>
+        <div style="font-size:13px;color:var(--ink-2)">[e.g. Random Forest / XGBoost]</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Last trained</div>
@@ -292,7 +277,7 @@
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Training data</div>
-        <div style="font-size:13px;color:var(--ink-2)">[Dataset description placeholder]</div>
+        <div style="font-size:13px;color:var(--ink-2)">[Dataset description]</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Accuracy</div>
@@ -309,15 +294,42 @@
 
 <script>
 async function runPrediction() {
-  // Wire to POST /api/predict when prediction_service.py is ready
-  // Update #out-a, #out-b, #out-c, #out-conf with real values from response
+  const inputs = {
+    payment_format:  document.getElementById('payment-format').value,
+    currency:        document.getElementById('payment-currency').value,
+    amount:          parseFloat(document.getElementById('amount').value) || 0,
+    conversion_rate: parseFloat(document.getElementById('conversion-rate').value) || 1,
+    sender_type:     document.getElementById('sender-type').value,
+    cross_border:    document.getElementById('cross-border').value,
+    hour:            parseInt(document.getElementById('hour').value) || 0,
+  };
+
+  // Show result panel
+  document.getElementById('result-panel').style.display = 'block';
+  document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   try {
-    const res  = await fetch('/api/predict', { method: 'POST' });
+    const res  = await fetch('/api/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inputs)
+    });
     const data = await res.json();
+
+    // TODO: replace these with real field names from your model's response
+    // document.getElementById('out-a').textContent    = data.risk_score;
+    // document.getElementById('out-b').textContent    = data.flag;
+    // document.getElementById('out-c').textContent    = data.category;
+    // document.getElementById('out-conf').textContent = data.confidence + '%';
     console.log('Prediction response:', data);
-    // TODO: document.getElementById('out-a').textContent = data.metric_a;
+
   } catch (err) {
-    console.error('Prediction failed:', err);
+    // Model not connected yet — show placeholder values
+    document.getElementById('out-a').textContent    = '[XX]';
+    document.getElementById('out-b').textContent    = '[XX]';
+    document.getElementById('out-c').textContent    = '[XX]';
+    document.getElementById('out-conf').textContent = '[XX%]';
+    console.log('Inputs ready, model not yet connected:', inputs);
   }
 }
 </script>
