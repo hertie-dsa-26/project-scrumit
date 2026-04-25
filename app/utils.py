@@ -218,63 +218,7 @@ def validate_numeric(value: Any, name: str, min_val: float = None, max_val: floa
 
     return True, ''
 
-
-# ── 4. SPRINT / DATE HELPERS ──────────────────────────────────────────────────
-# Reusable date and sprint calculations used across routes and templates.
-
-def sprint_progress(start_date: date, end_date: date, today: date = None) -> dict:
-    """
-    Calculate how far through a sprint we are.
-
-    Usage:
-        progress = sprint_progress(date(2025, 1, 1), date(2025, 1, 14))
-
-    Returns:
-        {
-            "day_current": 7,
-            "day_total": 14,
-            "percent": 50.0,
-            "days_remaining": 7,
-            "display": "Day 7 of 14"
-        }
-
-    TODO: Wire up to your actual sprint data source.
-    """
-    today = today or date.today()
-    total_days = (end_date - start_date).days or 1
-    elapsed    = max(0, min((today - start_date).days, total_days))
-    remaining  = max(0, (end_date - today).days)
-
-    return {
-        'day_current':    elapsed,
-        'day_total':      total_days,
-        'percent':        round((elapsed / total_days) * 100, 1),
-        'days_remaining': remaining,
-        'display':        f'Day {elapsed} of {total_days}'
-    }
-
-
-def format_date_range(start: date, end: date) -> str:
-    """
-    Format a date range as a readable string.
-
-    format_date_range(date(2025, 1, 1), date(2025, 1, 14))
-    → "1–14 Jan 2025"
-
-    format_date_range(date(2025, 1, 28), date(2025, 2, 10))
-    → "28 Jan – 10 Feb 2025"
-
-    TODO: Adjust format to match your team's preference.
-    """
-    if start.month == end.month and start.year == end.year:
-        return f'{start.day}–{end.day} {start.strftime("%b %Y")}'
-    elif start.year == end.year:
-        return f'{start.strftime("%-d %b")} – {end.strftime("%-d %b %Y")}'
-    else:
-        return f'{start.strftime("%-d %b %Y")} – {end.strftime("%-d %b %Y")}'
-
-
-# ── 5. MODEL LOADING ──────────────────────────────────────────────────────────
+# ── 4. MODEL LOADING ──────────────────────────────────────────────────────────
 # Safe model loading so the app doesn't crash if the file doesn't exist yet.
 
 MODEL_PATH = os.path.join(
@@ -321,7 +265,7 @@ def model_is_ready(path: str = MODEL_PATH) -> bool:
     return os.path.exists(os.path.abspath(path))
 
 
-# ── 6. LOGGING HELPERS ────────────────────────────────────────────────────────
+# ── 5. LOGGING HELPERS ────────────────────────────────────────────────────────
 
 def log_prediction(inputs: dict, result: dict) -> None:
     """
