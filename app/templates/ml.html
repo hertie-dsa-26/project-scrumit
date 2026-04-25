@@ -369,16 +369,12 @@
                 <th style="width:40%">Relative weight</th>
               </tr>
             </thead>
-            <tbody>
-              <tr><td>Currency mismatch</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div></div></td></tr>
-              <tr><td>Amount paid</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:65%"></div></div></div></td></tr>
-              <tr><td>Sending country</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:50%"></div></div></div></td></tr>
-              <tr><td>Payment format</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:38%"></div></div></div></td></tr>
-              <tr><td>Receiving bank type</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div></td></tr>
-              <tr><td>Transaction hour</td><td>[XX%]</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%"></div></div></div></td></tr>
+            <tbody id="feature-importance-tbody">
+              <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--ink-3)">Loading feature importance…</td></tr>
             </tbody>
           </table>
         </div>
+
 
       </div>
     </div>
@@ -390,23 +386,23 @@
     <div class="card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Model type</div>
-        <div style="font-size:13px;color:var(--ink-2)">[e.g. Random Forest / XGBoost]</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-type">Quadratic Discriminant Analysis (QDA)</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Last trained</div>
-        <div style="font-size:13px;color:var(--ink-2)">[Date placeholder]</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-trained">Custom trained</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">Status</div>
-        <div class="status-pill">[Not connected]</div>
+        <div class="status-pill" id="model-status">[Loading…]</div>
       </div>
       <div>
-        <div class="kpi-label" style="margin-bottom:6px">Training data</div>
-        <div style="font-size:13px;color:var(--ink-2)">[Dataset description]</div>
+        <div class="kpi-label" style="margin-bottom:6px">Preprocessor</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-preprocessor">PyCaret v3.x</div>
       </div>
       <div>
-        <div class="kpi-label" style="margin-bottom:6px">Accuracy</div>
-        <div style="font-size:13px;color:var(--ink-2)">[XX%] on test set</div>
+        <div class="kpi-label" style="margin-bottom:6px">Input features</div>
+        <div style="font-size:13px;color:var(--ink-2)" id="model-features">14 features</div>
       </div>
       <div>
         <div class="kpi-label" style="margin-bottom:6px">API endpoint</div>
@@ -418,6 +414,75 @@
 </div>
 
 <script>
+
+// Load model info and feature importance on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadModelInfo();
+  loadFeatureImportance();
+});
+
+async function loadModelInfo() {
+  try {
+    const res = await fetch('/api/model-info');
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('model-type').textContent = data.model_type || 'QDA';
+      document.getElementById('model-preprocessor').textContent = data.preprocessor || 'PyCaret v3.x';
+      document.getElementById('model-features').textContent = data.input_features + ' features';
+
+      const statusEl = document.getElementById('model-status');
+      if (data.status === 'connected') {
+        statusEl.textContent = 'Connected';
+        statusEl.style.background = 'var(--ok-lt)';
+        statusEl.style.color = 'var(--ok)';
+        statusEl.style.borderColor = '#c4e0c8';
+      } else {
+        statusEl.textContent = 'Disconnected';
+        statusEl.style.background = 'var(--warn-lt)';
+        statusEl.style.color = 'var(--warn)';
+        statusEl.style.borderColor = '#ecc9c0';
+      }
+    }
+  } catch (err) {
+    console.error('Error loading model info:', err);
+  }
+}
+
+async function loadFeatureImportance() {
+  try {
+    const res = await fetch('/api/feature-importance');
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      const tbody = document.getElementById('feature-importance-tbody');
+      tbody.innerHTML = '';
+
+      const features = data.features || {};
+      const maxImportance = Math.max(...Object.values(features), 1);
+
+      Object.entries(features).forEach(([feature, importance]) => {
+        const barWidth = (importance / maxImportance) * 100;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${feature}</td>
+          <td>${importance.toFixed(1)}%</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg">
+                <div class="bar-fill" style="width:${barWidth}%"></div>
+              </div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading feature importance:', err);
+  }
+}
+
 function checkCurrencyMismatch() {
   const payC = document.getElementById('payment-currency').value;
   const recC = document.getElementById('receiving-currency').value;
@@ -440,6 +505,27 @@ function checkCurrencyMismatch() {
 }
 
 async function runPrediction() {
+  // Validate required fields
+  const requiredFields = [
+    'payment-format', 'sending-bank', 'sending-account',
+    'sending-bank-type', 'sending-country', 'receiving-bank',
+    'receiving-account', 'receiving-bank-type', 'receiving-country',
+    'amount-paid', 'payment-currency', 'receiving-amount', 'receiving-currency'
+  ];
+
+  let missingFields = [];
+  for (const field of requiredFields) {
+    const el = document.getElementById(field);
+    if (!el || !el.value) {
+      missingFields.push(field.replace('-', ' '));
+    }
+  }
+
+  if (missingFields.length > 0) {
+    alert('Please fill in all required fields:\n- ' + missingFields.join('\n- '));
+    return;
+  }
+
   const inputs = {
     from_bank:          document.getElementById('sending-bank').value || 'Unknown',
     account:            document.getElementById('sending-account').value || 'UNKNOWN-ACCOUNT',
@@ -458,7 +544,7 @@ async function runPrediction() {
     s_country:          document.getElementById('sending-country').value || 'US',
     r_country:          document.getElementById('receiving-country').value || 'US',
     s_bank_type:        document.getElementById('sending-bank-type').value || 'Commercial',
-    r_bank_type:        document.getElementById('receiving-bank-type').value || 'Commercial',
+    r_bank_type:        document.getElementById('receiving-bank-type').value || 'Commercial'
   };
 
   // Show result panel
@@ -499,10 +585,10 @@ async function runPrediction() {
     document.getElementById('out-conf').textContent = '0%';
     document.getElementById('qda-prob-label').textContent = '0.0%';
     document.getElementById('qda-prob-bar').style.width = '0%';
+    alert('Prediction error: ' + err.message);
     console.error('Prediction failed:', err);
   }
 }
 </script>
-
 </body>
 </html>
