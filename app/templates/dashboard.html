@@ -33,18 +33,17 @@
     button { cursor: pointer; font-family: var(--sans); }
 
     /* ── TOPBAR ── */
-    .topbar {
+    nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 52px;
+      padding: 0 40px; height: 56px;
       background: var(--surface); border-bottom: 1px solid var(--border);
     }
-    .topbar-left { display: flex; align-items: center; gap: 20px; }
     .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-    .topbar-meta { font-family: var(--mono); font-size: 10px; color: var(--ink-3); padding-left: 20px; border-left: 1px solid var(--border); }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .topbar-user { font-size: 12px; color: var(--ink-2); }
-    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
@@ -153,6 +152,32 @@
     .prediction-text strong { font-family: var(--serif); font-size: 22px; letter-spacing: -.03em; display: block; margin-bottom: 3px; }
     .prediction-text p { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
 
+    /* ── RISK FORM ── */
+    .risk-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--ink-2); }
+    .form-input, .form-select {
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r);
+      font-size: 13px; font-family: var(--sans); color: var(--ink);
+      background: var(--surface); outline: none; width: 100%;
+      transition: border-color .15s; appearance: none; -webkit-appearance: none;
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a8a8a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--ink-3); }
+    .risk-btn {
+      width: 100%; padding: 11px; border-radius: var(--r);
+      background: var(--accent-lt); color: var(--accent);
+      border: 1px solid var(--accent-lt); font-size: 13px; font-weight: 500;
+      font-family: var(--sans); cursor: pointer; transition: background .15s, border-color .15s;
+      letter-spacing: .01em;
+    }
+    .risk-btn:hover { background: #d4e8f7; border-color: #b5d4f4; }
+
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -165,20 +190,16 @@
 <body>
 
 <!-- ── TOPBAR ── -->
-<header class="topbar">
-  <div class="topbar-right">
-    <a href="/" class="logo">AppName</a>
+ <nav>
+  <span class="logo">AppName</span>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/map">Map</a>
+    <a href="/ml" class="active">ML</a>
   </div>
-  <div class="topbar-left">
-    <span class="topbar-meta">[Additional context or metadata about the current view]</span>
-
-  <nav>
-  <div class="nav-right">
-    <button class="btn btn-dark">Refresh ↻</button>
-    <a href="/"><button class="btn btn-dark">← Home</button></a>
-  </div>
-  </nav>
-</header>
+  <div style="width:120px"></div>
+</nav>
 
 <div class="layout">
 
@@ -203,8 +224,8 @@
   <main class="main">
 
     <div class="page-header">
-      <h2>[Page / View title]</h2>
-      <p>[Short description of what this view shows — replace when ready]</p>
+      <h2>Transaction Overview</h2>
+      <p>A real-time snapshot of transaction volumes, flagged activity, and laundering risk across your portfolio.</p>
     </div>
 
     <!-- ── TABS ── -->
@@ -212,6 +233,7 @@
       <button class="tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
       <button class="tab" onclick="switchTab(this,'tab-details')">Details</button>
       <button class="tab" onclick="switchTab(this,'tab-predictions')">Predictions</button>
+      <button class="tab" onclick="switchTab(this,'tab-risk')">Risk Assessment</button>
       <button class="tab" onclick="switchTab(this,'tab-history')">History</button>
     </div>
 
@@ -406,6 +428,69 @@
     } catch (err) {
       console.error('Prediction fetch failed:', err);
     }
+  }
+
+  // Risk Assessment — wire to POST /api/predict when model is ready
+  async function assessRisk() {
+    const inputs = {
+      payment_format:  document.getElementById('r-payment-format').value,
+      currency:        document.getElementById('r-currency').value,
+      amount:          parseFloat(document.getElementById('r-amount').value) || 0,
+      conversion_rate: parseFloat(document.getElementById('r-conversion').value) || 1,
+      sender_type:     document.getElementById('r-sender-type').value,
+      cross_border:    document.getElementById('r-cross-border').value,
+      hour:            parseInt(document.getElementById('r-hour').value) || 0,
+    };
+
+    // Show result panel with placeholder until real API is connected
+    document.getElementById('risk-result').style.display = 'block';
+
+    try {
+      const res  = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inputs)
+      });
+      const data = await res.json();
+
+      // TODO: replace with real fields from your model's response
+      // document.getElementById('res-score').textContent = data.risk_score;
+      // document.getElementById('res-conf').textContent  = data.confidence + '%';
+      // document.getElementById('res-flag').textContent  = data.flagged ? '⚑' : '✓';
+      console.log('Risk assessment response:', data);
+
+    } catch (err) {
+      // Model not connected yet — show placeholder output
+      document.getElementById('res-score').textContent   = '[XX]';
+      document.getElementById('res-level').textContent   = '[risk level]';
+      document.getElementById('res-conf').textContent    = '[XX%]';
+      document.getElementById('res-flag').textContent    = '[—]';
+      document.getElementById('res-flag-sub').textContent = '[pending model]';
+      console.log('Assessment inputs ready:', inputs);
+    }
+  }
+  // Read filter param from map
+  const params = new URLSearchParams(window.location.search);
+  const country = params.get('country');
+  const continent = params.get('continent');
+  const filterLabel = country || continent;
+  if (filterLabel) {
+    const param = country ? `country=${encodeURIComponent(country)}` : `continent=${encodeURIComponent(continent)}`;
+    document.querySelector('a[href="/dashboard"]').href = `/dashboard?${param}`;
+    const isContinent = !!continent;
+    const banner = document.createElement('div');
+    banner.style.cssText = `
+      display:flex;justify-content:space-between;align-items:center;
+      background:#edf3f9;border-bottom:1px solid #b5d4f4;
+      padding:10px 32px;font-size:13px;color:#2a5f8f;
+    `;
+    banner.innerHTML = `
+      <span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span>
+      <a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>
+    `;
+    document.querySelector('.main').prepend(banner);
+    document.querySelector('.page-header h2').textContent = filterLabel;
+    document.querySelector('.page-header p').textContent  = isContinent ? 'Continent view · filtered from map' : 'Country view · filtered from map';
   }
 </script>
 

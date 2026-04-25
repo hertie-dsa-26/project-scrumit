@@ -11,12 +11,14 @@ dependencies = [
     "joblib>=1.4.2,<1.5",
     "jupyter>=1.1.1",
     "kagglehub>=1.0.0",
+    "matplotlib>=3.10.8",
     "pandas>=2.0,<2.2",
     "pathlib>=1.0.1",
     "pycaret",
     "requests>=2.32.5",
     "scikit-learn>=1.4,<1.9",
     "scipy>=1.6.1,<=1.11.4",
+    "seaborn>=0.13.2",
 ]
 
 [tool.uv.sources]
