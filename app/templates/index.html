@@ -121,10 +121,10 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 
 <a href="/map" id="map-preview-link" 
-   style="display:block;max-width:700px;margin:40px auto;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:box-shadow .2s;"
+   style="display:block;max-width:700px;margin:40px auto;margin-left:-50px;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:box-shadow .2s;"
    onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'"
    onmouseout="this.style.boxShadow='none'">
-  <svg id="preview-map" style="width:100%;display:block;background:#eaf3fb;"></svg>
+  <svg id="preview-map" style="width:400px;height:300px;display:block;background:#eaf3fb;"></svg>
   <div style="text-align:center;padding:10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-3);background:var(--surface);border-top:1px solid var(--border)">
     CLICK TO EXPLORE MAP →
   </div>
@@ -134,7 +134,7 @@
 (async () => {
   const svg  = d3.select('#preview-map').attr('viewBox','0 0 960 500');
   const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-  const proj = d3.geoNaturalEarth1().scale(153).translate([480,250]);
+  const proj = d3.geoNaturalEarth1().scale(200).translate([480, 260]);
   const path = d3.geoPath().projection(proj);
   const g    = svg.append('g');
 
