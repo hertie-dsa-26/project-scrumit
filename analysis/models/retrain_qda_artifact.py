@@ -11,7 +11,6 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.services.custom_qda import CustomQDA
 
-
 def main():
     df_abt = pd.read_csv("data/processed/aml_clean.csv")
     df_abt["date"] = pd.to_datetime(df_abt["date"]).dt.date
