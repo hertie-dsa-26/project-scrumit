@@ -343,11 +343,19 @@
           </div>
         </div>
 
-        <!-- Chart placeholder — replace with Chart.js canvas when model is ready -->
-        <div class="chart-placeholder" style="margin-top:16px">
-          <div style="font-family:var(--mono);font-size:18px;opacity:.2">[ ]</div>
-          <span>Output visualisation appears here</span>
-          <span style="font-size:11px">[Replace with Chart.js or Plotly chart]</span>
+        <!-- Simple custom QDA probability bar -->
+        <div class="chart-placeholder" style="margin-top:16px;align-items:stretch;justify-content:flex-start;padding:16px;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);">
+            <span>Laundering probability</span>
+            <span id="qda-prob-label">0.0%</span>
+          </div>
+          <div style="height:12px;background:var(--border);border-radius:999px;overflow:hidden;">
+            <div id="qda-prob-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3a7d44 0%, #f0ad4e 55%, #c2553a 100%);transition:width .35s ease;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);">
+            <span>Low risk</span>
+            <span>High risk</span>
+          </div>
         </div>
 
         <!-- Feature importance -->
@@ -433,27 +441,24 @@ function checkCurrencyMismatch() {
 
 async function runPrediction() {
   const inputs = {
-    payment_format:     document.getElementById('payment-format').value,
-    hour:               parseInt(document.getElementById('hour').value) || 0,
-
-    sending_bank:       document.getElementById('sending-bank').value,
-    sending_account:    document.getElementById('sending-account').value,
-    sending_bank_type:  document.getElementById('sending-bank-type').value,
-    sending_country:    document.getElementById('sending-country').value,
-
-    receiving_bank:     document.getElementById('receiving-bank').value,
-    receiving_account:  document.getElementById('receiving-account').value,
-    receiving_bank_type:document.getElementById('receiving-bank-type').value,
-    receiving_country:  document.getElementById('receiving-country').value,
-
+    from_bank:          document.getElementById('sending-bank').value || 'Unknown',
+    account:            document.getElementById('sending-account').value || 'UNKNOWN-ACCOUNT',
+    to_bank:            document.getElementById('receiving-bank').value || 'Unknown',
+    'account.1':        document.getElementById('receiving-account').value || 'UNKNOWN-ACCOUNT',
+    amount_received:    parseFloat(document.getElementById('receiving-amount').value) || 0,
+    receiving_currency: document.getElementById('receiving-currency').value || 'USD',
     amount_paid:        parseFloat(document.getElementById('amount-paid').value) || 0,
-    payment_currency:   document.getElementById('payment-currency').value,
-    receiving_amount:   parseFloat(document.getElementById('receiving-amount').value) || 0,
-    receiving_currency: document.getElementById('receiving-currency').value,
-
-    currency_mismatch:  document.getElementById('payment-currency').value &&
-                        document.getElementById('receiving-currency').value &&
-                        document.getElementById('payment-currency').value !== document.getElementById('receiving-currency').value,
+    payment_currency:   document.getElementById('payment-currency').value || 'USD',
+    currency_mismatch:  (
+      document.getElementById('payment-currency').value &&
+      document.getElementById('receiving-currency').value &&
+      document.getElementById('payment-currency').value !== document.getElementById('receiving-currency').value
+    ) ? 'Yes' : 'No',
+    payment_format:     document.getElementById('payment-format').value || 'Wire',
+    s_country:          document.getElementById('sending-country').value || 'US',
+    r_country:          document.getElementById('receiving-country').value || 'US',
+    s_bank_type:        document.getElementById('sending-bank-type').value || 'Commercial',
+    r_bank_type:        document.getElementById('receiving-bank-type').value || 'Commercial',
   };
 
   // Show result panel
@@ -468,20 +473,33 @@ async function runPrediction() {
     });
     const data = await res.json();
 
-    // TODO: replace these with real field names from your model's response
-    // document.getElementById('out-a').textContent    = data.risk_score;
-    // document.getElementById('out-b').textContent    = data.flag;
-    // document.getElementById('out-c').textContent    = data.category;
-    // document.getElementById('out-conf').textContent = data.confidence + '%';
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Prediction request failed');
+    }
+
+    const riskPercent = Number(data.probability || 0) * 100;
+    const confidencePercent = Number(data.confidence || 0) * 100;
+    const flag = riskPercent >= 50 ? 'HIGH' : 'LOW';
+    const category = riskPercent >= 70 ? 'Critical' : (riskPercent >= 40 ? 'Watch' : 'Normal');
+
+    document.getElementById('out-a').textContent = riskPercent.toFixed(1);
+    document.getElementById('out-a-sub').textContent = '0–100 scale';
+    document.getElementById('out-b').textContent = flag;
+    document.getElementById('out-c').textContent = category;
+    document.getElementById('out-conf').textContent = confidencePercent.toFixed(1) + '%';
+    document.getElementById('qda-prob-label').textContent = riskPercent.toFixed(1) + '%';
+    document.getElementById('qda-prob-bar').style.width = riskPercent.toFixed(1) + '%';
+
     console.log('Prediction response:', data);
 
   } catch (err) {
-    // Model not connected yet — show placeholder values
-    document.getElementById('out-a').textContent    = '[XX]';
-    document.getElementById('out-b').textContent    = '[XX]';
-    document.getElementById('out-c').textContent    = '[XX]';
-    document.getElementById('out-conf').textContent = '[XX%]';
-    console.log('Inputs ready, model not yet connected:', inputs);
+    document.getElementById('out-a').textContent = 'ERR';
+    document.getElementById('out-b').textContent = 'N/A';
+    document.getElementById('out-c').textContent = 'N/A';
+    document.getElementById('out-conf').textContent = '0%';
+    document.getElementById('qda-prob-label').textContent = '0.0%';
+    document.getElementById('qda-prob-bar').style.width = '0%';
+    console.error('Prediction failed:', err);
   }
 }
 </script>
