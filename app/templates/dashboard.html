@@ -6,6 +6,7 @@
   <title>Dashboard — AppName</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -17,6 +18,7 @@
       --border:   #e8e6df;
       --accent:   #2a5f8f;
       --accent-lt:#edf3f9;
+      --accent-md:#b5d4f4;
       --green:    #237a4b;
       --green-bg: #edf7f2;
       --amber:    #8f5a10;
@@ -32,7 +34,6 @@
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font-family: var(--sans); }
 
-    /* ── TOPBAR ── */
     nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
@@ -45,38 +46,24 @@
     .nav-links a:hover { color: var(--ink); }
     .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
-    .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
-    .btn-dark:hover { opacity: .85; background: var(--ink); }
 
-    /* ── LAYOUT ── */
-    .layout { display: grid; grid-template-columns: 188px 1fr; min-height: calc(100vh - 52px); }
+    .layout { display: grid; grid-template-columns: 188px 1fr; min-height: calc(100vh - 56px); }
 
-    /* ── SIDEBAR ── */
     .sidebar {
       background: var(--surface); border-right: 1px solid var(--border);
-      padding: 20px 0; position: sticky; top: 52px;
-      height: calc(100vh - 52px); overflow-y: auto;
+      padding: 20px 0; position: sticky; top: 56px;
+      height: calc(100vh - 56px); overflow-y: auto;
     }
     .sidebar-section { margin-bottom: 24px; }
-    .sidebar-section-label {
-      font-family: var(--mono); font-size: 8px; text-transform: uppercase;
-      letter-spacing: .16em; color: var(--ink-3); padding: 0 18px 8px;
-    }
-    .sidebar-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 8px 18px; font-size: 13px; color: var(--ink-2);
-      cursor: pointer; border-left: 2px solid transparent;
-      transition: all .12s;
-    }
+    .sidebar-section-label { font-family: var(--mono); font-size: 8px; text-transform: uppercase; letter-spacing: .16em; color: var(--ink-3); padding: 0 18px 8px; }
+    .sidebar-item { display: flex; align-items: center; gap: 9px; padding: 8px 18px; font-size: 13px; color: var(--ink-2); cursor: pointer; border-left: 2px solid transparent; transition: all .12s; }
     .sidebar-item:hover { background: var(--bg); color: var(--ink); }
     .sidebar-item.active { background: var(--accent-lt); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
     .sidebar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
     .sidebar-item.active .sidebar-dot { background: var(--accent); }
 
-    /* ── MAIN ── */
     .main { padding: 28px 32px 60px; min-width: 0; }
 
-    /* ── PAGE HEADER ── */
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-family: var(--serif); font-size: 26px; letter-spacing: -.02em; margin-bottom: 4px; }
     .page-header p { font-size: 13px; color: var(--ink-3); }
@@ -92,11 +79,9 @@
     .tab:hover { color: var(--ink); }
     .tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
 
-    /* ── TAB PANELS ── */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── KPI GRID ── */
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
     .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 10px; }
@@ -105,15 +90,13 @@
     .delta-pos { color: var(--green); }
     .delta-neg { color: var(--red); }
 
-    /* ── CONTENT GRID ── */
-    .content-grid { display: grid; grid-template-columns: 1fr 260px; gap: 16px; margin-bottom: 20px; }
+    .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .content-grid-wide { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
 
-    /* ── CARD ── */
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
     .card-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); }
 
-    /* ── BADGE ── */
     .badge { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 3px; }
     .badge-green { background: var(--green-bg); color: var(--green); }
     .badge-amber { background: var(--amber-bg); color: var(--amber); }
@@ -121,21 +104,10 @@
     .badge-red   { background: var(--red-bg);   color: var(--red); }
     .badge-blue  { background: var(--accent-lt); color: var(--accent); }
 
-    /* ── CHART PLACEHOLDER ── */
-    .chart-wrap { display: flex; align-items: flex-end; gap: 5px; height: 110px; }
-    .chart-bar { flex: 1; border-radius: 2px 2px 0 0; }
-    .bar-done      { background: var(--accent-lt); border: 1px solid var(--accent); }
-    .bar-today     { background: var(--accent); }
-    .bar-projected { background: var(--border); opacity: .55; }
-    .chart-axis { display: flex; justify-content: space-between; margin-top: 8px; }
-    .chart-axis span { font-family: var(--mono); font-size: 9px; color: var(--ink-3); }
-
-    /* ── LIST CARD ── */
     .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
     .list-item:last-child { border-bottom: none; }
-    .list-item-name { color: var(--ink-2); flex: 1; padding-right: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .list-item-name { color: var(--ink-2); flex: 1; padding-right: 8px; }
 
-    /* ── TABLE ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     thead th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
@@ -143,16 +115,6 @@
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--bg); }
 
-    /* ── PREDICTION CARD ── */
-    .prediction-row { display: flex; gap: 20px; align-items: center; }
-    .prediction-ring {
-      width: 68px; height: 68px; border-radius: 50%; flex-shrink: 0;
-      border: 6px solid var(--accent-lt); border-top-color: var(--accent);
-    }
-    .prediction-text strong { font-family: var(--serif); font-size: 22px; letter-spacing: -.03em; display: block; margin-bottom: 3px; }
-    .prediction-text p { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
-
-    /* ── RISK FORM ── */
     .risk-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-label { font-size: 12px; font-weight: 500; color: var(--ink-2); }
@@ -164,8 +126,7 @@
     }
     .form-select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a8a8a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 12px center;
-      padding-right: 32px;
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
     }
     .form-input:focus, .form-select:focus { border-color: var(--accent); }
     .form-input::placeholder { color: var(--ink-3); }
@@ -173,10 +134,21 @@
       width: 100%; padding: 11px; border-radius: var(--r);
       background: var(--accent-lt); color: var(--accent);
       border: 1px solid var(--accent-lt); font-size: 13px; font-weight: 500;
-      font-family: var(--sans); cursor: pointer; transition: background .15s, border-color .15s;
-      letter-spacing: .01em;
+      font-family: var(--sans); cursor: pointer; transition: background .15s;
     }
     .risk-btn:hover { background: #d4e8f7; border-color: #b5d4f4; }
+
+    .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .result-kpi { background: var(--bg); border-radius: var(--r); padding: 14px; }
+    .result-kpi .kpi-value { font-size: 22px; }
+    .risk-bar-wrap { background: var(--bg); border-radius: var(--r); padding: 16px; }
+    .risk-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+    .risk-bar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .risk-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #237a4b, #f59e0b, #9b2c2c); transition: width .6s ease; }
+    .risk-bar-ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; font-family: var(--mono); color: var(--ink-3); }
+
+    .coming-soon { padding: 48px 0; text-align: center; color: var(--ink-3); font-size: 13px; }
+    .coming-soon-icon { font-size: 28px; margin-bottom: 10px; opacity: .3; }
 
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
@@ -189,215 +161,284 @@
 </head>
 <body>
 
-<!-- ── TOPBAR ── -->
- <nav>
+<nav>
   <span class="logo">AppName</span>
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/map">Map</a>
-    <a href="/ml" class="active">ML</a>
+    <a href="/ml">ML</a>
   </div>
   <div style="width:120px"></div>
 </nav>
 
 <div class="layout">
 
-  <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-section-label">Views</div>
-      <div class="sidebar-item active" onclick="setView(this)"><div class="sidebar-dot"></div>[View 1]</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 2]</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 3]</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 4]</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[View 5]</div>
+      <div class="sidebar-item active" onclick="setView(this)"><div class="sidebar-dot"></div>Overview</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Temporal</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Currency</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Geographic</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>ML / Risk</div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-label">More</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[Link A]</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>[Link B]</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Details</div>
+      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>History</div>
     </div>
   </aside>
 
-  <!-- ── MAIN ── -->
   <main class="main">
 
     <div class="page-header">
-      <h2>Transaction Overview</h2>
-      <p>A real-time snapshot of transaction volumes, flagged activity, and laundering risk across your portfolio.</p>
+      <h2 id="page-title">Transaction Overview</h2>
+      <p id="page-sub">A real-time snapshot of transaction volumes, flagged activity, and laundering risk.</p>
     </div>
 
     <!-- ── TABS ── -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
-      <button class="tab" onclick="switchTab(this,'tab-details')">Details</button>
-      <button class="tab" onclick="switchTab(this,'tab-predictions')">Predictions</button>
-      <button class="tab" onclick="switchTab(this,'tab-risk')">Risk Assessment</button>
-      <button class="tab" onclick="switchTab(this,'tab-history')">History</button>
+      <button class="tab" onclick="switchTab(this,'tab-temporal')">Temporal</button>
+      <button class="tab" onclick="switchTab(this,'tab-currency')">Currency</button>
+      <button class="tab" onclick="switchTab(this,'tab-geographic')">Geographic</button>
+      <button class="tab" onclick="switchTab(this,'tab-ml')">ML / Risk</button>
     </div>
 
-    <!-- ╌╌ TAB: OVERVIEW ╌╌ -->
+    <!-- ╌╌ OVERVIEW ╌╌ -->
     <div id="tab-overview" class="tab-panel active">
-
-      <!-- KPI row — replace labels & values with real data -->
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-label">[Metric label]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta delta-pos">[↑ context or delta]</div>
+          <div class="kpi-label">Total Transactions</div>
+          <div class="kpi-value">{{ total_transactions }}</div>
+          <div class="kpi-delta">all time</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Metric label]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta">[context or delta]</div>
+          <div class="kpi-label">Laundering Cases</div>
+          <div class="kpi-value">{{ laundering_cases }}</div>
+          <div class="kpi-delta delta-neg">flagged</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Metric label]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta delta-neg">[↓ context or delta]</div>
+          <div class="kpi-label">Laundering Rate</div>
+          <div class="kpi-value">{{ laundering_rate }}</div>
+          <div class="kpi-delta delta-neg">of all transactions</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Metric label]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta">[context or delta]</div>
+          <div class="kpi-label">Model Accuracy</div>
+          <div class="kpi-value">97.6%</div>
+          <div class="kpi-delta delta-pos">Kaggle score</div>
         </div>
       </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quick Summary</span></div>
+        <div class="list-item"><span class="list-item-name">Total transactions analysed</span><span class="badge badge-blue">{{ total_transactions }}</span></div>
+        <div class="list-item"><span class="list-item-name">Confirmed laundering cases</span><span class="badge badge-red">{{ laundering_cases }}</span></div>
+        <div class="list-item"><span class="list-item-name">Laundering rate</span><span class="badge badge-amber">{{ laundering_rate }}</span></div>
+        <div class="list-item"><span class="list-item-name">Model type</span><span class="badge badge-gray">QDA</span></div>
+        <div class="list-item"><span class="list-item-name">Dataset</span><span class="badge badge-gray">HI-Small AML</span></div>
+      </div>
+    </div>
 
-      <!-- Chart + list -->
+    <!-- ╌╌ TEMPORAL ╌╌ -->
+    <div id="tab-temporal" class="tab-panel">
+      <div class="content-grid-wide">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Laundering Rate by Hour of Day</span>
+            <span class="badge badge-gray">All time</span>
+          </div>
+          <div id="hourly-chart" style="height:240px"></div>
+        </div>
+      </div>
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Transaction Volume by Day</span></div>
+          <div id="volume-chart" style="height:220px"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Laundering Rate by Day</span></div>
+          <div id="daily-rate-chart" style="height:220px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╌╌ CURRENCY ╌╌ -->
+    <div id="tab-currency" class="tab-panel">
       <div class="content-grid">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">[Chart title]</span>
-            <span class="badge badge-gray">[Period]</span>
+            <span class="card-title">Transactions by Currency</span>
           </div>
-          <!-- Replace .chart-wrap with a Chart.js <canvas id="myChart"> when ready -->
-          <div class="chart-wrap" id="main-chart">
-            <div class="chart-bar bar-done"  style="height:93%"></div>
-            <div class="chart-bar bar-done"  style="height:80%"></div>
-            <div class="chart-bar bar-done"  style="height:68%"></div>
-            <div class="chart-bar bar-done"  style="height:57%"></div>
-            <div class="chart-bar bar-today" style="height:47%"></div>
-            <div class="chart-bar bar-projected" style="height:38%"></div>
-            <div class="chart-bar bar-projected" style="height:27%"></div>
-            <div class="chart-bar bar-projected" style="height:16%"></div>
-            <div class="chart-bar bar-projected" style="height:6%"></div>
-          </div>
-          <div class="chart-axis">
-            <span>[Start]</span><span>Today</span><span>[End]</span>
-          </div>
+          <div id="currency-volume-chart" style="height:260px"></div>
         </div>
-
         <div class="card">
           <div class="card-header">
-            <span class="card-title">[List title]</span>
+            <span class="card-title">Laundering Rate by Currency</span>
           </div>
-          <!-- Replace with real list items from backend -->
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-green">done</span></div>
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-amber">in progress</span></div>
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-amber">in progress</span></div>
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-gray">todo</span></div>
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-gray">todo</span></div>
-          <div class="list-item"><span class="list-item-name">[Item name]</span><span class="badge badge-red">blocked</span></div>
+          <div id="currency-rate-chart" style="height:260px"></div>
         </div>
       </div>
     </div>
 
-    <!-- ╌╌ TAB: DETAILS ╌╌ -->
-    <div id="tab-details" class="tab-panel">
+    <!-- ╌╌ GEOGRAPHIC ╌╌ -->
+    <div id="tab-geographic" class="tab-panel">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">[Table title]</span>
-          <button class="btn">Export ↓</button>
+          <span class="card-title">Geographic charts</span>
+          <span class="badge badge-amber">Coming soon</span>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>[Column A]</th>
-                <th>[Column B]</th>
-                <th>[Column C]</th>
-                <th>[Column D]</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-green">done</span></td></tr>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-amber">in progress</span></td></tr>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-amber">in progress</span></td></tr>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-gray">todo</span></td></tr>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-red">blocked</span></td></tr>
-              <tr><td>[Value]</td><td>[Value]</td><td>[Value]</td><td>[Value]</td><td><span class="badge badge-gray">todo</span></td></tr>
-            </tbody>
-          </table>
+        <div class="coming-soon">
+          <div class="coming-soon-icon">🌍</div>
+          Geographic visualisations coming soon.
         </div>
       </div>
     </div>
 
-    <!-- ╌╌ TAB: PREDICTIONS ╌╌ -->
-    <div id="tab-predictions" class="tab-panel">
-
-      <!-- KPI row for predictions -->
-      <div class="kpi-grid" style="margin-bottom:20px">
+    <!-- ╌╌ ML / RISK ╌╌ -->
+    <div id="tab-ml" class="tab-panel">
+      <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-label">[Prediction metric]</div>
-          <div class="kpi-value">[XX%]</div>
-          <div class="kpi-delta delta-pos">[context]</div>
+          <div class="kpi-label">Model Accuracy</div>
+          <div class="kpi-value">97.6%</div>
+          <div class="kpi-delta delta-pos">Kaggle score</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Prediction metric]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta">[context]</div>
+          <div class="kpi-label">Model Type</div>
+          <div class="kpi-value" style="font-size:18px">QDA</div>
+          <div class="kpi-delta">Quadratic Discriminant</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Risk metric]</div>
-          <div class="kpi-value">[XX]</div>
-          <div class="kpi-delta delta-neg">[context]</div>
+          <div class="kpi-label">Laundering Cases</div>
+          <div class="kpi-value">{{ laundering_cases }}</div>
+          <div class="kpi-delta delta-neg">detected</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">[Confidence metric]</div>
-          <div class="kpi-value">[XX%]</div>
-          <div class="kpi-delta">[context]</div>
+          <div class="kpi-label">Laundering Rate</div>
+          <div class="kpi-value">{{ laundering_rate }}</div>
+          <div class="kpi-delta">of all transactions</div>
         </div>
       </div>
 
-      <!-- ML prediction output — wire to POST /api/predict -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">ML Prediction · [Model version]</span>
-          <button class="btn" onclick="fetchPrediction()">Run prediction ↻</button>
-        </div>
-        <div class="prediction-row">
-          <div class="prediction-ring" id="prediction-ring"></div>
-          <div class="prediction-text">
-            <strong id="prediction-val">[XX%]</strong>
-            <p>[Short description of what this prediction represents. Replace with real model output description when ready.]</p>
-            <p style="margin-top:8px;font-size:11px;color:var(--ink-3)">[Additional model context, feature importances, or risk flags go here.]</p>
+        <div class="card-header"><span class="card-title">Transaction Risk Assessment</span></div>
+        <div class="risk-form-grid">
+          <div class="form-group">
+            <label class="form-label">From Bank</label>
+            <input class="form-input" id="r-from-bank" type="text" placeholder="e.g. Bank of America">
+          </div>
+          <div class="form-group">
+            <label class="form-label">To Bank</label>
+            <input class="form-input" id="r-to-bank" type="text" placeholder="e.g. HSBC">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sender Account</label>
+            <input class="form-input" id="r-account" type="text" placeholder="Account number">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Receiver Account</label>
+            <input class="form-input" id="r-account2" type="text" placeholder="Account number">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount Paid</label>
+            <input class="form-input" id="r-amount-paid" type="number" placeholder="e.g. 50000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount Received</label>
+            <input class="form-input" id="r-amount-received" type="number" placeholder="e.g. 50000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Currency</label>
+            <input class="form-input" id="r-payment-currency" type="text" placeholder="e.g. US Dollar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Receiving Currency</label>
+            <input class="form-input" id="r-receiving-currency" type="text" placeholder="e.g. US Dollar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Format</label>
+            <select class="form-select" id="r-payment-format">
+              <option value="Wire">Wire</option>
+              <option value="ACH">ACH</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Cash">Cash</option>
+              <option value="Bitcoin">Bitcoin</option>
+              <option value="Reinvestment">Reinvestment</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Currency Mismatch</label>
+            <select class="form-select" id="r-currency-mismatch">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sender Country</label>
+            <input class="form-input" id="r-s-country" type="text" placeholder="e.g. US">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Receiver Country</label>
+            <input class="form-input" id="r-r-country" type="text" placeholder="e.g. CN">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sender Bank Type</label>
+            <select class="form-select" id="r-s-bank-type">
+              <option value="Commercial">Commercial</option>
+              <option value="Trust">Trust</option>
+              <option value="Savings">Savings</option>
+              <option value="Cooperative">Cooperative</option>
+              <option value="Holding">Holding</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Receiver Bank Type</label>
+            <select class="form-select" id="r-r-bank-type">
+              <option value="Commercial">Commercial</option>
+              <option value="Trust">Trust</option>
+              <option value="Savings">Savings</option>
+              <option value="Cooperative">Cooperative</option>
+              <option value="Holding">Holding</option>
+            </select>
           </div>
         </div>
+        <button class="risk-btn" style="margin-top:20px" onclick="assessRisk()">Assess Risk →</button>
       </div>
-    </div>
 
-    <!-- ╌╌ TAB: HISTORY ╌╌ -->
-    <div id="tab-history" class="tab-panel">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">[Historical data title]</span>
-          <span class="badge badge-gray">[Date range]</span>
+      <div class="card" id="risk-result" style="display:none">
+        <div class="card-header"><span class="card-title">Assessment Result</span></div>
+        <div class="result-grid">
+          <div class="result-kpi">
+            <div class="kpi-label">Risk Score</div>
+            <div class="kpi-value" id="res-score">—</div>
+            <div class="kpi-delta">0–100 scale</div>
+          </div>
+          <div class="result-kpi">
+            <div class="kpi-label">Flag</div>
+            <div class="kpi-value" id="res-level">—</div>
+            <div class="kpi-delta">risk level</div>
+          </div>
+          <div class="result-kpi">
+            <div class="kpi-label">Category</div>
+            <div class="kpi-value" id="res-flag">—</div>
+            <div class="kpi-delta">typology</div>
+          </div>
+          <div class="result-kpi">
+            <div class="kpi-label">Confidence</div>
+            <div class="kpi-value" id="res-conf">—</div>
+            <div class="kpi-delta">model output</div>
+          </div>
         </div>
-        <!-- Replace with real historical chart or table -->
-        <div class="chart-wrap" style="height:130px">
-          <div class="chart-bar bar-done" style="height:60%"></div>
-          <div class="chart-bar bar-done" style="height:75%"></div>
-          <div class="chart-bar bar-done" style="height:55%"></div>
-          <div class="chart-bar bar-done" style="height:82%"></div>
-          <div class="chart-bar bar-done" style="height:70%"></div>
-          <div class="chart-bar bar-done" style="height:90%"></div>
-          <div class="chart-bar bar-done" style="height:65%"></div>
-          <div class="chart-bar bar-done" style="height:78%"></div>
-        </div>
-        <div class="chart-axis">
-          <span>[Period 1]</span><span>[Period 2]</span><span>[Period 3]</span><span>[Period N]</span>
+        <div class="risk-bar-wrap">
+          <div class="risk-bar-label">
+            <span>Laundering probability</span>
+            <span id="res-prob-pct">—</span>
+          </div>
+          <div class="risk-bar-track">
+            <div class="risk-bar-fill" id="res-bar" style="width:0%"></div>
+          </div>
+          <div class="risk-bar-ends"><span>Low risk</span><span>High risk</span></div>
         </div>
       </div>
     </div>
@@ -406,6 +447,7 @@
 </div>
 
 <script>
+  // ── TAB SWITCHING ─────────────────────────────────────────────────────────
   function switchTab(btn, panelId) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -418,58 +460,88 @@
     item.classList.add('active');
   }
 
-  // Wire to POST /api/predict — update #prediction-val and #prediction-ring with real data
-  async function fetchPrediction() {
-    try {
-      const res = await fetch('/api/predict', { method: 'POST' });
-      const data = await res.json();
-      // TODO: document.getElementById('prediction-val').textContent = data.confidence + '%';
-      console.log('Prediction response:', data);
-    } catch (err) {
-      console.error('Prediction fetch failed:', err);
-    }
+  // ── PLOTLY CONFIG ─────────────────────────────────────────────────────────
+  const plotConfig = { responsive: true, displayModeBar: false };
+
+  function renderChart(divId, chartJson) {
+    const fig = JSON.parse(chartJson);
+    Plotly.newPlot(divId, fig.data, fig.layout, plotConfig);
   }
 
-  // Risk Assessment — wire to POST /api/predict when model is ready
+  // ── RENDER CHARTS FROM aml_viz.py ────────────────────────────────────────
+  Plotly.newPlot('hourly-chart', {{ hourly_chart | safe }}.data, {{ hourly_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('volume-chart', {{ volume_chart | safe }}.data, {{ volume_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('daily-rate-chart', {{ daily_rate_chart | safe }}.data, {{ daily_rate_chart | safe }}.layout, plotConfig);
+  // ── CURRENCY CHARTS ───────────────────────────────────────────────────────
+  const currencyNames   = {{ currency_names | safe }};
+  const currencyVolumes = {{ currency_volumes | safe }};
+  const currencyRates   = {{ currency_rates | safe }};
+
+  Plotly.newPlot('currency-volume-chart', [{
+    x: currencyNames, y: currencyVolumes,
+    type: 'bar',
+    marker: { color: '#b5d4f4', line: { color: '#2a5f8f', width: 1 } },
+    hovertemplate: '%{x}<br>Transactions: %{y:,}<extra></extra>'
+  }], {
+    margin: { t: 10, r: 10, b: 80, l: 50 },
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
+    yaxis: { title: 'Transactions', gridcolor: '#e8e6df' },
+    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
+  }, plotConfig);
+
+  Plotly.newPlot('currency-rate-chart', [{
+    x: currencyNames, y: currencyRates,
+    type: 'bar',
+    marker: { color: '#f4b5b5', line: { color: '#9b2c2c', width: 1 } },
+    hovertemplate: '%{x}<br>Rate: %{y:.3f}%<extra></extra>'
+  }], {
+    margin: { t: 10, r: 10, b: 80, l: 50 },
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
+    yaxis: { title: 'Laundering Rate (%)', gridcolor: '#e8e6df' },
+    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
+  }, plotConfig);
+
+  // ── RISK ASSESSMENT ───────────────────────────────────────────────────────
   async function assessRisk() {
     const inputs = {
-      payment_format:  document.getElementById('r-payment-format').value,
-      currency:        document.getElementById('r-currency').value,
-      amount:          parseFloat(document.getElementById('r-amount').value) || 0,
-      conversion_rate: parseFloat(document.getElementById('r-conversion').value) || 1,
-      sender_type:     document.getElementById('r-sender-type').value,
-      cross_border:    document.getElementById('r-cross-border').value,
-      hour:            parseInt(document.getElementById('r-hour').value) || 0,
+      from_bank:          document.getElementById('r-from-bank').value,
+      account:            document.getElementById('r-account').value,
+      to_bank:            document.getElementById('r-to-bank').value,
+      'account.1':        document.getElementById('r-account2').value,
+      amount_paid:        parseFloat(document.getElementById('r-amount-paid').value) || 0,
+      amount_received:    parseFloat(document.getElementById('r-amount-received').value) || 0,
+      payment_currency:   document.getElementById('r-payment-currency').value,
+      receiving_currency: document.getElementById('r-receiving-currency').value,
+      currency_mismatch:  document.getElementById('r-currency-mismatch').value,
+      payment_format:     document.getElementById('r-payment-format').value,
+      s_country:          document.getElementById('r-s-country').value,
+      r_country:          document.getElementById('r-r-country').value,
+      s_bank_type:        document.getElementById('r-s-bank-type').value,
+      r_bank_type:        document.getElementById('r-r-bank-type').value,
     };
-
-    // Show result panel with placeholder until real API is connected
     document.getElementById('risk-result').style.display = 'block';
-
     try {
-      const res  = await fetch('/api/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch('/api/predict', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputs)
       });
       const data = await res.json();
-
-      // TODO: replace with real fields from your model's response
-      // document.getElementById('res-score').textContent = data.risk_score;
-      // document.getElementById('res-conf').textContent  = data.confidence + '%';
-      // document.getElementById('res-flag').textContent  = data.flagged ? '⚑' : '✓';
-      console.log('Risk assessment response:', data);
-
-    } catch (err) {
-      // Model not connected yet — show placeholder output
-      document.getElementById('res-score').textContent   = '[XX]';
-      document.getElementById('res-level').textContent   = '[risk level]';
-      document.getElementById('res-conf').textContent    = '[XX%]';
-      document.getElementById('res-flag').textContent    = '[—]';
-      document.getElementById('res-flag-sub').textContent = '[pending model]';
-      console.log('Assessment inputs ready:', inputs);
-    }
+      if (data.success) {
+        const prob = data.probability * 100;
+        const isHigh = prob > 50;
+        document.getElementById('res-score').textContent    = prob.toFixed(1);
+        document.getElementById('res-level').textContent    = isHigh ? 'HIGH' : 'LOW';
+        document.getElementById('res-flag').textContent     = isHigh ? 'Suspicious' : 'Normal';
+        document.getElementById('res-conf').textContent     = (data.confidence * 100).toFixed(1) + '%';
+        document.getElementById('res-prob-pct').textContent = prob.toFixed(1) + '%';
+        document.getElementById('res-bar').style.width      = prob + '%';
+      }
+    } catch (err) { console.error('Risk assessment error:', err); }
   }
-  // Read filter param from map
+
+  // ── MAP FILTER BANNER ─────────────────────────────────────────────────────
   const params = new URLSearchParams(window.location.search);
   const country = params.get('country');
   const continent = params.get('continent');
@@ -479,18 +551,11 @@
     document.querySelector('a[href="/dashboard"]').href = `/dashboard?${param}`;
     const isContinent = !!continent;
     const banner = document.createElement('div');
-    banner.style.cssText = `
-      display:flex;justify-content:space-between;align-items:center;
-      background:#edf3f9;border-bottom:1px solid #b5d4f4;
-      padding:10px 32px;font-size:13px;color:#2a5f8f;
-    `;
-    banner.innerHTML = `
-      <span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span>
-      <a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>
-    `;
+    banner.style.cssText = `display:flex;justify-content:space-between;align-items:center;background:#edf3f9;border-bottom:1px solid #b5d4f4;padding:10px 32px;font-size:13px;color:#2a5f8f;`;
+    banner.innerHTML = `<span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span><a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>`;
     document.querySelector('.main').prepend(banner);
-    document.querySelector('.page-header h2').textContent = filterLabel;
-    document.querySelector('.page-header p').textContent  = isContinent ? 'Continent view · filtered from map' : 'Country view · filtered from map';
+    document.getElementById('page-title').textContent = filterLabel;
+    document.getElementById('page-sub').textContent   = isContinent ? 'Continent view · filtered from map' : 'Country view · filtered from map';
   }
 </script>
 

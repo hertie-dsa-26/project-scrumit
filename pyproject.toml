@@ -3,7 +3,7 @@ name = "project-scrumit-t1"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "flask>=3.1.3",
     "geopy>=2.4.1",
@@ -11,9 +11,10 @@ dependencies = [
     "joblib>=1.4.2,<1.5",
     "jupyter>=1.1.1",
     "kagglehub>=1.0.0",
-    "matplotlib>=3.10.8",
+    "matplotlib>=3.7.0,<3.8.0",
     "pandas>=2.0,<2.2",
     "pathlib>=1.0.1",
+    "plotly>=6.7.0",
     "pycaret",
     "requests>=2.32.5",
     "scikit-learn>=1.4,<1.9",
