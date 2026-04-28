@@ -74,10 +74,11 @@ def predict():
         # Get JSON data from request
         data = request.get_json()
 
-        if not data:
+        # Allow empty dict (will use all defaults)
+        if data is None:
             return jsonify({
                 'success': False,
-                'error': 'No data provided'
+                'error': 'No JSON data provided'
             }), 400
 
         # Make prediction (missing values will be imputed automatically)

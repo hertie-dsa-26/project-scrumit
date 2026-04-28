@@ -160,7 +160,7 @@
 
       <div style="margin-bottom:20px">
         <h1 style="font-family:var(--serif);font-size:24px;letter-spacing:-.01em;margin-bottom:6px">Transaction Risk Assessment</h1>
-        <p style="font-size:13px;color:var(--ink-3)">Enter transaction details to check for money laundering risk</p>
+        <p style="font-size:13px;color:var(--ink-3)">Enter transaction details to check for money laundering risk. <strong>All fields are optional</strong> — missing values will use intelligent defaults.</p>
       </div>
 
       <div style="height:1px;background:var(--border);margin-bottom:24px"></div>
@@ -176,7 +176,7 @@
         <div class="form-group">
           <label class="form-label">Payment format</label>
           <select class="form-field" id="payment-format">
-            <option value="">Select format…</option>
+            <option value="">— Optional —</option>
             <option>ACH</option>
             <option>Cheque</option>
             <option>Credit Card</option>
@@ -198,18 +198,44 @@
 
         <div class="form-group">
           <label class="form-label">Sending bank</label>
-          <input class="form-field" type="text" id="sending-bank" placeholder="e.g. Bank of America">
+          <select class="form-field" id="sending-bank">
+            <option value="">— Optional —</option>
+            <option>Bank of America</option>
+            <option>Chase Bank</option>
+            <option>Wells Fargo</option>
+            <option>Citibank</option>
+            <option>Goldman Sachs</option>
+            <option>JPMorgan Chase</option>
+            <option>Morgan Stanley</option>
+            <option>HSBC</option>
+            <option>Barclays</option>
+            <option>Deutsche Bank</option>
+            <option>ING</option>
+            <option>Santander</option>
+            <option>Credit Suisse</option>
+            <option>UBS</option>
+            <option>BNY Mellon</option>
+            <option>State Street</option>
+            <option>DBS Bank</option>
+            <option>ICBC</option>
+            <option>Agricultural Bank of China</option>
+            <option>Mitsubishi UFJ Financial</option>
+            <option>Sumitomo Mitsui</option>
+            <option>Standard Chartered</option>
+            <option>ANZ Bank</option>
+            <option>Other</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label class="form-label">Sending account</label>
-          <input class="form-field" type="text" id="sending-account" placeholder="e.g. ACCT-00123">
+          <input class="form-field" type="text" id="sending-account" placeholder="e.g. ACCT-00123 (optional)">
         </div>
 
         <div class="form-group">
           <label class="form-label">Sending bank type</label>
           <select class="form-field" id="sending-bank-type">
-            <option value="">Select type…</option>
+            <option value="">— Optional —</option>
             <option>Commercial</option>
             <option>Investment</option>
             <option>Central</option>
@@ -220,7 +246,34 @@
 
         <div class="form-group">
           <label class="form-label">Sending country</label>
-          <input class="form-field" type="text" id="sending-country" placeholder="e.g. US">
+          <select class="form-field" id="sending-country">
+            <option value="">— Optional —</option>
+            <option>US - United States</option>
+            <option>GB - United Kingdom</option>
+            <option>DE - Germany</option>
+            <option>FR - France</option>
+            <option>CN - China</option>
+            <option>JP - Japan</option>
+            <option>IN - India</option>
+            <option>BR - Brazil</option>
+            <option>RU - Russia</option>
+            <option>MX - Mexico</option>
+            <option>CA - Canada</option>
+            <option>AU - Australia</option>
+            <option>SG - Singapore</option>
+            <option>HK - Hong Kong</option>
+            <option>AE - United Arab Emirates</option>
+            <option>CH - Switzerland</option>
+            <option>NL - Netherlands</option>
+            <option>SE - Sweden</option>
+            <option>KY - Cayman Islands</option>
+            <option>MU - Mauritius</option>
+            <option>PA - Panama</option>
+            <option>VG - British Virgin Islands</option>
+            <option>LU - Luxembourg</option>
+            <option>IE - Ireland</option>
+            <option>Other</option>
+          </select>
         </div>
 
         <div class="form-divider">
@@ -230,18 +283,44 @@
 
         <div class="form-group">
           <label class="form-label">Receiving bank</label>
-          <input class="form-field" type="text" id="receiving-bank" placeholder="e.g. HSBC">
+          <select class="form-field" id="receiving-bank">
+            <option value="">— Optional —</option>
+            <option>Bank of America</option>
+            <option>Chase Bank</option>
+            <option>Wells Fargo</option>
+            <option>Citibank</option>
+            <option>Goldman Sachs</option>
+            <option>JPMorgan Chase</option>
+            <option>Morgan Stanley</option>
+            <option>HSBC</option>
+            <option>Barclays</option>
+            <option>Deutsche Bank</option>
+            <option>ING</option>
+            <option>Santander</option>
+            <option>Credit Suisse</option>
+            <option>UBS</option>
+            <option>BNY Mellon</option>
+            <option>State Street</option>
+            <option>DBS Bank</option>
+            <option>ICBC</option>
+            <option>Agricultural Bank of China</option>
+            <option>Mitsubishi UFJ Financial</option>
+            <option>Sumitomo Mitsui</option>
+            <option>Standard Chartered</option>
+            <option>ANZ Bank</option>
+            <option>Other</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label class="form-label">Receiving account</label>
-          <input class="form-field" type="text" id="receiving-account" placeholder="e.g. ACCT-99871">
+          <input class="form-field" type="text" id="receiving-account" placeholder="e.g. ACCT-99871 (optional)">
         </div>
 
         <div class="form-group">
           <label class="form-label">Receiving bank type</label>
           <select class="form-field" id="receiving-bank-type">
-            <option value="">Select type…</option>
+            <option value="">— Optional —</option>
             <option>Commercial</option>
             <option>Investment</option>
             <option>Central</option>
@@ -252,7 +331,34 @@
 
         <div class="form-group">
           <label class="form-label">Receiving country</label>
-          <input class="form-field" type="text" id="receiving-country" placeholder="e.g. GB">
+          <select class="form-field" id="receiving-country">
+            <option value="">— Optional —</option>
+            <option>US - United States</option>
+            <option>GB - United Kingdom</option>
+            <option>DE - Germany</option>
+            <option>FR - France</option>
+            <option>CN - China</option>
+            <option>JP - Japan</option>
+            <option>IN - India</option>
+            <option>BR - Brazil</option>
+            <option>RU - Russia</option>
+            <option>MX - Mexico</option>
+            <option>CA - Canada</option>
+            <option>AU - Australia</option>
+            <option>SG - Singapore</option>
+            <option>HK - Hong Kong</option>
+            <option>AE - United Arab Emirates</option>
+            <option>CH - Switzerland</option>
+            <option>NL - Netherlands</option>
+            <option>SE - Sweden</option>
+            <option>KY - Cayman Islands</option>
+            <option>MU - Mauritius</option>
+            <option>PA - Panama</option>
+            <option>VG - British Virgin Islands</option>
+            <option>LU - Luxembourg</option>
+            <option>IE - Ireland</option>
+            <option>Other</option>
+          </select>
         </div>
 
         <!-- ── AMOUNTS & CURRENCIES ── -->
@@ -263,13 +369,13 @@
 
         <div class="form-group">
           <label class="form-label">Amount paid</label>
-          <input class="form-field" type="number" id="amount-paid" placeholder="0.00" step="0.01" min="0">
+          <input class="form-field" type="number" id="amount-paid" placeholder="0.00 (optional)" step="0.01" min="0">
         </div>
 
         <div class="form-group">
           <label class="form-label">Payment currency</label>
           <select class="form-field" id="payment-currency" onchange="checkCurrencyMismatch()">
-            <option value="">Select currency…</option>
+            <option value="">— Optional —</option>
             <option>USD</option>
             <option>EUR</option>
             <option>GBP</option>
@@ -284,13 +390,13 @@
 
         <div class="form-group">
           <label class="form-label">Receiving amount</label>
-          <input class="form-field" type="number" id="receiving-amount" placeholder="0.00" step="0.01" min="0">
+          <input class="form-field" type="number" id="receiving-amount" placeholder="0.00 (optional)" step="0.01" min="0">
         </div>
 
         <div class="form-group">
           <label class="form-label">Receiving currency</label>
           <select class="form-field" id="receiving-currency" onchange="checkCurrencyMismatch()">
-            <option value="">Select currency…</option>
+            <option value="">— Optional —</option>
             <option>USD</option>
             <option>EUR</option>
             <option>GBP</option>
@@ -312,7 +418,8 @@
       </div>
 
       <div style="margin-top:28px">
-        <button class="assess-btn" onclick="runPrediction()">Assess transaction risk</button>
+        <button class="assess-btn" onclick="runPrediction()">Assess transaction risk →</button>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px;text-align:center">Fill any fields to predict — missing values will use intelligent defaults</p>
       </div>
 
       <!-- ── RESULT — hidden until assessment runs ── -->
@@ -505,54 +612,66 @@ function checkCurrencyMismatch() {
 }
 
 async function runPrediction() {
-  // Validate required fields
-  const requiredFields = [
-    'payment-format', 'sending-bank', 'sending-account',
-    'sending-bank-type', 'sending-country', 'receiving-bank',
-    'receiving-account', 'receiving-bank-type', 'receiving-country',
-    'amount-paid', 'payment-currency', 'receiving-amount', 'receiving-currency'
+  // Collect only the values that were provided (non-empty)
+  const inputs = {};
+
+  // List of all possible fields
+  const allFields = [
+    { id: 'payment-format', key: 'payment_format' },
+    { id: 'sending-bank', key: 'from_bank', parse: (v) => v.split(' - ')[0] || v },
+    { id: 'sending-account', key: 'account' },
+    { id: 'sending-bank-type', key: 's_bank_type' },
+    { id: 'sending-country', key: 's_country', parse: (v) => v.split(' - ')[0] || v },
+    { id: 'receiving-bank', key: 'to_bank', parse: (v) => v.split(' - ')[0] || v },
+    { id: 'receiving-account', key: 'account.1' },
+    { id: 'receiving-bank-type', key: 'r_bank_type' },
+    { id: 'receiving-country', key: 'r_country', parse: (v) => v.split(' - ')[0] || v },
+    { id: 'amount-paid', key: 'amount_paid', type: 'number' },
+    { id: 'payment-currency', key: 'payment_currency' },
+    { id: 'receiving-amount', key: 'amount_received', type: 'number' },
+    { id: 'receiving-currency', key: 'receiving_currency' }
   ];
 
-  let missingFields = [];
-  for (const field of requiredFields) {
-    const el = document.getElementById(field);
-    if (!el || !el.value) {
-      missingFields.push(field.replace('-', ' '));
+  // Collect provided values
+  let providedCount = 0;
+  allFields.forEach(field => {
+    const el = document.getElementById(field.id);
+    if (el && el.value) {
+      let value = el.value;
+
+      // Apply custom parser if defined
+      if (field.parse) {
+        value = field.parse(value);
+      }
+
+      if (field.type === 'number') {
+        inputs[field.key] = parseFloat(value);
+      } else {
+        inputs[field.key] = value;
+      }
+      providedCount++;
     }
-  }
+  });
 
-  if (missingFields.length > 0) {
-    alert('Please fill in all required fields:\n- ' + missingFields.join('\n- '));
-    return;
+  // Add currency mismatch indicator if both currencies are provided
+  const paymentCurrency = document.getElementById('payment-currency').value;
+  const receivingCurrency = document.getElementById('receiving-currency').value;
+  if (paymentCurrency && receivingCurrency) {
+    inputs['currency_mismatch'] = paymentCurrency !== receivingCurrency ? 'Yes' : 'No';
   }
-
-  const inputs = {
-    from_bank:          document.getElementById('sending-bank').value || 'Unknown',
-    account:            document.getElementById('sending-account').value || 'UNKNOWN-ACCOUNT',
-    to_bank:            document.getElementById('receiving-bank').value || 'Unknown',
-    'account.1':        document.getElementById('receiving-account').value || 'UNKNOWN-ACCOUNT',
-    amount_received:    parseFloat(document.getElementById('receiving-amount').value) || 0,
-    receiving_currency: document.getElementById('receiving-currency').value || 'USD',
-    amount_paid:        parseFloat(document.getElementById('amount-paid').value) || 0,
-    payment_currency:   document.getElementById('payment-currency').value || 'USD',
-    currency_mismatch:  (
-      document.getElementById('payment-currency').value &&
-      document.getElementById('receiving-currency').value &&
-      document.getElementById('payment-currency').value !== document.getElementById('receiving-currency').value
-    ) ? 'Yes' : 'No',
-    payment_format:     document.getElementById('payment-format').value || 'Wire',
-    s_country:          document.getElementById('sending-country').value || 'US',
-    r_country:          document.getElementById('receiving-country').value || 'US',
-    s_bank_type:        document.getElementById('sending-bank-type').value || 'Commercial',
-    r_bank_type:        document.getElementById('receiving-bank-type').value || 'Commercial'
-  };
 
   // Show result panel
   document.getElementById('result-panel').style.display = 'block';
   document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  // Show loading state
+  document.getElementById('out-a').textContent = '...';
+  document.getElementById('out-b').textContent = '...';
+  document.getElementById('out-c').textContent = '...';
+  document.getElementById('out-conf').textContent = '...';
+
   try {
-    const res  = await fetch('/api/predict', {
+    const res = await fetch('/api/predict', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(inputs)
@@ -576,7 +695,20 @@ async function runPrediction() {
     document.getElementById('qda-prob-label').textContent = riskPercent.toFixed(1) + '%';
     document.getElementById('qda-prob-bar').style.width = riskPercent.toFixed(1) + '%';
 
+    // Show imputation info if fields were imputed
+    const imputedFields = data.imputed_fields || [];
+    if (imputedFields.length > 0) {
+      const imputationMsg = document.getElementById('imputation-note') || createImputationNote();
+      imputationMsg.innerHTML = `<strong>Note:</strong> ${imputedFields.length} field(s) used intelligent defaults: <em>${imputedFields.join(', ')}</em>`;
+      imputationMsg.style.display = 'block';
+    } else {
+      const imputationMsg = document.getElementById('imputation-note');
+      if (imputationMsg) imputationMsg.style.display = 'none';
+    }
+
     console.log('Prediction response:', data);
+    console.log('Provided fields:', providedCount);
+    console.log('Imputed fields:', imputedFields);
 
   } catch (err) {
     document.getElementById('out-a').textContent = 'ERR';
@@ -588,6 +720,20 @@ async function runPrediction() {
     alert('Prediction error: ' + err.message);
     console.error('Prediction failed:', err);
   }
+}
+
+function createImputationNote() {
+  const note = document.createElement('div');
+  note.id = 'imputation-note';
+  note.style.cssText = 'grid-column: 1 / -1; padding: 10px 14px; background: #edf3f9; border: 1px solid #c8dff5; border-radius: 6px; font-size: 12px; color: #2a5f8f; margin-bottom: 16px;';
+
+  const resultPanel = document.getElementById('result-panel');
+  if (resultPanel && resultPanel.querySelector('.section-title')) {
+    const sectionTitle = resultPanel.querySelector('.section-title');
+    sectionTitle.parentNode.insertBefore(note, sectionTitle.nextSibling);
+  }
+
+  return note;
 }
 </script>
 </body>
