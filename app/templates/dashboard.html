@@ -47,7 +47,7 @@
     .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
 
-    .layout { display: grid; grid-template-columns: 188px 1fr; min-height: calc(100vh - 56px); }
+    .layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 56px); }
 
     .sidebar {
       background: var(--surface); border-right: 1px solid var(--border);
@@ -174,22 +174,6 @@
 
 <div class="layout">
 
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Views</div>
-      <div class="sidebar-item active" onclick="setView(this)"><div class="sidebar-dot"></div>Overview</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Temporal</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Currency</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Geographic</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>ML / Risk</div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">More</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>Details</div>
-      <div class="sidebar-item" onclick="setView(this)"><div class="sidebar-dot"></div>History</div>
-    </div>
-  </aside>
-
   <main class="main">
 
     <div class="page-header">
@@ -203,7 +187,6 @@
       <button class="tab" onclick="switchTab(this,'tab-temporal')">Temporal</button>
       <button class="tab" onclick="switchTab(this,'tab-currency')">Currency</button>
       <button class="tab" onclick="switchTab(this,'tab-geographic')">Geographic</button>
-      <button class="tab" onclick="switchTab(this,'tab-ml')">ML / Risk</button>
     </div>
 
     <!-- ╌╌ OVERVIEW ╌╌ -->
@@ -238,17 +221,97 @@
         <div class="list-item"><span class="list-item-name">Model type</span><span class="badge badge-gray">QDA</span></div>
         <div class="list-item"><span class="list-item-name">Dataset</span><span class="badge badge-gray">HI-Small AML</span></div>
       </div>
+      <!-- ── 4 SUMMARY TABLES ── -->
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top Laundering Countries</span>
+            <span class="badge badge-red">by volume</span>
+          </div>
+          <table>
+            <thead><tr><th>Country</th><th>Cases</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in top_countries %}
+              <tr>
+                <td>{{ row.s_country }}</td>
+                <td><span class="badge badge-red">{{ row.total }}</span></td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top Country Corridors</span>
+            <span class="badge badge-amber">by laundering rate</span>
+          </div>
+          <table>
+            <thead><tr><th>From</th><th>To</th><th>Transactions</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in top_corridors %}
+              <tr>
+                <td>{{ row.s_country }}</td>
+                <td>{{ row.r_country }}</td>
+                <td>{{ row.count }}</td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Bank Type Risk</span>
+            <span class="badge badge-gray">by laundering rate</span>
+          </div>
+          <table>
+            <thead><tr><th>Bank Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in bank_stats %}
+              <tr>
+                <td>{{ row.s_bank_type }}</td>
+                <td>{{ row.count }}</td>
+                <td><span class="badge badge-red">{{ row.total }}</span></td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Entity Type Risk</span>
+            <span class="badge badge-gray">by laundering rate</span>
+          </div>
+          <table>
+            <thead><tr><th>Entity Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in entity_stats %}
+              <tr>
+                <td>{{ row.s_entity_type }}</td>
+                <td>{{ row.count }}</td>
+                <td><span class="badge badge-red">{{ row.total }}</span></td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ╌╌ TEMPORAL ╌╌ -->
     <div id="tab-temporal" class="tab-panel">
-      <div class="content-grid-wide">
+      <div class="content-grid-wide" style="max-width:900px;margin:0 auto">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Laundering Rate by Hour of Day</span>
             <span class="badge badge-gray">All time</span>
           </div>
-          <div id="hourly-chart" style="height:240px"></div>
+         <div id="hourly-chart" style="height:240px"></div>
         </div>
       </div>
       <div class="content-grid">
@@ -264,181 +327,65 @@
     </div>
 
     <!-- ╌╌ CURRENCY ╌╌ -->
-    <div id="tab-currency" class="tab-panel">
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Transactions by Currency</span>
-          </div>
-          <div id="currency-volume-chart" style="height:260px"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Laundering Rate by Currency</span>
-          </div>
-          <div id="currency-rate-chart" style="height:260px"></div>
-        </div>
+  <div id="tab-currency" class="tab-panel">
+    <div class="content-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Transactions by Currency</span></div>
+        <div id="currency-volume-chart" style="height:260px"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Laundering Rate by Currency</span></div>
+        <div id="currency-rate-chart" style="height:260px"></div>
       </div>
     </div>
+    <div class="content-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Laundering Rate by Payment Format</span></div>
+        <div id="payment-format-chart" style="height:260px"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Laundering Rate by Transaction Amount</span></div>
+        <div id="amount-bucket-chart" style="height:260px"></div>
+      </div>
+    </div>
+    <div class="content-grid-wide">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Laundering Rate by Payment Currency</span>
+        </div>
+        <div id="laundering-rate-by-currency-chart" style="height:450px"></div>
+      </div>
+    </div>
+  </div>
 
     <!-- ╌╌ GEOGRAPHIC ╌╌ -->
     <div id="tab-geographic" class="tab-panel">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Geographic charts</span>
-          <span class="badge badge-amber">Coming soon</span>
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
+          </div>
+          <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
         </div>
-        <div class="coming-soon">
-          <div class="coming-soon-icon">🌍</div>
-          Geographic visualisations coming soon.
-        </div>
-      </div>
-    </div>
-
-    <!-- ╌╌ ML / RISK ╌╌ -->
-    <div id="tab-ml" class="tab-panel">
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Model Accuracy</div>
-          <div class="kpi-value">97.6%</div>
-          <div class="kpi-delta delta-pos">Kaggle score</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Model Type</div>
-          <div class="kpi-value" style="font-size:18px">QDA</div>
-          <div class="kpi-delta">Quadratic Discriminant</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Cases</div>
-          <div class="kpi-value">{{ laundering_cases }}</div>
-          <div class="kpi-delta delta-neg">detected</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Rate</div>
-          <div class="kpi-value">{{ laundering_rate }}</div>
-          <div class="kpi-delta">of all transactions</div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top 15 Sender Countries by Laundering Rate</span>
+          </div>
+          <div id="top-sender-countries-chart" style="height:380px"></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header"><span class="card-title">Transaction Risk Assessment</span></div>
-        <div class="risk-form-grid">
-          <div class="form-group">
-            <label class="form-label">From Bank</label>
-            <input class="form-input" id="r-from-bank" type="text" placeholder="e.g. Bank of America">
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top 15 Receiver Countries by Laundering Rate</span>
           </div>
-          <div class="form-group">
-            <label class="form-label">To Bank</label>
-            <input class="form-input" id="r-to-bank" type="text" placeholder="e.g. HSBC">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sender Account</label>
-            <input class="form-input" id="r-account" type="text" placeholder="Account number">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Receiver Account</label>
-            <input class="form-input" id="r-account2" type="text" placeholder="Account number">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Amount Paid</label>
-            <input class="form-input" id="r-amount-paid" type="number" placeholder="e.g. 50000">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Amount Received</label>
-            <input class="form-input" id="r-amount-received" type="number" placeholder="e.g. 50000">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Payment Currency</label>
-            <input class="form-input" id="r-payment-currency" type="text" placeholder="e.g. US Dollar">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Receiving Currency</label>
-            <input class="form-input" id="r-receiving-currency" type="text" placeholder="e.g. US Dollar">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Payment Format</label>
-            <select class="form-select" id="r-payment-format">
-              <option value="Wire">Wire</option>
-              <option value="ACH">ACH</option>
-              <option value="Cheque">Cheque</option>
-              <option value="Credit Card">Credit Card</option>
-              <option value="Cash">Cash</option>
-              <option value="Bitcoin">Bitcoin</option>
-              <option value="Reinvestment">Reinvestment</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Currency Mismatch</label>
-            <select class="form-select" id="r-currency-mismatch">
-              <option value="No">No</option>
-              <option value="Yes">Yes</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sender Country</label>
-            <input class="form-input" id="r-s-country" type="text" placeholder="e.g. US">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Receiver Country</label>
-            <input class="form-input" id="r-r-country" type="text" placeholder="e.g. CN">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sender Bank Type</label>
-            <select class="form-select" id="r-s-bank-type">
-              <option value="Commercial">Commercial</option>
-              <option value="Trust">Trust</option>
-              <option value="Savings">Savings</option>
-              <option value="Cooperative">Cooperative</option>
-              <option value="Holding">Holding</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Receiver Bank Type</label>
-            <select class="form-select" id="r-r-bank-type">
-              <option value="Commercial">Commercial</option>
-              <option value="Trust">Trust</option>
-              <option value="Savings">Savings</option>
-              <option value="Cooperative">Cooperative</option>
-              <option value="Holding">Holding</option>
-            </select>
-          </div>
+          <div id="top-receiver-countries-chart" style="height:380px"></div>
         </div>
-        <button class="risk-btn" style="margin-top:20px" onclick="assessRisk()">Assess Risk →</button>
-      </div>
-
-      <div class="card" id="risk-result" style="display:none">
-        <div class="card-header"><span class="card-title">Assessment Result</span></div>
-        <div class="result-grid">
-          <div class="result-kpi">
-            <div class="kpi-label">Risk Score</div>
-            <div class="kpi-value" id="res-score">—</div>
-            <div class="kpi-delta">0–100 scale</div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top 15 Country Corridors by Laundering Rate</span>
           </div>
-          <div class="result-kpi">
-            <div class="kpi-label">Flag</div>
-            <div class="kpi-value" id="res-level">—</div>
-            <div class="kpi-delta">risk level</div>
-          </div>
-          <div class="result-kpi">
-            <div class="kpi-label">Category</div>
-            <div class="kpi-value" id="res-flag">—</div>
-            <div class="kpi-delta">typology</div>
-          </div>
-          <div class="result-kpi">
-            <div class="kpi-label">Confidence</div>
-            <div class="kpi-value" id="res-conf">—</div>
-            <div class="kpi-delta">model output</div>
-          </div>
-        </div>
-        <div class="risk-bar-wrap">
-          <div class="risk-bar-label">
-            <span>Laundering probability</span>
-            <span id="res-prob-pct">—</span>
-          </div>
-          <div class="risk-bar-track">
-            <div class="risk-bar-fill" id="res-bar" style="width:0%"></div>
-          </div>
-          <div class="risk-bar-ends"><span>Low risk</span><span>High risk</span></div>
+          <div id="top-corridors-chart" style="height:380px"></div>
         </div>
       </div>
     </div>
@@ -472,6 +419,11 @@
   Plotly.newPlot('hourly-chart', {{ hourly_chart | safe }}.data, {{ hourly_chart | safe }}.layout, plotConfig);
   Plotly.newPlot('volume-chart', {{ volume_chart | safe }}.data, {{ volume_chart | safe }}.layout, plotConfig);
   Plotly.newPlot('daily-rate-chart', {{ daily_rate_chart | safe }}.data, {{ daily_rate_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('domestic-vs-crossborder-chart', {{ domestic_vs_crossborder_chart | safe }}.data, {{ domestic_vs_crossborder_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('top-sender-countries-chart', {{ top_sender_countries_chart | safe }}.data, {{ top_sender_countries_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('top-receiver-countries-chart', {{ top_receiver_countries_chart | safe }}.data, {{ top_receiver_countries_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('top-corridors-chart', {{ top_corridors_chart | safe }}.data, {{ top_corridors_chart | safe }}.layout, plotConfig);
+ 
   // ── CURRENCY CHARTS ───────────────────────────────────────────────────────
   const currencyNames   = {{ currency_names | safe }};
   const currencyVolumes = {{ currency_volumes | safe }};
@@ -502,6 +454,10 @@
     yaxis: { title: 'Laundering Rate (%)', gridcolor: '#e8e6df' },
     font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
   }, plotConfig);
+
+  Plotly.newPlot('payment-format-chart', {{ payment_format_chart | safe }}.data, {{ payment_format_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('amount-bucket-chart', {{ amount_bucket_chart | safe }}.data, {{ amount_bucket_chart | safe }}.layout, plotConfig);
+  Plotly.newPlot('laundering-rate-by-currency-chart', {{ laundering_rate_by_currency_chart | safe }}.data, {{ laundering_rate_by_currency_chart | safe }}.layout, plotConfig);
 
   // ── RISK ASSESSMENT ───────────────────────────────────────────────────────
   async function assessRisk() {

@@ -206,3 +206,64 @@ def build_money_df(df: pd.DataFrame) -> pd.DataFrame:
         n_countries     =("s_country",        "nunique"),
         n_cross_border  =("country_mismatch", "sum"),
     ).reset_index()
+
+#overview visualisations
+
+def get_top_laundering_countries(df: pd.DataFrame, top_n: int = 5) -> list[dict]:
+    result = (
+        df.groupby("s_country")["is_laundering"]
+        .agg(total="sum", count="count")
+        .assign(rate=lambda x: (x["total"] / x["count"] * 100).round(2))
+        .sort_values("total", ascending=False)
+        .head(top_n)
+        .reset_index()
+    )
+    return result[["s_country", "total", "rate"]].to_dict(orient="records")
+
+
+def get_top_country_corridors(df: pd.DataFrame, top_n: int = 5) -> list[dict]:
+    result = (
+        df.groupby(["s_country", "r_country"])["is_laundering"]
+        .agg(count="count", total="sum", rate="mean")
+        .reset_index()
+    )
+    result = (
+        result[result["count"] > 10]
+        .sort_values("rate", ascending=False)
+        .head(top_n)
+        .reset_index(drop=True)
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    return result[["s_country", "r_country", "count", "rate"]].to_dict(orient="records")
+
+
+def get_bank_type_stats(df: pd.DataFrame) -> list[dict]:
+    result = (
+        df.groupby("s_bank_type")
+        .agg(
+            count=("is_laundering", "count"),
+            total=("is_laundering", "sum"),
+            rate=("is_laundering", "mean"),
+            avg_amount=("amount_paid", "mean"),
+        )
+        .reset_index()
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    result["avg_amount"] = result["avg_amount"].round(2)
+    return result.sort_values("rate", ascending=False).to_dict(orient="records")
+
+
+def get_entity_type_stats(df: pd.DataFrame) -> list[dict]:
+    result = (
+        df.groupby("s_entity_type")
+        .agg(
+            count=("is_laundering", "count"),
+            total=("is_laundering", "sum"),
+            rate=("is_laundering", "mean"),
+            avg_amount=("amount_paid", "mean"),
+        )
+        .reset_index()
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    result["avg_amount"] = result["avg_amount"].round(2)
+    return result.sort_values("rate", ascending=False).to_dict(orient="records")
