@@ -1,6 +1,6 @@
 import pandas as pd
-from analysis.cleaning.cleaning import clean_aml
-from analysis.cleaning.visualization import build_transactions_df, build_accounts_df, build_money_df
+from src.cleaning import clean_aml
+from src.cleaning_visualization import build_transactions_df, build_accounts_df, build_money_df
 
 if __name__ == '__main__':
     print("Running cleaning pipeline...")

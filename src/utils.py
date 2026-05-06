@@ -1,14 +1,56 @@
 ##utils.py will be used to store helper functions that will be used across the flask app program.
-##calling on https://frankfurter.dev/docs/ for currency conversion.
 
-##in terminal: uv sync
-import requests as requests
+import pandas as pd
 
-#currency conversion function
-def convert_currency(amount, date, from_currency, to_currency="EUR"):
-    response = requests.get("https://api.frankfurter.app/latest",
-                            params={"from": from_currency, "to": to_currency,"date": date}
-                            )
-    response.raise_for_status()
-    rate = response.json()["rates"][to_currency]
-    return round(amount * rate, 2)
+
+NAME_TO_ISO = {
+    'Australia': 36,
+    'Austria': 40,
+    'Belgium': 56,
+    'Brazil': 76,
+    'Canada': 124,
+    'China': 156,
+    'Croatia': 191,
+    'Cyprus': 196,
+    'Estonia': 233,
+    'Finland': 246,
+    'France': 250,
+    'Germany': 276,
+    'Greece': 300,
+    'India': 356,
+    'Ireland': 372,
+    'Israel': 376,
+    'Italy': 380,
+    'Japan': 392,
+    'Latvia': 428,
+    'Lithuania': 440,
+    'Luxembourg': 442,
+    'Malta': 470,
+    'Mexico': 484,
+    'Netherlands': 528,
+    'Portugal': 620,
+    'Russia': 643,
+    'Saudi Arabia': 682,
+    'Slovakia': 703,
+    'Slovenia': 705,
+    'Spain': 724,
+    'Switzerland': 756,
+    'UK': 826,
+    'USA': 840,
+}
+
+# This function computes the laundering rates for each country based on sender and receiver data.
+def compute_country_rates(df):
+    sender = df.groupby('s_country').agg(total=('is_laundering','count'), laundering=('is_laundering','sum'))
+    receiver = df.groupby('r_country').agg(total=('is_laundering','count'), laundering=('is_laundering','sum'))
+    sender.index.name = 'country'
+    receiver.index.name = 'country'
+    combined = sender.add(receiver, fill_value=0)
+    combined['rate'] = combined['laundering'] / combined['total'] * 100
+
+    result = {}
+    for name, rate in combined['rate'].items():
+        iso = NAME_TO_ISO.get(name)
+        if iso:
+            result[iso] = round(rate, 4)
+    return result

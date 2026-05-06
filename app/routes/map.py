@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from analysis.visuals.utils import compute_country_rates
+from src.utils import compute_country_rates
 import pandas as pd
 from flask import jsonify
 

@@ -1,14 +1,14 @@
 from flask import Blueprint, render_template
 import pandas as pd, json
 from pathlib import Path
-from analysis.visuals.aml_viz import (
+from src.aml_viz import (
     plotly_hourly_laundering_rate, plotly_daily_volume, plotly_daily_laundering_rate,
     plotly_laundering_by_payment_format, plotly_laundering_by_amount_bucket,
     plotly_laundering_by_currency, plotly_laundering_rate_by_currency,
     plotly_top_country_corridors, plotly_domestic_vs_crossborder,
     plotly_top_sender_countries, plotly_top_receiver_countries
 )
-from analysis.cleaning.visualization import get_top_laundering_countries, get_top_country_corridors, get_bank_type_stats, get_entity_type_stats
+from src.cleaning_visualization import get_top_laundering_countries, get_top_country_corridors, get_bank_type_stats, get_entity_type_stats
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
