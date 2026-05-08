@@ -75,6 +75,11 @@
     .country-path:hover, .continent-path:hover { fill: var(--land-hover); }
     .country-path.selected, .continent-path.selected { fill: var(--land-sel); stroke: var(--surface); stroke-width: 1; }
     .country-path.dimmed { fill: #c8d8c0; opacity: .6; }
+    .country-path.no-data {
+      fill: #d0cfc9 !important;
+      cursor: default;
+      pointer-events: none;
+    }
 
     /* GRATICULE */
     .graticule { fill: none; stroke: #c8dff0; stroke-width: 0.3; }
@@ -220,6 +225,30 @@
       <button class="map-btn" onclick="zoom(0.7)" title="Zoom out">−</button>
       <button class="map-btn" onclick="resetZoom()" title="Reset" style="font-size:11px">⊙</button>
     </div>
+    <div style="position:absolute;bottom:16px;right:16px;background:var(--surface);
+                border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;
+                font-size:11px;z-index:10;">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;
+                  letter-spacing:.1em;color:var(--ink-3);margin-bottom:8px;">
+        Laundering rate
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--ink-3)">Low</span>
+        <div style="width:100px;height:8px;border-radius:4px;
+                    background:linear-gradient(to right,rgb(255,230,180),rgb(255,0,0))"></div>
+        <span style="color:var(--ink-3)">High</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;
+                  font-family:var(--mono);color:var(--ink-3);">
+        <span>0%</span>
+        <span id="legend-max"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;
+                  border-top:1px solid var(--border);padding-top:8px;">
+        <div style="width:12px;height:12px;border-radius:2px;background:#d0cfc9;flex-shrink:0;"></div>
+        <span style="color:var(--ink-3)">No data</span>
+      </div>
+    </div>
   </div>
 
   <aside class="sidebar">
@@ -281,9 +310,19 @@ let zoomBehavior;
 // ── INIT ──────────────────────────────────────────────────────────────────────
 const mapEl = document.getElementById('map-svg');
 const tooltip = document.getElementById('tooltip');
+const COUNTRY_RATES = {};
+let maxRate = 0;
 
 async function init() {
-  const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+  const [data, ratesData] = await Promise.all([
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'),
+    fetch('/api/country-rates').then(r => r.json())
+  ]);
+
+  Object.assign(COUNTRY_RATES, ratesData);
+  maxRate = Math.max(...Object.values(COUNTRY_RATES));
+  document.getElementById('legend-max').textContent = maxRate.toFixed(2) + '%';
+
   worldData = data;
   document.getElementById('loading').style.display = 'none';
   drawMap(data);
@@ -299,6 +338,16 @@ async function init() {
       setTimeout(() => drillToCountry(+savedCountryId, savedContinent), 600);
     }, 300);
   }
+}
+
+function getLandColor(isoId) {
+  const rate = COUNTRY_RATES[isoId];
+  if (rate == null) return 'var(--land)';
+  const t = maxRate > 0 ? rate / maxRate : 0;
+  const r = Math.round(255);
+  const g = Math.round(255 * (1 - t * 0.85));
+  const b = Math.round(220 * (1 - t));
+  return `rgb(${r},${g},${b})`;
 }
 
 function drawMap(data) {
@@ -339,8 +388,9 @@ function drawMap(data) {
   g.selectAll('.country-path')
     .data(countries.features)
     .enter().append('path')
-    .attr('class','country-path')
+    .attr('class', d => COUNTRY_RATES[+d.id] == null ? 'country-path no-data' : 'country-path')
     .attr('d', pathGen)
+    .style('fill', d => getLandColor(+d.id))
     .on('mousemove', onCountryHover)
     .on('mouseleave', hideTooltip)
     .on('click', onCountryClick);
@@ -405,6 +455,7 @@ function positionTooltip(event) {
 
 // ── CLICK ─────────────────────────────────────────────────────────────────────
 function onCountryClick(event, d) {
+  if (COUNTRY_RATES[+d.id] == null) return;
   const id = +d.id;
   const continent = COUNTRY_CONTINENT[id] || 'Unknown';
 
