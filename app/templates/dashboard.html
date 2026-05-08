@@ -189,6 +189,13 @@
       <button class="tab" onclick="switchTab(this,'tab-geographic')">Geographic</button>
     </div>
 
+    <!-- ── COUNTRY FILTER ── -->
+    <div style="margin-bottom: 20px; margin-top: 8px;">
+      <select id="country-filter" class="form-select" style="width: 200px;" onchange="applyCountryFilter(this.value)">
+        <option value="all">All Countries</option>
+      </select>
+    </div>
+
     <!-- ╌╌ OVERVIEW ╌╌ -->
     <div id="tab-overview" class="tab-panel active">
       <div class="kpi-grid">
@@ -410,54 +417,84 @@
   // ── PLOTLY CONFIG ─────────────────────────────────────────────────────────
   const plotConfig = { responsive: true, displayModeBar: false };
 
-  function renderChart(divId, chartJson) {
-    const fig = JSON.parse(chartJson);
-    Plotly.newPlot(divId, fig.data, fig.layout, plotConfig);
+  // ── RENDER CHARTS FROM JSON FILES ────────────────────────────────────────
+  const chartCache = {};
+
+  async function getChart(name) {
+    if (!chartCache[name]) {
+      chartCache[name] = await fetch(`/static/charts/${name}`).then(r => r.json());
+    }
+    return chartCache[name];
   }
 
-  // ── RENDER CHARTS FROM aml_viz.py ────────────────────────────────────────
-  Plotly.newPlot('hourly-chart', {{ hourly_chart | safe }}.data, {{ hourly_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('volume-chart', {{ volume_chart | safe }}.data, {{ volume_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('daily-rate-chart', {{ daily_rate_chart | safe }}.data, {{ daily_rate_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('domestic-vs-crossborder-chart', {{ domestic_vs_crossborder_chart | safe }}.data, {{ domestic_vs_crossborder_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-sender-countries-chart', {{ top_sender_countries_chart | safe }}.data, {{ top_sender_countries_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-receiver-countries-chart', {{ top_receiver_countries_chart | safe }}.data, {{ top_receiver_countries_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-corridors-chart', {{ top_corridors_chart | safe }}.data, {{ top_corridors_chart | safe }}.layout, plotConfig);
- 
-  // ── CURRENCY CHARTS ───────────────────────────────────────────────────────
-  const currencyNames   = {{ currency_names | safe }};
-  const currencyVolumes = {{ currency_volumes | safe }};
-  const currencyRates   = {{ currency_rates | safe }};
+  async function loadAllCharts() {
+    const charts = [
+      ['hourly_chart.json',                    'hourly-chart'],
+      ['volume_chart.json',                    'volume-chart'],
+      ['daily_rate_chart.json',                'daily-rate-chart'],
+      ['domestic_vs_crossborder_chart.json',   'domestic-vs-crossborder-chart'],
+      ['top_sender_countries_chart.json',      'top-sender-countries-chart'],
+      ['top_receiver_countries_chart.json',    'top-receiver-countries-chart'],
+      ['top_corridors_chart.json',             'top-corridors-chart'],
+      ['payment_format_chart.json',            'payment-format-chart'],
+      ['amount_bucket_chart.json',             'amount-bucket-chart'],
+      ['laundering_rate_by_currency_chart.json', 'laundering-rate-by-currency-chart'],
+      ['currency_volume_chart.json',           'currency-volume-chart'],
+      ['currency_laundering_rate_chart.json',  'currency-rate-chart'],
+    ];
 
-  Plotly.newPlot('currency-volume-chart', [{
-    x: currencyNames, y: currencyVolumes,
-    type: 'bar',
-    marker: { color: '#b5d4f4', line: { color: '#2a5f8f', width: 1 } },
-    hovertemplate: '%{x}<br>Transactions: %{y:,}<extra></extra>'
-  }], {
-    margin: { t: 10, r: 10, b: 80, l: 50 },
-    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
-    yaxis: { title: 'Transactions', gridcolor: '#e8e6df' },
-    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
-  }, plotConfig);
+    const figs = await Promise.all(charts.map(([file]) => getChart(file)));
 
-  Plotly.newPlot('currency-rate-chart', [{
-    x: currencyNames, y: currencyRates,
-    type: 'bar',
-    marker: { color: '#f4b5b5', line: { color: '#9b2c2c', width: 1 } },
-    hovertemplate: '%{x}<br>Rate: %{y:.3f}%<extra></extra>'
-  }], {
-    margin: { t: 10, r: 10, b: 80, l: 50 },
-    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
-    yaxis: { title: 'Laundering Rate (%)', gridcolor: '#e8e6df' },
-    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
-  }, plotConfig);
+    charts.forEach(([file, divId], i) => {
+      Plotly.newPlot(divId, figs[i].data, figs[i].layout, plotConfig);
+    });
 
-  Plotly.newPlot('payment-format-chart', {{ payment_format_chart | safe }}.data, {{ payment_format_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('amount-bucket-chart', {{ amount_bucket_chart | safe }}.data, {{ amount_bucket_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('laundering-rate-by-currency-chart', {{ laundering_rate_by_currency_chart | safe }}.data, {{ laundering_rate_by_currency_chart | safe }}.layout, plotConfig);
+    // populate country dropdown from first chart's traces
+    populateDropdown(figs[0]);
+
+    // apply country filter from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get('country');
+    if (country) {
+      document.getElementById('country-filter').value = country;
+      applyCountryFilter(country);
+    }
+  }
+
+  // ── COUNTRY FILTER ────────────────────────────────────────────────────────
+  function populateDropdown(fig) {
+    const select = document.getElementById('country-filter');
+    fig.data
+      .filter(t => t.name !== 'All Countries')
+      .forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.name;
+        opt.textContent = t.name;
+        select.appendChild(opt);
+      });
+  }
+
+  const chartIds = [
+    'hourly-chart', 'volume-chart', 'daily-rate-chart',
+    'domestic-vs-crossborder-chart', 'top-sender-countries-chart',
+    'top-receiver-countries-chart', 'top-corridors-chart',
+    'payment-format-chart', 'amount-bucket-chart',
+    'laundering-rate-by-currency-chart'
+  ];
+
+  function applyCountryFilter(selectedCountry) {
+    chartIds.forEach(divId => {
+      const traces = document.getElementById(divId).data;
+      if (!traces) return;
+      Plotly.restyle(divId, {
+        visible: traces.map(t =>
+          selectedCountry === 'all' ? t.name === 'All Countries' : t.name === selectedCountry
+        )
+      });
+    });
+  }
+
+  loadAllCharts()
 
   // ── RISK ASSESSMENT ───────────────────────────────────────────────────────
   async function assessRisk() {
