@@ -301,6 +301,16 @@ const COUNTRY_DATA = {
   // 276: { name: 'Germany', metrics: { '[Metric A]': '42', '[Metric B]': '18', '[Metric C]': '73%' }, delta: '+3%', status: 'green' },
 };
 
+const ISO_TO_DATANAME = {
+  36:'Australia',40:'Austria',56:'Belgium',76:'Brazil',124:'Canada',
+  156:'China',191:'Croatia',196:'Cyprus',233:'Estonia',246:'Finland',
+  250:'France',276:'Germany',300:'Greece',356:'India',372:'Ireland',
+  376:'Israel',380:'Italy',392:'Japan',428:'Latvia',440:'Lithuania',
+  442:'Luxembourg',470:'Malta',484:'Mexico',528:'Netherlands',620:'Portugal',
+  643:'Russia',682:'Saudi Arabia',703:'Slovakia',705:'Slovenia',724:'Spain',
+  756:'Switzerland',826:'UK',840:'USA'
+};
+
 // continent membership by numeric ISO code (world-atlas codes)
 // This maps every country to its continent.
 const COUNTRY_CONTINENT = {"10":"Antarctica","44":"North America","260":"Africa",
@@ -508,13 +518,20 @@ function onCountryHover(event, d) {
   const id = +d.id;
   const cdata = COUNTRY_DATA[id];
   const name = cdata ? cdata.name : continentCountryName(id);
+  const rate = COUNTRY_RATES[id];
 
   let html = `<h4>${name}</h4>`;
 
+  if (rate != null) {
+    html += `<div class="tip-row"><span class="tip-label">Laundering rate</span><span class="tip-val">${rate.toFixed(2)}%</span></div>`;
+  }
   if (cdata) {
     Object.entries(cdata.metrics).forEach(([k,v]) => {
       html += `<div class="tip-row"><span class="tip-label">${k}</span><span class="tip-val">${v}</span></div>`;
     });
+  } else {
+    html += `<div class="tip-row"><span class="tip-label">[Metric A]</span><span class="tip-val">[XX]</span></div>`;
+    html += `<div class="tip-row"><span class="tip-label">[Metric B]</span><span class="tip-val">[XX]</span></div>`;
   }
   html += `<div class="tip-hint">Click for country detail</div>`;
 
@@ -634,45 +651,62 @@ function resetZoom() {
 }
 
 // ── SIDEBAR RENDERERS ─────────────────────────────────────────────────────────
-function renderWorldView() {
+async function renderWorldView() {
   document.getElementById('sidebar-title').textContent = 'World overview';
-  document.getElementById('sidebar-sub').textContent   = 'Click a country to explore';
+  document.getElementById('sidebar-sub').textContent = 'Click a country to explore';
+  
   let html = '';
-  html += `<div class="kpi-grid" style="margin-top:16px">`;
-  const worldMetrics = [['[Global metric A]','[XX]'],['[Global metric B]','[XX]'],['[Global metric C]','[XX%]'],['[Global metric D]','[XX]']];
-  worldMetrics.forEach(([label, val]) => {
-    html += `<div class="kpi"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div></div>`;
-  });
-  html += `</div>`;
+  html += `<div class="section-label" style="margin-bottom:8px">Top Sender Countries</div>`;
+  html += `<div id="map-chart-senders" style="width:100%;height:200px;"></div>`;
+  html += `<div class="section-label" style="margin:14px 0 8px">Top Receiver Countries</div>`;
+  html += `<div id="map-chart-receivers" style="width:100%;height:200px;"></div>`;
+  
   document.getElementById('sidebar-body').innerHTML = html;
+
+  const [senders, receivers] = await Promise.all([
+    fetch('/api/charts/top-senders').then(r => r.json()),
+    fetch('/api/charts/top-receivers').then(r => r.json())
+  ]);
+
+  const cfg = { displayModeBar: false, responsive: true };
+  Plotly.newPlot('map-chart-senders', senders.data, senders.layout, cfg);
+  Plotly.newPlot('map-chart-receivers', receivers.data, receivers.layout, cfg);
 }
 
-function renderCountrySidebar(id, name) {
-  const d = COUNTRY_DATA[id];
+async function renderCountrySidebar(id, name) {
   document.getElementById('sidebar-title').textContent = name;
-  document.getElementById('sidebar-sub').textContent   = 'Country detail';
+  document.getElementById('sidebar-sub').textContent = 'Country detail';
 
-  let html = `<div class="kpi-grid">`;
-  const metrics = d ? d.metrics : {'[Metric A]':'[XX]','[Metric B]':'[XX]','[Metric C]':'[XX%]'};
-  Object.entries(metrics).forEach(([k,v]) => {
-    html += `<div class="kpi"><div class="kpi-label">${k}</div><div class="kpi-val">${v}</div></div>`;
-  });
-  html += `</div>`;
-
-  html += `<div class="section-label" style="margin:14px 0 10px">Detail</div>`;
-  const rows = [['[Field A]','[Value]'],['[Field B]','[Value]'],['[Field C]','[Value]'],['Status','<span class="badge badge-green">active</span>']];
-  rows.forEach(([label, val]) => {
-    html += `<div class="list-item"><span class="list-name">${label}</span><span class="list-val">${val}</span></div>`;
-  });
-
-    html += `<a href="/dashboard?country=${encodeURIComponent(name)}"
+  let html = '';
+  html += `<div id="map-chart-hourly" style="width:100%;height:200px;"></div>`;
+  html += `<div class="section-label" style="margin:14px 0 8px">Top Corridors</div>`;
+  html += `<div id="map-chart-corridors" style="width:100%;height:200px;"></div>`;
+  html += `<a href="/dashboard?country=${encodeURIComponent(ISO_TO_DATANAME[id] || name)}"
     style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
     border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
     text-decoration:none;transition:opacity .15s;"
     onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
     View in Dashboard →
   </a>`;
+
   document.getElementById('sidebar-body').innerHTML = html;
+
+  const dataName = ISO_TO_DATANAME[id];
+  if (!dataName) return; // country not in our dataset, stop here
+
+  const [hourly, corridors] = await Promise.all([
+    fetch('/api/charts/hourly').then(r => r.json()),
+    fetch('/api/charts/top-corridors').then(r => r.json())
+  ]);
+
+  const cfg = { displayModeBar: false, responsive: true };
+
+  Plotly.newPlot('map-chart-hourly',
+    hourly.data.map(t => ({...t, visible: t.name === dataName})),
+    hourly.layout, cfg);
+  Plotly.newPlot('map-chart-corridors',
+    corridors.data.map(t => ({...t, visible: t.name === dataName})),
+    corridors.layout, cfg);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
