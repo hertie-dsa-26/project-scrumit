@@ -30,6 +30,25 @@
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
     }
+
+    html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+      --green:    #6a9e7a;
+      --green-bg: #1a2420;
+      --accent-md:#4a3d7a;
+      --amber:    #b08a3a;
+      --amber-bg: #231d0e;
+      --red:      #b06070;
+      --red-bg:   #241618;
+    }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font-family: var(--sans); }
@@ -158,6 +177,13 @@
       .main { padding: 20px 16px 48px; }
     }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
 </head>
 <body>
 
