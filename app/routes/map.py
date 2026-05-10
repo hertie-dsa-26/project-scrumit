@@ -35,6 +35,6 @@ def top_receivers_chart():
 def hourly_chart():
     return send_from_directory(CHARTS_DIR, 'hourly_chart.json')
 
-@map_bp.route('/api/charts/top-corridors')
-def top_corridors_chart():
-    return send_from_directory(CHARTS_DIR, 'top_corridors_chart.json')
+@map_bp.route('/api/charts/domestic_vs_crossborder')
+def domestic_vs_crossborder_chart():
+    return send_from_directory(CHARTS_DIR, 'domestic_vs_crossborder_chart.json')

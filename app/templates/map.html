@@ -217,7 +217,7 @@
   <span id="bc-country" class="active" style="display:none"></span>
   <div id="view-toggle" style="display:flex;gap:6px;margin-left:16px;">
     <button class="toggle-btn active" onclick="setView('combined')">Rate</button>
-    <button class="toggle-btn" onclick="setView('corridors')">Corridors</button>
+    <button class="toggle-btn" onclick="setView('domestic_vs_crossborder')">Domestic vs Crossborder</button>
   </div>
   <div style="margin-left:auto;position:relative;">
     <input id="map-search" type="text" placeholder="Search country…" autocomplete="off"
@@ -244,8 +244,8 @@
       <button class="map-btn" onclick="resetZoom()" title="Reset" style="font-size:11px">⊙</button>
     </div>
     <div style="position:absolute;bottom:16px;right:16px;background:var(--surface);
-                border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;
-                font-size:11px;z-index:10;">
+                border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;
+                font-size:9px;z-index:10;">
       <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;
                   letter-spacing:.1em;color:var(--ink-3);margin-bottom:8px;">
         Laundering rate
@@ -363,10 +363,10 @@ async function setView(view) {
     btn.classList.toggle('active', btn.getAttribute('onclick') === `setView('${view}')`);
   });
 
-  if (view === 'corridors') {
-    const data = await fetch('/api/corridors').then(r => r.json());
-    allCorridors = data;
-    drawCorridors(data);
+  if (view === 'domestic_vs_crossborder') {
+    const data = await fetch('/api/domestic_vs_crossborder').then(r => r.json());
+    allDomestic_vs_crossborder = data;
+    drawDomestic_vs_crossborder(data);
     return;
   }
 
@@ -382,7 +382,7 @@ async function setView(view) {
     .style('fill', d => getLandColor(+d.id));
 }
 
-function drawCorridors(data) {
+function drawDomestic_vs_crossborder(data) {
   g.selectAll('.corridor').remove();
   d3.selectAll('.country-path').style('fill', 'var(--land)');
 
@@ -412,7 +412,7 @@ function drawCorridors(data) {
   });
 }
 
-function highlightCorridors(countryId) {
+function highlightDomestic_vs_crossborder(countryId) {
   g.selectAll('.corridor')
     .attr('stroke', function(d) {
       const match = d.s_iso === countryId || d.r_iso === countryId;
@@ -469,11 +469,11 @@ function drawMap(data) {
   .attr('class','sphere')
   .attr('d', pathGen)
   .on('click', () => {
-    if (currentView === 'corridors') {
+    if (currentView === 'domestic_vs_crossborder') {
       const top50 = new Set(
-        [...allCorridors].sort((a, b) => b.rate - a.rate).slice(0, 50).map(d => `${d.s_country}-${d.r_country}`)
+        [...allDomestic_vs_crossborder].sort((a, b) => b.rate - a.rate).slice(0, 50).map(d => `${d.s_country}-${d.r_country}`)
       );
-      g.selectAll('.corridor')
+      g.selectAll('.domestic_vs_crossborder')
         .attr('stroke', function(d) {
           const isTop = top50.has(`${d.s_country}-${d.r_country}`);
           const opacity = isTop ? 0.1 + (d.rate / maxRate) * 0.7 : 0.04;
@@ -554,8 +554,8 @@ function positionTooltip(event) {
 
 // ── CLICK ─────────────────────────────────────────────────────────────────────
 function onCountryClick(event, d) {
-  if (currentView === 'corridors') {
-    highlightCorridors(+d.id);
+  if (currentView === 'domestic_vs_crossborder') {
+    highlightDomestic_vs_crossborder(+d.id);
     return;
   }
   if (COUNTRY_RATES[+d.id] == null) return;
@@ -679,8 +679,8 @@ async function renderCountrySidebar(id, name) {
 
   let html = '';
   html += `<div id="map-chart-hourly" style="width:100%;height:200px;"></div>`;
-  html += `<div class="section-label" style="margin:14px 0 8px">Top Corridors</div>`;
-  html += `<div id="map-chart-corridors" style="width:100%;height:200px;"></div>`;
+  html += `<div class="section-label" style="margin:14px 0 8px">Domestic vs Crossborder</div>`;
+  html += `<div id="map-chart-domestic_vs_crossborder" style="width:100%;height:200px;"></div>`;
   html += `<a href="/dashboard?country=${encodeURIComponent(ISO_TO_DATANAME[id] || name)}"
     style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
     border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
@@ -694,9 +694,9 @@ async function renderCountrySidebar(id, name) {
   const dataName = ISO_TO_DATANAME[id];
   if (!dataName) return; // country not in our dataset, stop here
 
-  const [hourly, corridors] = await Promise.all([
+  const [hourly, domestic_vs_crossborder] = await Promise.all([
     fetch('/api/charts/hourly').then(r => r.json()),
-    fetch('/api/charts/top-corridors').then(r => r.json())
+    fetch('/api/charts/domestic_vs_crossborder').then(r => r.json())
   ]);
 
   const cfg = { displayModeBar: false, responsive: true };
@@ -704,9 +704,9 @@ async function renderCountrySidebar(id, name) {
   Plotly.newPlot('map-chart-hourly',
     hourly.data.map(t => ({...t, visible: t.name === dataName})),
     hourly.layout, cfg);
-  Plotly.newPlot('map-chart-corridors',
-    corridors.data.map(t => ({...t, visible: t.name === dataName})),
-    corridors.layout, cfg);
+  Plotly.newPlot('map-chart-domestic_vs_crossborder',
+    domestic_vs_crossborder.data.map(t => ({...t, visible: t.name === dataName})),
+    domestic_vs_crossborder.layout, cfg);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
