@@ -241,3 +241,17 @@ def plotly_top_receiver_countries(df: pd.DataFrame) -> str:
                          'yaxis': {**LAYOUT['yaxis'], 'title': ''}}
     fig.update_layout(**layout)
     return json.dumps(fig, cls=PlotlyJSONEncoder)
+
+
+def get_top_laundering_payment_format(df: pd.DataFrame) -> dict:
+    result = (
+        df[df["is_laundering"] == 1]
+        .groupby("payment_format")["is_laundering"]
+        .count()
+        .sort_values(ascending=False)
+    )
+    top_format = result.index[0]
+    top_count = int(result.iloc[0])
+    total = int(result.sum())
+    pct = round(top_count / total * 100, 1)
+    return {"format": top_format, "pct": pct}

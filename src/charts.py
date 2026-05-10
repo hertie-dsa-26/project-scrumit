@@ -459,7 +459,8 @@ def save_top_receiver_countries(df: pd.DataFrame, output_dir: str):
 def save_overview(df: pd.DataFrame, df_accounts: pd.DataFrame, df_clean: pd.DataFrame, output_dir: str):
     from src.cleaning_visualization import (
         get_top_laundering_countries, get_top_country_corridors,
-        get_bank_type_stats, get_entity_type_stats
+        get_bank_type_stats, get_entity_type_stats,
+        get_top_laundering_payment_format
     )
 
     top_accounts = (
@@ -470,6 +471,19 @@ def save_overview(df: pd.DataFrame, df_accounts: pd.DataFrame, df_clean: pd.Data
         [["entity_name", "country", "n_transactions", "laundering_rate"]]
         .to_dict("records")
     )
+    
+    countries = sorted(df_clean["s_country"].dropna().unique().tolist())
+    
+    # build per-country data
+    by_country = {}
+    for c in countries:
+        by_country[c] = {
+            "top_countries":      get_top_laundering_countries(df_clean, top_n=5, country=c),
+            "top_corridors":      get_top_country_corridors(df_clean, top_n=5, country=c),
+            "bank_stats":         get_bank_type_stats(df_clean, country=c),
+            "entity_stats":       get_entity_type_stats(df_clean, country=c),
+            "top_payment_format": get_top_laundering_payment_format(df_clean, country=c),
+        }
 
     overview = {
         "total_transactions": f"{len(df):,}",
@@ -480,6 +494,9 @@ def save_overview(df: pd.DataFrame, df_accounts: pd.DataFrame, df_clean: pd.Data
         "top_corridors":      get_top_country_corridors(df_clean, top_n=5),
         "bank_stats":         get_bank_type_stats(df_clean),
         "entity_stats":       get_entity_type_stats(df_clean),
+        "top_payment_format": get_top_laundering_payment_format(df_clean), 
+        "countries_list":     countries,
+        "by_country":         by_country,
     }
 
     with open(f"{output_dir}/overview.json", "w") as f:
