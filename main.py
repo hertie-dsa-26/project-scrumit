@@ -11,13 +11,13 @@ if __name__ == '__main__':
        trans_path="data/raw/HI-Small_Trans.csv",
        accounts_path="data/raw/HI-Small_accounts.csv",
        output_path="data/processed/aml_clean.csv",
-       geocode=False,
+       geocode=True,
        overwrite=False,
     )
 
     print("Building visualization dataframes...")
     df = pd.read_csv("data/processed/aml_clean.csv")
-    df_trans    = build_transactions_df(df, convert_eur=False)
+    df_trans    = build_transactions_df(df, convert_eur=True)
     df_accounts = build_accounts_df(df_trans)
     df_money    = build_money_df(df_trans)
 
