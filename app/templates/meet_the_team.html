@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meet the Team — scrumIt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    /* paste all the same CSS from index.html here, then add page-specific styles below */
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">scrumIt</span>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/map">Map</a>
+    <a href="/ml">ML</a>
+  </div>
+  <div style="width:120px"></div>
+</nav>
+
+<style>
+  .page-header { padding: 64px 0 48px; border-bottom: 1px solid var(--border, #e8e6df); margin-bottom: 48px; }
+  .eyebrow { font-family: monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #2a5f8f; margin-bottom: 16px; }
+  .page-header h1 { font-size: 46px; line-height: 1.08; margin-bottom: 16px; }
+  .page-header h1 i { color: #2a5f8f; }
+  .page-header p { font-size: 15px; color: #6b6b65; line-height: 1.75; max-width: 520px; font-weight: 300; }
+
+  /* GROUP PHOTO */
+  .group-photo-wrap { border: 1px solid #e8e6df; border-radius: 8px; overflow: hidden; margin-bottom: 10px; background: #f0ede6; }
+  .group-photo-wrap img { width: 100%; height: 340px; object-fit: cover; display: block; }
+  .photo-caption { font-family: monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #a8a8a0; margin-bottom: 48px; }
+
+  /* TEAM MEMBERS */
+  .team-label { font-family: monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #a8a8a0; margin-bottom: 8px; padding-bottom: 16px; border-top: 1px solid #e8e6df; padding-top: 32px; }
+  .member { display: flex; gap: 28px; align-items: flex-start; padding: 28px 0; border-bottom: 1px solid #e8e6df; }
+  .member:last-child { border-bottom: none; }
+  .member-photo { flex-shrink: 0; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid #e8e6df; }
+  .member-initials { flex-shrink: 0; width: 80px; height: 80px; border-radius: 50%; background: #edf3f9; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; color: #2a5f8f; border: 1px solid #e8e6df; }
+  .member-info { flex: 1; }
+  .member-name { font-size: 16px; font-weight: 500; margin: 0 0 3px; }
+  .member-role { font-family: monospace; font-size: 11px; letter-spacing: .05em; color: #6b6b65; margin: 0 0 12px; }
+  .member-bio { font-size: 13px; color: #6b6b65; line-height: 1.8; font-weight: 300; margin: 0; }
+  .back { display: inline-flex; font-family: monospace; font-size: 11px; color: #6b6b65; margin-bottom: 40px; }
+
+  @media (max-width: 600px) {
+    .page-header h1 { font-size: 32px; }
+    .member { flex-direction: column; gap: 16px; }
+    .group-photo-wrap img { height: 220px; }
+  }
+</style>
+
+<div class="page-header">
+  <p class="eyebrow">Meet the Team · scrumIt</p>
+  <h1>The people behind<br><i>the detection.</i></h1>
+  <p>A team of Hertie data science students who got tired of financial criminals having all the fun. Consider this our villain origin story — except we're the good guys. Probably.</p>
+</div>
+
+<a href="/" class="back">← Back to Home</a>
+
+<!-- GROUP PHOTO — replace src with your actual image path -->
+<div class="group-photo-wrap">
+  <img src="{{ url_for('static', filename='images/team_photo.jpg') }}" alt="The scrumIt team">
+</div>
+<p class="photo-caption">Hertie School of Governance — Berlin, 2025</p>
+
+<!-- TEAM MEMBERS -->
+<p class="team-label">The individuals</p>
+
+<!-- Repeat this block for each team member. 
+     For photo: use <img class="member-photo"> with the static path.
+     For no photo: use <div class="member-initials">AB</div> with initials. -->
+
+<div class="member">
+  <div class="member-initials">AB</div>
+  <div class="member-info">
+    <p class="member-name">Team Member Name</p>
+    <p class="member-role">Role · Hertie School</p>
+    <p class="member-bio">
+      Bio goes here. 3–5 sentences about this person's background, what they contributed to the project, and something human about them.
+    </p>
+  </div>
+</div>
+
+<div class="member">
+  <div class="member-initials">CD</div>
+  <div class="member-info">
+    <p class="member-name">Team Member Name</p>
+    <p class="member-role">Role · Hertie School</p>
+    <p class="member-bio">
+      Bio goes here. 3–5 sentences about this person's background, what they contributed to the project, and something human about them.
+    </p>
+  </div>
+</div>
+
+<footer>
+  <span>scrumIt</span>
+  <span>© 2025</span>
+</footer>
+
+</body>
+</html>
