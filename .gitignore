@@ -22,3 +22,8 @@ data/processed/*
 # Keep folder structure
 !data/raw/.gitkeep
 !data/processed/.gitkeepvenv/
+
+# .gitignore
+analysis/models/logs.log
+analysis/models/*.logvenv/
+logs.log
