@@ -32,15 +32,17 @@
     button { cursor: pointer; font-family: var(--sans); }
 
     /* TOPBAR */
-    nav {
-      position: sticky; top: 0; z-index: 100;
+     nav {
+      position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 52px;
+      padding: 0 40px; height: 56px;
       background: var(--surface); border-bottom: 1px solid var(--border);
     }
     .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .btn { padding: 7px 16px; border-radius: var(--r); font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--ink); transition: background .15s; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 13px; color: var(--ink-2); transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .btn { padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-family: var(--sans); border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s; }
     .btn:hover { background: var(--border); }
     .btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
     .btn-dark:hover { opacity: .85; background: var(--ink); }
@@ -63,16 +65,21 @@
     .map-area { position: relative; background: var(--ocean); overflow: hidden; }
     #map-svg { width: 100%; height: 100%; display: block; }
 
-    .country-path, .continent-path {
+    .country-path {
       stroke: var(--surface);
       stroke-width: 0.5;
       cursor: pointer;
       transition: fill .18s;
       fill: var(--land);
     }
-    .country-path:hover, .continent-path:hover { fill: var(--land-hover); }
-    .country-path.selected, .continent-path.selected { fill: var(--land-sel); stroke: var(--surface); stroke-width: 1; }
+    .country-path:hover { fill: var(--land-hover); }
+    .country-path.selected { fill: var(--land-sel); stroke: var(--surface); stroke-width: 1; }
     .country-path.dimmed { fill: #c8d8c0; opacity: .6; }
+    .country-path.no-data {
+      fill: #d0cfc9 !important;
+      cursor: default;
+      pointer-events: none;
+    }
 
     /* GRATICULE */
     .graticule { fill: none; stroke: #c8dff0; stroke-width: 0.3; }
@@ -152,6 +159,22 @@
       cursor: pointer; transition: background .15s; font-family: monospace;
     }
     .map-btn:hover { background: var(--bg); }
+    .toggle-btn {
+      padding: 4px 12px;
+      font-size: 12px;
+      font-family: var(--sans);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .toggle-btn.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
 
     /* LOADING */
     #loading {
@@ -178,21 +201,26 @@
 <body>
 
 <nav>
-  <a href="/" class="logo">AppName</a>
-  <div class="nav-right">
-    <a href="/dashboard"><button class="btn">Dashboard</button></a>
-    <a href="/"><button class="btn btn-dark">← Home</button></a>
+  <a href="/" class="logo">FRISK</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/map">Map</a>
+    <a href="/ml" class="active">ML</a>
   </div>
+  <div style="width:120px"></div>
 </nav>
 
 <div class="breadcrumb">
   <span id="bc-world" class="active" onclick="drillUp('world')">World</span>
-  <span class="sep" id="bc-sep1" style="display:none">›</span>
-  <span id="bc-continent" class="active" style="display:none" onclick="drillUp('continent')"></span>
   <span class="sep" id="bc-sep2" style="display:none">›</span>
   <span id="bc-country" class="active" style="display:none"></span>
+  <div id="view-toggle" style="display:flex;gap:6px;margin-left:16px;">
+    <button class="toggle-btn active" onclick="setView('combined')">Rate</button>
+    <button class="toggle-btn" onclick="setView('corridors')">Corridors</button>
+  </div>
   <div style="margin-left:auto;position:relative;">
-    <input id="map-search" type="text" placeholder="Search country or continent…" autocomplete="off"
+    <input id="map-search" type="text" placeholder="Search country…" autocomplete="off"
       style="width:230px;padding:5px 12px 5px 32px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--ink);font-family:var(--sans);outline:none;transition:border-color .15s;"
       oninput="onSearch(this.value)"
       onfocus="this.style.borderColor='var(--accent)'"
@@ -215,12 +243,36 @@
       <button class="map-btn" onclick="zoom(0.7)" title="Zoom out">−</button>
       <button class="map-btn" onclick="resetZoom()" title="Reset" style="font-size:11px">⊙</button>
     </div>
+    <div style="position:absolute;bottom:16px;right:16px;background:var(--surface);
+                border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;
+                font-size:11px;z-index:10;">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;
+                  letter-spacing:.1em;color:var(--ink-3);margin-bottom:8px;">
+        Laundering rate
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--ink-3)">Low</span>
+        <div style="width:100px;height:8px;border-radius:4px;
+                    background:linear-gradient(to right,rgb(255,190,160),rgb(195,30,10))"></div>
+        <span style="color:var(--ink-3)">High</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;
+                  font-family:var(--mono);color:var(--ink-3);">
+        <span>0%</span>
+        <span id="legend-max"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;
+                  border-top:1px solid var(--border);padding-top:8px;">
+        <div style="width:12px;height:12px;border-radius:2px;background:#d0cfc9;flex-shrink:0;"></div>
+        <span style="color:var(--ink-3)">No data</span>
+      </div>
+    </div>
   </div>
 
   <aside class="sidebar">
     <div class="sidebar-header">
       <h2 id="sidebar-title">World overview</h2>
-      <p id="sidebar-sub">Click a continent to drill down</p>
+      <p id="sidebar-sub">Click a country to explore</p>
     </div>
     <div class="sidebar-body" id="sidebar-body">
       <div class="empty-state">
@@ -228,7 +280,7 @@
           <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="1.5"/>
           <path d="M3 16h26M16 3a20 20 0 010 26M16 3a20 20 0 000 26" stroke="currentColor" stroke-width="1.5" fill="none"/>
         </svg>
-        <p>Hover over a region to preview data.<br>Click to drill down.</p>
+        <p>Hover over a country to preview data.<br>Click to explore.</p>
       </div>
     </div>
   </aside>
@@ -236,19 +288,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <script>
 // ── PLACEHOLDER DATA ─────────────────────────────────────────────────────────
 // Replace these objects with real data from your API / prediction_service
-
-const CONTINENT_DATA = {
-  'Africa':        { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '+[X]%', status: 'amber', items: ['[Country A]','[Country B]','[Country C]','[Country D]'] },
-  'Asia':          { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '+[X]%', status: 'green', items: ['[Country A]','[Country B]','[Country C]','[Country D]'] },
-  'Europe':        { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '−[X]%', status: 'green', items: ['[Country A]','[Country B]','[Country C]','[Country D]'] },
-  'North America': { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '+[X]%', status: 'green', items: ['[Country A]','[Country B]','[Country C]'] },
-  'South America': { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '−[X]%', status: 'amber', items: ['[Country A]','[Country B]','[Country C]'] },
-  'Oceania':       { metrics: { '[Metric A]': '[XX]', '[Metric B]': '[XX]', '[Metric C]': '[XX%]' }, delta: '+[X]%', status: 'green', items: ['[Country A]','[Country B]'] },
-  'Antarctica':    { metrics: { '[Metric A]': 'N/A',  '[Metric B]': 'N/A',  '[Metric C]': 'N/A'   }, delta: '—',     status: 'gray',  items: [] },
-};
 
 // Per-country data: keyed by numeric ISO country code (from world-atlas)
 // Add entries here as your dataset grows. Unmapped countries show generic placeholders.
@@ -258,8 +301,18 @@ const COUNTRY_DATA = {
   // 276: { name: 'Germany', metrics: { '[Metric A]': '42', '[Metric B]': '18', '[Metric C]': '73%' }, delta: '+3%', status: 'green' },
 };
 
+const ISO_TO_DATANAME = {
+  36:'Australia',40:'Austria',56:'Belgium',76:'Brazil',124:'Canada',
+  156:'China',191:'Croatia',196:'Cyprus',233:'Estonia',246:'Finland',
+  250:'France',276:'Germany',300:'Greece',356:'India',372:'Ireland',
+  376:'Israel',380:'Italy',392:'Japan',428:'Latvia',440:'Lithuania',
+  442:'Luxembourg',470:'Malta',484:'Mexico',528:'Netherlands',620:'Portugal',
+  643:'Russia',682:'Saudi Arabia',703:'Slovakia',705:'Slovenia',724:'Spain',
+  756:'Switzerland',826:'UK',840:'USA'
+};
+
 // continent membership by numeric ISO code (world-atlas codes)
-// This maps every country to its continent for the drill-down.
+// This maps every country to its continent.
 const COUNTRY_CONTINENT = {"10":"Antarctica","44":"North America","260":"Africa",
 "268":"Europe","276":"Europe","417":"Asia","499":"Europe",
 "512":"Asia","688":"Europe","704":"Asia","732":"Africa",
@@ -267,20 +320,115 @@ const COUNTRY_CONTINENT = {"10":"Antarctica","44":"North America","260":"Africa"
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentLevel = 'world';
-let selectedContinent = null;
+let currentView = 'combined';
+let selectedCountryId = null; 
 let projection, pathGen, svg, g, currentTransform = d3.zoomIdentity;
 let worldData = null;
 let zoomBehavior;
+const countryFeatures = {};
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 const mapEl = document.getElementById('map-svg');
 const tooltip = document.getElementById('tooltip');
+const COUNTRY_RATES = {};
+let maxRate = 0;
 
 async function init() {
-  const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+  const [data, ratesData] = await Promise.all([
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'),
+    fetch('/api/country-rates').then(r => r.json())
+  ]);
+
+  Object.assign(COUNTRY_RATES, ratesData);
+  maxRate = Math.max(...Object.values(COUNTRY_RATES));
+  document.getElementById('legend-max').textContent = maxRate.toFixed(2) + '%';
+
   worldData = data;
   document.getElementById('loading').style.display = 'none';
   drawMap(data);
+
+  const savedLevel = sessionStorage.getItem('map_level');
+  const savedCountryId = sessionStorage.getItem('map_country_id');
+  if (savedLevel === 'country' && savedCountryId) {
+    setTimeout(() => {
+      drillToCountry(+savedCountryId, countryFeatures[+savedCountryId]);
+    }, 300);
+  }
+}
+
+async function setView(view) {
+  currentView = view;
+
+  document.querySelectorAll('#view-toggle .toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick') === `setView('${view}')`);
+  });
+
+  if (view === 'corridors') {
+    const data = await fetch('/api/corridors').then(r => r.json());
+    allCorridors = data;
+    drawCorridors(data);
+    return;
+  }
+
+  g.selectAll('.corridor').remove();
+
+  const ratesData = await fetch('/api/country-rates').then(r => r.json());
+  Object.keys(COUNTRY_RATES).forEach(k => delete COUNTRY_RATES[k]);
+  Object.assign(COUNTRY_RATES, ratesData);
+  maxRate = Math.max(...Object.values(COUNTRY_RATES));
+  document.getElementById('legend-max').textContent = maxRate.toFixed(2) + '%';
+
+  d3.selectAll('.country-path')
+    .style('fill', d => getLandColor(+d.id));
+}
+
+function drawCorridors(data) {
+  g.selectAll('.corridor').remove();
+  d3.selectAll('.country-path').style('fill', 'var(--land)');
+
+  const top50 = new Set(
+    [...data].sort((a, b) => b.rate - a.rate).slice(0, 50).map(d => `${d.s_country}-${d.r_country}`)
+  );
+
+  data.forEach(d => {
+    const source = projection(d.from);
+    const target = projection(d.to);
+    if (!source || !target) return;
+
+    const mx = (source[0] + target[0]) / 2;
+    const my = (source[1] + target[1]) / 2 - 40;
+    const isTop = top50.has(`${d.s_country}-${d.r_country}`);
+    const opacity = isTop ? 0.1 + (d.rate / maxRate) * 0.7 : 0.04;
+
+    g.append('path')
+      .datum(d)
+      .attr('class', 'corridor')
+      .attr('d', `M${source[0]},${source[1]} Q${mx},${my} ${target[0]},${target[1]}`)
+      .attr('fill', 'none')
+      .attr('stroke', `rgba(155, 44, 44, ${opacity})`)
+      .attr('stroke-width', 0.8)
+      .attr('marker-end', 'url(#arrow)')
+      .style('pointer-events', 'none');
+  });
+}
+
+function highlightCorridors(countryId) {
+  g.selectAll('.corridor')
+    .attr('stroke', function(d) {
+      const match = d.s_iso === countryId || d.r_iso === countryId;
+      const opacity = match ? 0.1 + (d.rate / maxRate) * 0.7 : 0.04;
+      return `rgba(155, 44, 44, ${opacity})`;
+    });
+}
+
+function getLandColor(isoId) {
+  const rate = COUNTRY_RATES[isoId];
+  if (rate == null) return 'var(--land)';
+  const t = maxRate > 0 ? Math.pow(rate / maxRate, 0.6) : 0;
+  const r = Math.round(255 - t * 60);
+  const g = Math.round(190 - t * 160);
+  const b = Math.round(160 - t * 150);
+  return `rgb(${r},${g},${b})`;
 }
 
 function drawMap(data) {
@@ -288,8 +436,8 @@ function drawMap(data) {
   const H = mapEl.clientHeight || 500;
 
   projection = d3.geoNaturalEarth1()
-    .scale(W / 6.2)
-    .translate([W / 2, H / 2]);
+    .scale(W / 5.3)
+    .translate([W / 2, H / 1.7]);
 
   pathGen = d3.geoPath().projection(projection);
 
@@ -304,27 +452,56 @@ function drawMap(data) {
 
   g = svg.append('g');
 
-  g.append('path')
-    .datum({type:'Sphere'})
-    .attr('class','sphere')
-    .attr('d', pathGen);
+  svg.append('defs').append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 8)
+    .attr('refY', 0)
+    .attr('markerWidth', 4)
+    .attr('markerHeight', 4)
+    .attr('orient', 'auto')
+    .append('path')
+    .attr('d', 'M0,-5L10,0L0,5')
+    .attr('fill', 'rgba(155, 44, 44, 0.6)');
 
   g.append('path')
-    .datum(d3.geoGraticule()())
-    .attr('class','graticule')
-    .attr('d', pathGen);
-
+  .datum({type:'Sphere'})
+  .attr('class','sphere')
+  .attr('d', pathGen)
+  .on('click', () => {
+    if (currentView === 'corridors') {
+      const top50 = new Set(
+        [...allCorridors].sort((a, b) => b.rate - a.rate).slice(0, 50).map(d => `${d.s_country}-${d.r_country}`)
+      );
+      g.selectAll('.corridor')
+        .attr('stroke', function(d) {
+          const isTop = top50.has(`${d.s_country}-${d.r_country}`);
+          const opacity = isTop ? 0.1 + (d.rate / maxRate) * 0.7 : 0.04;
+          return `rgba(155, 44, 44, ${opacity})`;
+        });
+      return;
+    }
+    drillUp('world');
+  });
+  
   const countries = topojson.feature(data, data.objects.countries);
   const borders   = topojson.mesh(data, data.objects.countries, (a,b) => a !== b);
 
   g.selectAll('.country-path')
     .data(countries.features)
     .enter().append('path')
-    .attr('class','country-path')
+    .attr('class', d => COUNTRY_RATES[+d.id] == null ? 'country-path no-data' : 'country-path')
     .attr('d', pathGen)
+    .style('fill', d => getLandColor(+d.id))
     .on('mousemove', onCountryHover)
     .on('mouseleave', hideTooltip)
-    .on('click', onCountryClick);
+    .on('click', onCountryClick)
+
+  g.selectAll('.country-path')
+    .filter(d => +d.id === 10)
+    .style('display', 'none');
+
+  countries.features.forEach(f => { countryFeatures[+f.id] = f; });
 
   g.append('path')
     .datum(borders)
@@ -339,33 +516,24 @@ function drawMap(data) {
 // ── HOVER ─────────────────────────────────────────────────────────────────────
 function onCountryHover(event, d) {
   const id = +d.id;
-  const continent = COUNTRY_CONTINENT[id] || 'Unknown';
   const cdata = COUNTRY_DATA[id];
   const name = cdata ? cdata.name : continentCountryName(id);
+  const rate = COUNTRY_RATES[id];
 
   let html = `<h4>${name}</h4>`;
 
-  if (currentLevel === 'world') {
-    const cd = CONTINENT_DATA[continent];
-    html += `<div class="tip-row"><span class="tip-label">Continent</span><span class="tip-val">${continent}</span></div>`;
-    if (cd) {
-      Object.entries(cd.metrics).slice(0,2).forEach(([k,v]) => {
-        html += `<div class="tip-row"><span class="tip-label">${k}</span><span class="tip-val">${v}</span></div>`;
-      });
-    }
-    html += `<div class="tip-hint">Click to explore ${continent}</div>`;
-  } else if (currentLevel === 'continent') {
-    if (cdata) {
-      Object.entries(cdata.metrics).forEach(([k,v]) => {
-        html += `<div class="tip-row"><span class="tip-label">${k}</span><span class="tip-val">${v}</span></div>`;
-      });
-      html += `<div class="tip-hint">Click for country detail</div>`;
-    } else {
-      html += `<div class="tip-row"><span class="tip-label">[Metric A]</span><span class="tip-val">[XX]</span></div>`;
-      html += `<div class="tip-row"><span class="tip-label">[Metric B]</span><span class="tip-val">[XX]</span></div>`;
-      html += `<div class="tip-hint">Click for country detail</div>`;
-    }
+  if (rate != null) {
+    html += `<div class="tip-row"><span class="tip-label">Laundering rate</span><span class="tip-val">${rate.toFixed(2)}%</span></div>`;
   }
+  if (cdata) {
+    Object.entries(cdata.metrics).forEach(([k,v]) => {
+      html += `<div class="tip-row"><span class="tip-label">${k}</span><span class="tip-val">${v}</span></div>`;
+    });
+  } else {
+    html += `<div class="tip-row"><span class="tip-label">[Metric A]</span><span class="tip-val">[XX]</span></div>`;
+    html += `<div class="tip-row"><span class="tip-label">[Metric B]</span><span class="tip-val">[XX]</span></div>`;
+  }
+  html += `<div class="tip-hint">Click for country detail</div>`;
 
   tooltip.innerHTML = html;
   positionTooltip(event);
@@ -386,41 +554,50 @@ function positionTooltip(event) {
 
 // ── CLICK ─────────────────────────────────────────────────────────────────────
 function onCountryClick(event, d) {
+  if (currentView === 'corridors') {
+    highlightCorridors(+d.id);
+    return;
+  }
+  if (COUNTRY_RATES[+d.id] == null) return;
   const id = +d.id;
-  const continent = COUNTRY_CONTINENT[id] || 'Unknown';
-
-  if (currentLevel === 'world') {
-    drillToContinent(continent);
-  } else if (currentLevel === 'continent' && continent === selectedContinent) {
-    drillToCountry(id, continent);
+  if (id === selectedCountryId) {
+    drillUp('world');
+  } else {
+    drillToCountry(id, d);
   }
 }
 
-function drillToContinent(continent) {
-  selectedContinent = continent;
-  currentLevel = 'continent';
+// For countries with multiple polygons (e.g. islands or *colonies*), use the largest one for zooming
+function getMainlandFeature(feature) {
+  if (feature.geometry.type === 'Polygon') return feature;
+  
+  // For MultiPolygon, find the largest polygon by area
+  const polygons = feature.geometry.coordinates;
+  let largestIndex = 0;
+  let largestArea = 0;
+  
+  polygons.forEach((coords, i) => {
+    const area = d3.geoArea({ type: 'Polygon', coordinates: coords });
+    if (area > largestArea) {
+      largestArea = area;
+      largestIndex = i;
+    }
+  });
 
-  // Update paths
-  d3.selectAll('.country-path')
-    .classed('dimmed', d => COUNTRY_CONTINENT[+d.id] !== continent)
-    .classed('selected', false);
-
-  // Zoom to continent
-  zoomToContinent(continent);
-
-  // Breadcrumb
-  document.getElementById('bc-world').classList.remove('active');
-  document.getElementById('bc-sep1').style.display = '';
-  const bcC = document.getElementById('bc-continent');
-  bcC.style.display = ''; bcC.textContent = continent; bcC.classList.add('active');
-  document.getElementById('bc-country').style.display = 'none';
-  document.getElementById('bc-sep2').style.display = 'none';
-
-  renderContinentSidebar(continent);
+  return {
+    ...feature,
+    geometry: {
+      type: 'Polygon',
+      coordinates: polygons[largestIndex]
+    }
+  };
 }
 
-function drillToCountry(id, continent) {
+function drillToCountry(id, feature) {
+  selectedCountryId = id;
   currentLevel = 'country';
+  sessionStorage.setItem('map_country_id', id);
+  sessionStorage.setItem('map_level', 'country');
 
   d3.selectAll('.country-path')
     .classed('selected', d => +d.id === id);
@@ -428,34 +605,40 @@ function drillToCountry(id, continent) {
   const cdata = COUNTRY_DATA[id];
   const name  = cdata ? cdata.name : continentCountryName(id);
 
-  document.getElementById('bc-continent').classList.remove('active');
-  document.getElementById('bc-sep2').style.display = '';
   const bcCo = document.getElementById('bc-country');
   bcCo.style.display = ''; bcCo.textContent = name; bcCo.classList.add('active');
+
+  // Zoom to country
+  if (feature) {
+    const W = mapEl.clientWidth || 900;
+    const H = mapEl.clientHeight || 500;
+    const mainlandFeature = getMainlandFeature(feature);
+    const [[x0, y0], [x1, y1]] = pathGen.bounds(mainlandFeature);
+    const dx = x1 - x0, dy = y1 - y0;
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const scale = Math.max(0.5, Math.min(12, 0.5 / Math.max(dx / W, dy / H)));
+    const tx = W / 2 - scale * cx;
+    const ty = H / 2 - scale * cy;
+    svg.transition().duration(550).call(
+      zoomBehavior.transform,
+      d3.zoomIdentity.translate(tx, ty).scale(scale)
+    );
+  }
 
   renderCountrySidebar(id, name);
 }
 
 function drillUp(level) {
   if (level === 'world') {
-    currentLevel = 'world'; selectedContinent = null;
+    sessionStorage.removeItem('map_country_id');
+    sessionStorage.removeItem('map_level');  
+    currentLevel = 'world'; 
     d3.selectAll('.country-path').classed('dimmed', false).classed('selected', false);
     resetZoom();
     document.getElementById('bc-world').classList.add('active');
-    document.getElementById('bc-sep1').style.display = 'none';
-    document.getElementById('bc-continent').style.display = 'none';
     document.getElementById('bc-sep2').style.display = 'none';
     document.getElementById('bc-country').style.display = 'none';
     renderWorldView();
-  } else if (level === 'continent' && selectedContinent) {
-    currentLevel = 'continent';
-    d3.selectAll('.country-path')
-      .classed('selected', false)
-      .classed('dimmed', d => COUNTRY_CONTINENT[+d.id] !== selectedContinent);
-    document.getElementById('bc-sep2').style.display = 'none';
-    document.getElementById('bc-country').style.display = 'none';
-    document.getElementById('bc-continent').classList.add('active');
-    renderContinentSidebar(selectedContinent);
   }
 }
 
@@ -467,97 +650,63 @@ function resetZoom() {
   svg.transition().duration(400).call(zoomBehavior.transform, d3.zoomIdentity);
 }
 
-const CONTINENT_BOUNDS = {
-  'Africa':        [[-20,-37],[55,38]],
-  'Asia':          [[25,-10],[145,55]],
-  'Europe':        [[-25,34],[45,72]],
-  'North America': [[-170,7],[-50,72]],
-  'South America': [[-82,-56],[-34,13]],
-  'Oceania':       [[110,-50],[180,0]],
-  'Antarctica':    [[-180,-90],[180,-60]],
-};
-
-function zoomToContinent(continent) {
-  const bounds = CONTINENT_BOUNDS[continent];
-  if (!bounds) return;
-  const W = mapEl.clientWidth || 900;
-  const H = mapEl.clientHeight || 500;
-  const [p0, p1] = [projection(bounds[0]), projection(bounds[1])];
-  if (!p0 || !p1) return;
-  const dx = p1[0] - p0[0], dy = p1[1] - p0[1];
-  const cx = (p0[0] + p1[0]) / 2, cy = (p0[1] + p1[1]) / 2;
-  const scale = Math.max(0.5, Math.min(8, 0.8 / Math.max(dx/W, dy/H)));
-  const tx = W/2 - scale*cx, ty = H/2 - scale*cy;
-  svg.transition().duration(550).call(
-    zoomBehavior.transform,
-    d3.zoomIdentity.translate(tx,ty).scale(scale)
-  );
-}
-
 // ── SIDEBAR RENDERERS ─────────────────────────────────────────────────────────
-function renderWorldView() {
+async function renderWorldView() {
   document.getElementById('sidebar-title').textContent = 'World overview';
-  document.getElementById('sidebar-sub').textContent   = 'Click a continent to drill down';
-
-  const continents = Object.keys(CONTINENT_DATA).filter(c => c !== 'Antarctica');
-  let html = `<div class="section-label" style="margin-bottom:12px">Continents</div>`;
-  continents.forEach(c => {
-    const d = CONTINENT_DATA[c];
-    const badge = `<span class="badge badge-${d.status}">${d.delta}</span>`;
-    html += `<div class="list-item"><span class="list-name">${c}</span>${badge}</div>`;
-  });
-
-  html += `<div class="kpi-grid" style="margin-top:16px">`;
-  const worldMetrics = [['[Global metric A]','[XX]'],['[Global metric B]','[XX]'],['[Global metric C]','[XX%]'],['[Global metric D]','[XX]']];
-  worldMetrics.forEach(([label, val]) => {
-    html += `<div class="kpi"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div></div>`;
-  });
-  html += `</div>`;
-
+  document.getElementById('sidebar-sub').textContent = 'Click a country to explore';
+  
+  let html = '';
+  html += `<div class="section-label" style="margin-bottom:8px">Top Sender Countries</div>`;
+  html += `<div id="map-chart-senders" style="width:100%;height:200px;"></div>`;
+  html += `<div class="section-label" style="margin:14px 0 8px">Top Receiver Countries</div>`;
+  html += `<div id="map-chart-receivers" style="width:100%;height:200px;"></div>`;
+  
   document.getElementById('sidebar-body').innerHTML = html;
+
+  const [senders, receivers] = await Promise.all([
+    fetch('/api/charts/top-senders').then(r => r.json()),
+    fetch('/api/charts/top-receivers').then(r => r.json())
+  ]);
+
+  const cfg = { displayModeBar: false, responsive: true };
+  Plotly.newPlot('map-chart-senders', senders.data, senders.layout, cfg);
+  Plotly.newPlot('map-chart-receivers', receivers.data, receivers.layout, cfg);
 }
 
-function renderContinentSidebar(continent) {
-  const d = CONTINENT_DATA[continent] || {};
-  document.getElementById('sidebar-title').textContent = continent;
-  document.getElementById('sidebar-sub').textContent   = 'Click a country to drill down';
-
-  let html = `<div class="kpi-grid">`;
-  const metrics = d.metrics || {'[Metric A]':'[XX]','[Metric B]':'[XX]','[Metric C]':'[XX%]'};
-  Object.entries(metrics).forEach(([k,v]) => {
-    html += `<div class="kpi"><div class="kpi-label">${k}</div><div class="kpi-val">${v}</div><div class="kpi-delta delta-pos">${d.delta||'—'}</div></div>`;
-  });
-  html += `</div>`;
-
-  if (d.items && d.items.length) {
-    html += `<div class="section-label" style="margin:14px 0 10px">Top countries</div>`;
-    d.items.forEach((name, i) => {
-      html += `<div class="list-item"><span class="list-name">${name}</span><span class="list-val">[XX]</span></div>`;
-    });
-  }
-
-  document.getElementById('sidebar-body').innerHTML = html;
-}
-
-function renderCountrySidebar(id, name) {
-  const d = COUNTRY_DATA[id];
+async function renderCountrySidebar(id, name) {
   document.getElementById('sidebar-title').textContent = name;
-  document.getElementById('sidebar-sub').textContent   = selectedContinent + ' · country detail';
+  document.getElementById('sidebar-sub').textContent = 'Country detail';
 
-  let html = `<div class="kpi-grid">`;
-  const metrics = d ? d.metrics : {'[Metric A]':'[XX]','[Metric B]':'[XX]','[Metric C]':'[XX%]'};
-  Object.entries(metrics).forEach(([k,v]) => {
-    html += `<div class="kpi"><div class="kpi-label">${k}</div><div class="kpi-val">${v}</div></div>`;
-  });
-  html += `</div>`;
-
-  html += `<div class="section-label" style="margin:14px 0 10px">Detail</div>`;
-  const rows = [['[Field A]','[Value]'],['[Field B]','[Value]'],['[Field C]','[Value]'],['Status','<span class="badge badge-green">active</span>']];
-  rows.forEach(([label, val]) => {
-    html += `<div class="list-item"><span class="list-name">${label}</span><span class="list-val">${val}</span></div>`;
-  });
+  let html = '';
+  html += `<div id="map-chart-hourly" style="width:100%;height:200px;"></div>`;
+  html += `<div class="section-label" style="margin:14px 0 8px">Top Corridors</div>`;
+  html += `<div id="map-chart-corridors" style="width:100%;height:200px;"></div>`;
+  html += `<a href="/dashboard?country=${encodeURIComponent(ISO_TO_DATANAME[id] || name)}"
+    style="display:block;margin-top:16px;padding:9px 14px;background:var(--ink);color:#fff;
+    border-radius:var(--r);font-size:12px;text-align:center;font-family:var(--sans);
+    text-decoration:none;transition:opacity .15s;"
+    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+    View in Dashboard →
+  </a>`;
 
   document.getElementById('sidebar-body').innerHTML = html;
+
+  const dataName = ISO_TO_DATANAME[id];
+  if (!dataName) return; // country not in our dataset, stop here
+
+  const [hourly, corridors] = await Promise.all([
+    fetch('/api/charts/hourly').then(r => r.json()),
+    fetch('/api/charts/top-corridors').then(r => r.json())
+  ]);
+
+  const cfg = { displayModeBar: false, responsive: true };
+
+  Plotly.newPlot('map-chart-hourly',
+    hourly.data.map(t => ({...t, visible: t.name === dataName})),
+    hourly.layout, cfg);
+  Plotly.newPlot('map-chart-corridors',
+    corridors.data.map(t => ({...t, visible: t.name === dataName})),
+    corridors.layout, cfg);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -572,19 +721,12 @@ function continentCountryName(id) {
 }
 
 // ── SEARCH ────────────────────────────────────────────────────────────────────
-const CONTINENTS = ['Africa','Asia','Europe','North America','South America','Oceania','Antarctica'];
-
 function onSearch(query) {
   const dd = document.getElementById('search-dropdown');
   const q  = query.trim().toLowerCase();
   if (!q) { dd.style.display = 'none'; return; }
 
   const results = [];
-
-  CONTINENTS.forEach(c => {
-    if (c.toLowerCase().includes(q)) results.push({ label: c, type: 'continent', value: c });
-  });
-
   Object.entries(ISO_NAMES).forEach(([id, name]) => {
     if (name.toLowerCase().includes(q)) results.push({ label: name, type: 'country', id: +id });
   });
@@ -603,10 +745,8 @@ function onSearch(query) {
   }
 
   dd.innerHTML = top.map(r => {
-    const continent = r.type === 'country' ? (COUNTRY_CONTINENT[String(r.id)] || '') : '';
-    const tag = r.type === 'continent'
-      ? `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:var(--accent-lt);color:var(--accent);border-radius:3px;flex-shrink:0">continent</span>`
-      : `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:var(--border);color:var(--ink-2);border-radius:3px;flex-shrink:0">${continent}</span>`;
+    const continent = COUNTRY_CONTINENT[String(r.id)] || '';
+    const tag = `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:var(--border);color:var(--ink-2);border-radius:3px;flex-shrink:0">${continent}</span>`;
     const hi = r.label.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<strong>$1</strong>');
     return `<div onclick="selectResult(${JSON.stringify(r).replace(/"/g,'&quot;')})"
       style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;"
@@ -620,23 +760,10 @@ function onSearch(query) {
 function selectResult(r) {
   document.getElementById('map-search').value = r.label;
   document.getElementById('search-dropdown').style.display = 'none';
-
-  if (r.type === 'continent') {
-    drillUp('world');
-    setTimeout(() => drillToContinent(r.value), 100);
-  } else {
-    const continent = COUNTRY_CONTINENT[String(r.id)];
-    if (!continent) return;
-    if (currentLevel !== 'continent' || selectedContinent !== continent) {
-      drillUp('world');
-      setTimeout(() => {
-        drillToContinent(continent);
-        setTimeout(() => drillToCountry(r.id, continent), 600);
-      }, 100);
-    } else {
-      drillToCountry(r.id, continent);
-    }
-  }
+  drillUp('world');
+  setTimeout(() => {
+    drillToCountry(r.id, countryFeatures[r.id]);
+  }, 450);
 }
 
 document.addEventListener('click', e => {

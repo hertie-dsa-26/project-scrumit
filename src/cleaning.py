@@ -73,7 +73,7 @@ def _find_country(bank_name: str) -> str:
 
 
 def _city_to_country(df: pd.DataFrame, mapping: dict) -> pd.DataFrame:
-    """Replace city names with their country using mapping."""
+    """Replace city names with their country using *mapping*."""
     df = df.copy()
     df["Country"] = df["Country"].map(lambda x: mapping.get(x, x))
     return df
@@ -255,7 +255,7 @@ def _clean_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _prefix_accounts(df: pd.DataFrame, prefix: str, rename_to: str) -> pd.DataFrame:
-    """Add prefix to all column names and rename the account-number column."""
+    """Add *prefix* to all column names and rename the account-number column."""
     df = df.copy()
     df.columns = prefix + df.columns
     df = df.rename(columns={f"{prefix}account_number": rename_to})
@@ -272,17 +272,17 @@ def merge_datasets(trans: pd.DataFrame, accounts: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     trans : pd.DataFrame
-        Output of :func:⁠ clean_transactions ⁠ (after column normalisation).
+        Output of :func:`clean_transactions` (after column normalisation).
     accounts : pd.DataFrame
-        Output of :func:⁠ clean_accounts ⁠ (after column normalisation).
+        Output of :func:`clean_accounts` (after column normalisation).
 
     Returns
     -------
     pd.DataFrame
         Fully merged AML dataset.
     """
-    s_accounts = prefix_accounts(accounts, "s", "account")
-    r_accounts = prefix_accounts(accounts, "r", "account.1")
+    s_accounts = _prefix_accounts(accounts, "s_", "account")
+    r_accounts = _prefix_accounts(accounts, "r_", "account.1")
 
     aml = trans.merge(s_accounts, on="account", how="left")
     aml = aml.merge(r_accounts, on="account.1", how="left")
@@ -318,7 +318,7 @@ def clean_aml(
         Whether to call the Nominatim API to fetch lat/lon for each country.
         Set to False if you are offline or want a faster run.
     overwrite : bool
-        If False (default) and output_path already exists, the file is not
+        If False (default) and *output_path* already exists, the file is not
         overwritten and the existing file is loaded instead.
 
     Returns

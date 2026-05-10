@@ -1,4 +1,3 @@
-##visualisations.py will be used to create visualizations for the flask app program. 
 """
 aml_viz.py
 ----------
@@ -207,3 +206,89 @@ def build_money_df(df: pd.DataFrame) -> pd.DataFrame:
         n_countries     =("s_country",        "nunique"),
         n_cross_border  =("country_mismatch", "sum"),
     ).reset_index()
+
+#overview visualisations
+
+def get_top_laundering_countries(df: pd.DataFrame, top_n: int = 5, country: str = None) -> list[dict]:
+    if country:
+        df = df[df["s_country"] == country]
+    result = (
+        df.groupby("s_country")["is_laundering"]
+        .agg(total="sum", count="count")
+        .assign(rate=lambda x: (x["total"] / x["count"] * 100).round(2))
+        .sort_values("total", ascending=False)
+        .head(top_n)
+        .reset_index()
+    )
+    return result[["s_country", "total", "rate"]].to_dict(orient="records")
+
+
+def get_top_country_corridors(df: pd.DataFrame, top_n: int = 5, country: str = None) -> list[dict]:
+    if country:
+        df = df[df["s_country"] == country]
+    result = (
+        df.groupby(["s_country", "r_country"])["is_laundering"]
+        .agg(count="count", total="sum", rate="mean")
+        .reset_index()
+    )
+    result = (
+        result[result["count"] > 10]
+        .sort_values("rate", ascending=False)
+        .head(top_n)
+        .reset_index(drop=True)
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    return result[["s_country", "r_country", "count", "rate"]].to_dict(orient="records")
+
+
+def get_bank_type_stats(df: pd.DataFrame, country: str = None) -> list[dict]:
+    if country:
+        df = df[df["s_country"] == country]
+    result = (
+        df.groupby("s_bank_type")
+        .agg(
+            count=("is_laundering", "count"),
+            total=("is_laundering", "sum"),
+            rate=("is_laundering", "mean"),
+            avg_amount=("amount_paid", "mean"),
+        )
+        .reset_index()
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    result["avg_amount"] = result["avg_amount"].round(2)
+    return result.sort_values("rate", ascending=False).to_dict(orient="records")
+
+
+def get_entity_type_stats(df: pd.DataFrame, country: str = None) -> list[dict]:
+    if country:
+        df = df[df["s_country"] == country]
+    result = (
+        df.groupby("s_entity_type")
+        .agg(
+            count=("is_laundering", "count"),
+            total=("is_laundering", "sum"),
+            rate=("is_laundering", "mean"),
+            avg_amount=("amount_paid", "mean"),
+        )
+        .reset_index()
+    )
+    result["rate"] = (result["rate"] * 100).round(2)
+    result["avg_amount"] = result["avg_amount"].round(2)
+    return result.sort_values("rate", ascending=False).to_dict(orient="records")
+
+def get_top_laundering_payment_format(df: pd.DataFrame, country: str = None) -> dict:
+    if country:
+        df = df[df["s_country"] == country]
+    result = (
+        df[df["is_laundering"] == 1]
+        .groupby("payment_format")["is_laundering"]
+        .count()
+        .sort_values(ascending=False)
+    )
+    if result.empty:
+        return {"format": "N/A", "pct": 0}
+    top_format = result.index[0]
+    top_count = int(result.iloc[0])
+    total = int(result.sum())
+    pct = round(top_count / total * 100, 1)
+    return {"format": top_format, "pct": pct}
