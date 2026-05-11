@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
+    .content-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ink:      #181816;
@@ -66,7 +67,7 @@
 
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-family: var(--serif); font-size: 26px; letter-spacing: -.02em; margin-bottom: 4px; }
-    .page-header p { font-size: 13px; color: var(--ink-3); }
+    .page-header p { font-size: 13px; color: var(--ink-2); font-weight: 500; }
 
     /* ── TABS ── */
     .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
@@ -84,9 +85,9 @@
 
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
-    .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 10px; }
+    .kpi-label { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-2); margin-bottom: 10px;font-weight:600; }
     .kpi-value { font-family: var(--serif); font-size: 30px; letter-spacing: -.04em; line-height: 1; color: var(--ink); }
-    .kpi-delta { font-size: 11px; margin-top: 6px; color: var(--ink-3); }
+    .kpi-delta { font-size: 15px; margin-top: 6px; color: var(--ink-2); font-weight:500; }
     .delta-pos { color: var(--green); }
     .delta-neg { color: var(--red); }
 
@@ -95,23 +96,23 @@
 
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .card-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); }
+    .card-title { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink); font-weight: 600; }
 
-    .badge { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+    .badge { font-family: var(--mono); font-size: 14px; padding: 4px 9px; border-radius: 3px; font-weight: 600; }
     .badge-green { background: var(--green-bg); color: var(--green); }
     .badge-amber { background: var(--amber-bg); color: var(--amber); }
     .badge-gray  { background: var(--border);   color: var(--ink-2); }
     .badge-red   { background: var(--red-bg);   color: var(--red); }
     .badge-blue  { background: var(--accent-lt); color: var(--accent); }
 
-    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .list-item:last-child { border-bottom: none; }
     .list-item-name { color: var(--ink-2); flex: 1; padding-right: 8px; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
-    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
+    thead th { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-2); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
+    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--ink); font-size: 14px; }
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--bg); }
 
@@ -197,45 +198,43 @@
     </div>
 
     <!-- ╌╌ OVERVIEW ╌╌ -->
-    <div id="tab-overview" class="tab-panel active">
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Transactions</div>
-          <div class="kpi-value">{{ total_transactions }}</div>
-          <div class="kpi-delta">all time</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Cases</div>
-          <div class="kpi-value">{{ laundering_cases }}</div>
-          <div class="kpi-delta delta-neg">flagged</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Rate</div>
-          <div class="kpi-value">{{ laundering_rate }}</div>
-          <div class="kpi-delta delta-neg">of all transactions</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Model Accuracy</div>
-          <div class="kpi-value">97.6%</div>
-          <div class="kpi-delta delta-pos">Kaggle score</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">Quick Summary</span></div>
-        <div class="list-item"><span class="list-item-name">Total transactions analysed</span><span class="badge badge-blue">{{ total_transactions }}</span></div>
-        <div class="list-item"><span class="list-item-name">Confirmed laundering cases</span><span class="badge badge-red">{{ laundering_cases }}</span></div>
-        <div class="list-item"><span class="list-item-name">Laundering rate</span><span class="badge badge-amber">{{ laundering_rate }}</span></div>
-        <div class="list-item"><span class="list-item-name">Model type</span><span class="badge badge-gray">QDA</span></div>
-        <div class="list-item"><span class="list-item-name">Dataset</span><span class="badge badge-gray">HI-Small AML</span></div>
-      </div>
-      <!-- ── 4 SUMMARY TABLES ── -->
-      <div class="content-grid">
+    <div id="tab-overview" class="tab-panel active">  
+
+    <!-- Row 1: 3 columns — Quick Summary + Top Countries + Entity Risk -->
+      <div class="content-grid-3">
+
+       <div class="card">
+  <div class="card-header"><span class="card-title">Quick Summary</span></div>
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Transactions</div>
+      <div class="kpi-value" id="summary-total">—</div>
+      <div class="kpi-delta">all time</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Laundering Cases</div>
+      <div class="kpi-value delta-neg" id="summary-cases">—</div>
+      <div class="kpi-delta delta-neg">flagged</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Laundering Rate</div>
+      <div class="kpi-value delta-neg" id="summary-rate">—</div>
+      <div class="kpi-delta delta-neg">of all transactions</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Top Laundering Format</div>
+      <div class="kpi-value" id="summary-format" style="color:var(--amber)">—</div>
+      <div class="kpi-delta">highest rate</div>
+    </div>
+  </div>
+</div>
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Top Laundering Countries</span>
             <span class="badge badge-red">by volume</span>
           </div>
-          <table>
+          <table id="top-countries-table">
             <thead><tr><th>Country</th><th>Cases</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in top_countries %}
@@ -248,12 +247,37 @@
             </tbody>
           </table>
         </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Entity Type Risk</span>
+            <span class="badge badge-gray">by laundering rate</span>
+          </div>
+          <table id="entity-stats-table">
+            <thead><tr><th>Entity Type</th><th>Cases</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in entity_stats %}
+              <tr>
+                <td>{{ row.s_entity_type }}</td>
+                <td><span class="badge badge-red">{{ row.total }}</span></td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Row 2: 2 columns — Corridors + Bank Risk -->
+      <div class="content-grid">
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Top Country Corridors</span>
             <span class="badge badge-amber">by laundering rate</span>
           </div>
-          <table>
+          <table id="top-corridors-table">
             <thead><tr><th>From</th><th>To</th><th>Transactions</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in top_corridors %}
@@ -267,14 +291,14 @@
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="content-grid">
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Bank Type Risk</span>
             <span class="badge badge-gray">by laundering rate</span>
           </div>
-          <table>
+          
+          <table id="bank-stats-table">
             <thead><tr><th>Bank Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in bank_stats %}
@@ -288,54 +312,36 @@
             </tbody>
           </table>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Entity Type Risk</span>
-            <span class="badge badge-gray">by laundering rate</span>
-          </div>
-          <table>
-            <thead><tr><th>Entity Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
-            <tbody>
-              {% for row in entity_stats %}
-              <tr>
-                <td>{{ row.s_entity_type }}</td>
-                <td>{{ row.count }}</td>
-                <td><span class="badge badge-red">{{ row.total }}</span></td>
-                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+
       </div>
-    </div>
+    </div> <!-- end tab-overview -->
 
     <!-- ╌╌ TEMPORAL ╌╌ -->
     <div id="tab-temporal" class="tab-panel">
-      <div class="content-grid-wide" style="max-width:900px;margin:0 auto">
+<div class="content-grid-wide">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Laundering Rate by Hour of Day</span>
             <span class="badge badge-gray">All time</span>
           </div>
-         <div id="hourly-chart" style="height:240px"></div>
+         <div id="hourly-chart" style="height:350px"></div>
         </div>
       </div>
       <div class="content-grid">
         <div class="card">
           <div class="card-header"><span class="card-title">Transaction Volume by Day</span></div>
-          <div id="volume-chart" style="height:220px"></div>
+          <div id="volume-chart" style="height:280px"></div>
         </div>
         <div class="card">
           <div class="card-header"><span class="card-title">Laundering Rate by Day</span></div>
-          <div id="daily-rate-chart" style="height:220px"></div>
+          <div id="daily-rate-chart" style="height:280px"></div>
         </div>
       </div>
     </div>
 
     <!-- ╌╌ CURRENCY ╌╌ -->
-  <div id="tab-currency" class="tab-panel">
-    <div class="content-grid">
+<div id="tab-currency" class="tab-panel">
+    <div id="global-currency-charts" class="content-grid">
       <div class="card">
         <div class="card-header"><span class="card-title">Transactions by Currency</span></div>
         <div id="currency-volume-chart" style="height:260px"></div>
@@ -365,37 +371,37 @@
     </div>
   </div>
 
-    <!-- ╌╌ GEOGRAPHIC ╌╌ -->
-    <div id="tab-geographic" class="tab-panel">
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
-          </div>
-          <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Sender Countries by Laundering Rate</span>
-          </div>
-          <div id="top-sender-countries-chart" style="height:380px"></div>
-        </div>
+  <!-- ╌╌ GEOGRAPHIC ╌╌ -->
+<div id="tab-geographic" class="tab-panel">
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
       </div>
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Receiver Countries by Laundering Rate</span>
-          </div>
-          <div id="top-receiver-countries-chart" style="height:380px"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Country Corridors by Laundering Rate</span>
-          </div>
-          <div id="top-corridors-chart" style="height:380px"></div>
-        </div>
-      </div>
+      <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
     </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Country Corridors by Laundering Rate</span>
+      </div>
+      <div id="top-corridors-chart" style="height:380px"></div>
+    </div>
+  </div>
+  <div id="global-country-charts" class="content-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Sender Countries by Laundering Rate</span>
+      </div>
+      <div id="top-sender-countries-chart" style="height:380px"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Receiver Countries by Laundering Rate</span>
+      </div>
+      <div id="top-receiver-countries-chart" style="height:380px"></div>
+    </div>
+  </div>
+</div>
 
   </main>
 </div>
@@ -435,7 +441,7 @@
       ['domestic_vs_crossborder_chart.json',   'domestic-vs-crossborder-chart'],
       ['top_sender_countries_chart.json',      'top-sender-countries-chart'],
       ['top_receiver_countries_chart.json',    'top-receiver-countries-chart'],
-      ['top_corridors_chart.json',             'top-corridors-chart'],
+      ['top_corridors_chart.json', 'top-corridors-chart'],
       ['payment_format_chart.json',            'payment-format-chart'],
       ['amount_bucket_chart.json',             'amount-bucket-chart'],
       ['laundering_rate_by_currency_chart.json', 'laundering-rate-by-currency-chart'],
@@ -475,14 +481,87 @@
   }
 
   const chartIds = [
-    'hourly-chart', 'volume-chart', 'daily-rate-chart',
-    'domestic-vs-crossborder-chart', 'top-sender-countries-chart',
-    'top-receiver-countries-chart', 'top-corridors-chart',
-    'payment-format-chart', 'amount-bucket-chart',
-    'laundering-rate-by-currency-chart'
-  ];
+  'hourly-chart', 'volume-chart', 'daily-rate-chart',
+  'domestic-vs-crossborder-chart', 'top-corridors-chart',
+  'payment-format-chart', 'amount-bucket-chart',
+  'laundering-rate-by-currency-chart'
+];
 
-  function applyCountryFilter(selectedCountry) {
+    
+  const overviewData = {
+    top_countries:      {{ top_countries | tojson | safe }},
+    top_corridors:      {{ top_corridors | tojson | safe }},
+    bank_stats:         {{ bank_stats | tojson | safe }},
+    entity_stats:       {{ entity_stats | tojson | safe }},
+    top_payment_format: {{ top_payment_format | tojson | safe }},
+    by_country:         {{ by_country | tojson | safe }},
+    total_transactions: {{ total_transactions | tojson | safe }},
+    laundering_cases:   {{ laundering_cases | tojson | safe }},
+    laundering_rate:    {{ laundering_rate | tojson | safe }},
+  };
+  
+  document.getElementById('summary-total').textContent  = overviewData.total_transactions || '—';
+  document.getElementById('summary-cases').textContent  = overviewData.laundering_cases || '—';
+  document.getElementById('summary-rate').textContent   = overviewData.laundering_rate || '—';
+  document.getElementById('summary-format').textContent = 
+    (overviewData.top_payment_format?.format || overviewData.top_payment_format || '—') +
+    (overviewData.top_payment_format?.pct ? ` (${overviewData.top_payment_format.pct}%)` : '');
+
+    function renderOverviewTables(data) {
+    document.querySelector('#top-countries-table tbody').innerHTML =
+      data.top_countries.map(row => `
+        <tr>
+          <td>${row.s_country}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.querySelector('#top-corridors-table tbody').innerHTML =
+      data.top_corridors.map(row => `
+        <tr>
+          <td>${row.s_country}</td>
+          <td>${row.r_country}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+  document.querySelector('#bank-stats-table tbody').innerHTML =
+      data.bank_stats.map(row => `
+        <tr>
+          <td>${row.s_bank_type}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.querySelector('#entity-stats-table tbody').innerHTML =
+      data.entity_stats.map(row => `
+        <tr>
+          <td>${row.s_entity_type}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.getElementById('summary-format').textContent = 
+      (data.top_payment_format?.format || '—') + 
+      (data.top_payment_format?.pct ? ` (${data.top_payment_format.pct}%)` : '');
+
+  }      
+
+function renderGlobalCharts() {
+  const globalCharts = [
+    ['currency_volume_chart.json',          'currency-volume-chart'],
+    ['currency_laundering_rate_chart.json', 'currency-rate-chart'],
+    ['top_sender_countries_chart.json',     'top-sender-countries-chart'],
+    ['top_receiver_countries_chart.json',   'top-receiver-countries-chart'],
+  ];
+  globalCharts.forEach(([file, divId]) => {
+    getChart(file).then(fig => Plotly.react(divId, fig.data, fig.layout, plotConfig));
+  });
+}
+
+function applyCountryFilter(selectedCountry) {
     chartIds.forEach(divId => {
       const traces = document.getElementById(divId).data;
       if (!traces) return;
@@ -491,9 +570,31 @@
           selectedCountry === 'all' ? t.name === 'All Countries' : t.name === selectedCountry
         )
       });
-    });
+    }); 
+  
+    ['global-currency-charts', 'global-country-charts'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.visibility = selectedCountry === 'all' ? 'visible' : 'hidden';
+    el.style.height = selectedCountry === 'all' ? '' : '0';
+    el.style.overflow = selectedCountry === 'all' ? '' : 'hidden';
   }
+});
 
+    const data = selectedCountry === 'all'
+      ? overviewData
+      : overviewData.by_country[selectedCountry];
+    if (data) {
+      document.getElementById('summary-total').textContent  = data.total_transactions || '—';
+      document.getElementById('summary-cases').textContent  = data.laundering_cases || '—';
+      document.getElementById('summary-rate').textContent   = data.laundering_rate || '—';
+      document.getElementById('summary-format').textContent = 
+        (overviewData.top_payment_format?.format || '—') +
+        (overviewData.top_payment_format?.pct ? ` (${overviewData.top_payment_format.pct}%)` : '');
+      renderOverviewTables(data);
+    }
+  }
+      
   loadAllCharts()
 
   // ── RISK ASSESSMENT ───────────────────────────────────────────────────────
@@ -535,14 +636,14 @@
   }
 
   // ── MAP FILTER BANNER ─────────────────────────────────────────────────────
-  const params = new URLSearchParams(window.location.search);
-  const country = params.get('country');
-  const continent = params.get('continent');
-  const filterLabel = country || continent;
+  const mapParams = new URLSearchParams(window.location.search);
+  const mapCountry = mapParams.get('country');
+  const mapContinent = mapParams.get('continent');
+  const filterLabel = mapCountry || mapContinent;
   if (filterLabel) {
-    const param = country ? `country=${encodeURIComponent(country)}` : `continent=${encodeURIComponent(continent)}`;
+    const param = mapCountry ? `country=${encodeURIComponent(mapCountry)}` : `continent=${encodeURIComponent(mapContinent)}`;
     document.querySelector('a[href="/dashboard"]').href = `/dashboard?${param}`;
-    const isContinent = !!continent;
+    const isContinent = !!mapContinent;
     const banner = document.createElement('div');
     banner.style.cssText = `display:flex;justify-content:space-between;align-items:center;background:#edf3f9;border-bottom:1px solid #b5d4f4;padding:10px 32px;font-size:13px;color:#2a5f8f;`;
     banner.innerHTML = `<span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span><a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>`;
