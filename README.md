@@ -185,6 +185,55 @@ The analytical engine (`analysis/`) operates independently from the web interfac
 
 ------------------------------------------------------------------------
 
+## Machine Learning Model Files
+
+This section describes all files involved in implementing the QDA-based AML detection model:
+
+### Model Development & Training
+
+-   **`analysis/models/retrain_qda_artifact.py`** – Main model training script. Loads preprocessed data, applies SMOTE for class imbalance handling, trains the custom QDA model, and saves the trained model artifact for deployment.
+
+-   **`analysis/models/feature_importance.py`** – Computes permutation feature importance scores for the trained QDA model using recall as the evaluation metric. Helps identify which features most influence predictions.
+
+-   **`analysis/models/QDA_model.ipynb`** – Development notebook for the Quadratic Discriminant Analysis model. Contains model design, training process, and initial evaluation (main notebook for replication).
+
+-   **`analysis/models/QDA_recall_comparison.ipynb`** – Evaluation notebook comparing model performance across different threshold values and examining recall-precision tradeoffs.
+
+### Visualization & Analysis
+
+-   **`src/ml_run.py`** – Utilities for model inference and result formatting. Contains helpers for confidence score conversion, metric formatting, and prediction validation for API responses.
+
+
+### Model Architecture & Core Algorithm
+
+-   **`app/services/custom_qda.py`** – Custom implementation of the Quadratic Discriminant Analysis (QDA) classifier. Implements fit() for training and predict_proba() for generating probability estimates. Includes regularization parameter to improve numerical stability.
+
+-   **`src/utils.py`** – Shared utility functions including API response formatting, input validation, model loading/caching, and prediction logging. Critical for integrating the trained model into the Flask application.
+
+### Model Artifacts (Serialized Objects)
+
+-   **`analysis/models/custom_qda_model_for_flask.pkl`** – Trained QDA model serialized with joblib. Contains learned class priors, means, and covariance matrices. Loaded by the prediction service for inference.
+
+-   **`analysis/features/pycaret_preprocessing_pipeline.pkl`** – PyCaret preprocessing pipeline serialized with joblib. Handles feature scaling, encoding, and transformations. Applied to raw transaction features before model prediction.
+
+-   **`analysis/models/feature_importance_results.pkl`** – Pre-computed permutation feature importance scores cached for the frontend. Contains feature names, importance means, and standard deviations.
+
+### Application Layer (Flask Integration)
+
+-   **`app/services/prediction_service.py`** – MoneyLaunderingPredictor class that orchestrates the prediction pipeline. Loads the trained model and preprocessing artifacts, accepts raw transaction data, applies preprocessing, and returns probability scores for money laundering.
+
+-   **`app/services/feature_service.py`** – FeatureImportanceService class that loads and serves cached feature importance results. Provides top-N features ranked by importance for frontend visualization.
+
+-   **`app/services/imputation_service.py`** – FeatureImputationService class that handles missing transaction features using sensible defaults. Provides mode values for categorical features and median/mean values for numerical features from the training data.
+
+-   **`app/routes/ml.py`** – Flask blueprint defining the ML dashboard route. Serves the ml.html template at `/ml` endpoint.
+
+-   **`app/routes/api.py`** – Flask blueprint defining ML API endpoints: `/api/health` (service status), `/api/predict` (transaction scoring), `/api/feature-importance` (top features). Handles request validation and response formatting.
+
+-   **`app/templates/ml.html`** – Frontend template for the interactive ML dashboard. Contains UI for transaction input, prediction display, feature importance visualization, and model metadata. Communicates with backend via JavaScript/fetch API calls.
+
+------------------------------------------------------------------------
+
 # Acknowledgements
 
 -   IBM — For creating and releasing the synthetic AML transaction dataset
