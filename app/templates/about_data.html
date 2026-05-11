@@ -23,6 +23,18 @@
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
     }
+
+       html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+    }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
     a:hover { opacity: .7; }
@@ -70,11 +82,17 @@
       .metric-box { grid-template-columns: 1fr; }
     }
   </style>
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+  </script>
+
 </head>
 <body>
 
 <nav>
-  <span class="logo">ScrumIt AML</span>
+  <span class="logo">FRISK</span>
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/dashboard">Dashboard</a>
