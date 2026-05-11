@@ -223,6 +223,7 @@
       style="width:230px;padding:5px 12px 5px 32px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--ink);font-family:var(--sans);outline:none;transition:border-color .15s;"
       oninput="onSearch(this.value)"
       onfocus="this.style.borderColor='var(--accent)'"
+      onclick="this.select()"
       onblur="this.style.borderColor='var(--border)'">
     <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;opacity:.4;pointer-events:none" viewBox="0 0 16 16" fill="none">
       <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
@@ -804,6 +805,10 @@ document.getElementById('map-search').addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('search-dropdown').style.display = 'none';
     e.target.value = '';
+  }
+  if (e.key === 'Enter') {
+    const first = document.getElementById('search-dropdown').querySelector('div');
+    if (first) first.dispatchEvent(new MouseEvent('click'));
   }
 });
 

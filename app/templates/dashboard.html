@@ -197,8 +197,11 @@
         style="width:100%; padding-left:32px;"
         oninput="onCountrySearch(this.value)"
         onfocus="onCountrySearch(this.value)"
+        onclick="this.select()"
         onblur="setTimeout(() => document.getElementById('country-dropdown').style.display='none', 150)"
-      >
+        onkeydown="if(event.key==='Enter'){const first=document.getElementById('country-dropdown').querySelector('div');if(first)first.dispatchEvent(new MouseEvent('mousedown'));}">
+
+      
       <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;opacity:.4;pointer-events:none" viewBox="0 0 16 16" fill="none">
         <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
         <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -551,7 +554,13 @@
       dd.style.display = 'block';
       return;
     }
-
+    document.getElementById('country-search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const dd = document.getElementById('country-dropdown');
+      const first = dd.querySelector('div');
+      if (first) first.dispatchEvent(new MouseEvent('mousedown'));
+    }
+  });  
     const dataMatches = allCountries
       .filter(n => n.toLowerCase().includes(q))
       .map(n => ({ label: n, value: n, hasData: true }));
@@ -596,6 +605,10 @@
 
     hideNoDataMessage();
     applyCountryFilter(value);
+    setTimeout(() => {
+      document.getElementById('country-search').focus();
+      document.getElementById('country-search').select();
+    }, 50);
   }
 
   function showNoDataMessage(countryName) {
