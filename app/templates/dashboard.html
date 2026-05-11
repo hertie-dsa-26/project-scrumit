@@ -94,7 +94,7 @@
     .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .content-grid-wide { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; min-width: 0; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
     .card-title { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink); font-weight: 600; }
 
@@ -191,10 +191,32 @@
     </div>
 
     <!-- ── COUNTRY FILTER ── -->
-    <div style="margin-bottom: 20px; margin-top: 8px;">
-      <select id="country-filter" class="form-select" style="width: 200px;" onchange="applyCountryFilter(this.value)">
-        <option value="all">All Countries</option>
-      </select>
+    <div style="margin-bottom: 20px; margin-top: 8px; position: relative; width: 220px;">
+      <input id="country-search" type="text" placeholder="All Countries" autocomplete="off"
+        class="form-input"
+        style="width:100%; padding-left:32px;"
+        oninput="onCountrySearch(this.value)"
+        onfocus="onCountrySearch(this.value)"
+        onblur="setTimeout(() => document.getElementById('country-dropdown').style.display='none', 150)"
+      >
+      <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;opacity:.4;pointer-events:none" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div id="country-dropdown"
+        style="display:none;position:absolute;top:calc(100% + 4px);left:0;width:100%;
+              background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+              z-index:200;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);max-height:220px;overflow-y:auto;">
+      </div>
+    </div>
+
+    <div id="no-data-message" style="display:none; padding: 48px 0; text-align: center; color: var(--ink-3); font-size: 13px;">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width:32px;height:32px;margin:0 auto 10px;display:block;opacity:.35;color:var(--ink-3);">
+        <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M3 16h26M16 3a20 20 0 010 26M16 3a20 20 0 000 26" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <p>No data is currently available for <strong id="no-data-country" style="color:var(--ink-2);"></strong>.</p>
     </div>
 
     <!-- ╌╌ OVERVIEW ╌╌ -->
@@ -205,7 +227,7 @@
 
        <div class="card">
   <div class="card-header"><span class="card-title">Quick Summary</span></div>
-  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">
     <div class="kpi-card">
       <div class="kpi-label">Total Transactions</div>
       <div class="kpi-value" id="summary-total">—</div>
@@ -413,6 +435,17 @@
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(panelId).classList.add('active');
+
+    if (currentCountryIsClean && panelId !== 'tab-overview') {
+      showCleanMessage(panelId);
+    } else {
+      hideCleanMessage(panelId);
+      requestAnimationFrame(() => {
+        document.getElementById(panelId).querySelectorAll('.js-plotly-plot').forEach(el => {
+          Plotly.relayout(el, { autosize: true, width: undefined });
+        });
+      });
+    }
   }
 
   function setView(item) {
@@ -462,22 +495,148 @@
     const params = new URLSearchParams(window.location.search);
     const country = params.get('country');
     if (country) {
-      document.getElementById('country-filter').value = country;
-      applyCountryFilter(country);
+      const isKnown = allCountries.includes(country);
+      document.getElementById('country-search').value = country;
+      if (isKnown) {
+        applyCountryFilter(country);
+      } else {
+        showNoDataMessage(country);
+      }
     }
+    setTimeout(() => {
+      charts.forEach(([file, divId]) => Plotly.relayout(divId, {}));
+    }, 300);
   }
 
   // ── COUNTRY FILTER ────────────────────────────────────────────────────────
+  const WORLD_COUNTRIES = [
+    "Afghanistan","Albania","Algeria","Angola","Argentina","Armenia","Australia","Austria",
+    "Azerbaijan","Bangladesh","Belarus","Belgium","Benin","Bolivia","Bosnia and Herz.","Botswana",
+    "Brazil","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Central African Rep.",
+    "Chad","Chile","China","Colombia","Congo","Costa Rica","Croatia","Cuba","Cyprus","Czech Rep.",
+    "Dem. Rep. Congo","Denmark","Dominican Rep.","Ecuador","Egypt","El Salvador","Eritrea","Estonia",
+    "Ethiopia","Finland","France","Gabon","Germany","Ghana","Greece","Guatemala","Guinea","Haiti",
+    "Honduras","Hungary","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Japan",
+    "Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyzstan","Laos","Latvia","Libya","Lithuania",
+    "Luxembourg","Madagascar","Malawi","Malaysia","Mali","Malta","Mauritania","Mexico","Moldova",
+    "Mongolia","Morocco","Mozambique","Myanmar","Namibia","Nepal","Netherlands","New Zealand",
+    "Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Panama","Paraguay",
+    "Peru","Philippines","Poland","Portugal","Romania","Russia","Rwanda","Saudi Arabia","Senegal",
+    "Serbia","Sierra Leone","Slovakia","Slovenia","Somalia","South Africa","South Korea","South Sudan",
+    "Spain","Sri Lanka","Sudan","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania",
+    "Thailand","Togo","Tunisia","Turkey","Turkmenistan","Uganda","UK","Ukraine","United Arab Emirates",
+    "Uruguay","USA","Uzbekistan","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
+  ];
+
+  let allCountries = [];
+  let currentCountryIsClean = false;
+
   function populateDropdown(fig) {
-    const select = document.getElementById('country-filter');
-    fig.data
+    allCountries = fig.data
       .filter(t => t.name !== 'All Countries')
-      .forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t.name;
-        opt.textContent = t.name;
-        select.appendChild(opt);
-      });
+      .map(t => t.name)
+      .sort();
+  }
+
+  function onCountrySearch(query) {
+    const dd = document.getElementById('country-dropdown');
+    const q = query.trim().toLowerCase();
+
+    if (!q) {
+      const items = [
+        { label: 'All Countries', value: 'all', hasData: true },
+        ...allCountries.map(n => ({ label: n, value: n, hasData: true }))
+      ];
+      renderDropdown(items);
+      dd.style.display = 'block';
+      return;
+    }
+
+    const dataMatches = allCountries
+      .filter(n => n.toLowerCase().includes(q))
+      .map(n => ({ label: n, value: n, hasData: true }));
+
+    const noDataMatches = WORLD_COUNTRIES
+      .filter(n => !allCountries.includes(n) && n.toLowerCase().includes(q))
+      .map(n => ({ label: n, value: n, hasData: false }));
+
+    const items = [...dataMatches, ...noDataMatches];
+
+    if (!items.length) {
+      dd.innerHTML = `<div style="padding:10px 14px;font-size:12px;color:var(--ink-3)">No results</div>`;
+      dd.style.display = 'block';
+      return;
+    }
+
+    renderDropdown(items);
+    dd.style.display = 'block';
+  }
+
+  function renderDropdown(items) {
+    const dd = document.getElementById('country-dropdown');
+    dd.innerHTML = items.map(item => `
+      <div onmousedown="selectCountry('${item.value.replace(/'/g,"\\'")}', '${item.label.replace(/'/g,"\\'")}', ${item.hasData})"
+        style="padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);
+              transition:background .12s;color:${item.hasData ? 'var(--ink)' : 'var(--ink-3)'};"
+        onmouseover="this.style.background='var(--bg)'"
+        onmouseout="this.style.background=''">
+        <span>${item.label}</span>${!item.hasData ? ' <span style="font-family:var(--mono);font-size:9px;color:var(--ink-3)">(no data)</span>' : ''}
+      </div>
+    `).join('');
+  }
+
+  function selectCountry(value, label, hasData) {
+    document.getElementById('country-search').value = label === 'All Countries' ? '' : label;
+    document.getElementById('country-dropdown').style.display = 'none';
+
+    if (!hasData) {
+      showNoDataMessage(label);
+      return;
+    }
+
+    hideNoDataMessage();
+    applyCountryFilter(value);
+  }
+
+  function showNoDataMessage(countryName) {
+    document.getElementById('no-data-country').textContent = countryName;
+    document.getElementById('no-data-message').style.display = 'block';
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('.tabs').style.display = 'none';
+  }
+
+  function hideNoDataMessage() {
+    document.querySelectorAll('.tab-panel').forEach(p => hideCleanMessage(p.id));
+    document.getElementById('no-data-message').style.display = 'none';
+    document.querySelector('.tabs').style.display = '';
+    // restore the first tab as active if none are
+    const anyActive = document.querySelector('.tab-panel.active');
+    if (!anyActive) {
+      document.querySelector('.tab-panel').classList.add('active');
+      document.querySelector('.tab').classList.add('active');
+    }
+  }
+
+  function showCleanMessage(panelId) {
+    const panel = document.getElementById(panelId);
+    if (!panel.querySelector('.clean-message')) {
+      const msg = document.createElement('div');
+      msg.className = 'clean-message';
+      msg.style.cssText = 'padding:48px 0;text-align:center;color:var(--ink-3);font-size:13px;';
+      msg.innerHTML = `
+        <div style="font-size:28px;margin-bottom:10px;opacity:.3;">✓</div>
+        <p><strong id="clean-country-name" style="color:var(--ink-2)"></strong> has a clean record — no laundering cases registered here.</p>`;
+      panel.prepend(msg);
+    }
+    panel.querySelector('#clean-country-name').textContent = document.getElementById('country-search').value;
+    panel.querySelectorAll('.js-plotly-plot, .card').forEach(el => el.style.display = 'none');
+  }
+
+  function hideCleanMessage(panelId) {
+    const panel = document.getElementById(panelId);
+    const msg = panel.querySelector('.clean-message');
+    if (msg) msg.remove();
+    panel.querySelectorAll('.js-plotly-plot, .card').forEach(el => el.style.display = '');
   }
 
   const chartIds = [
@@ -562,15 +721,24 @@ function renderGlobalCharts() {
 }
 
 function applyCountryFilter(selectedCountry) {
-    chartIds.forEach(divId => {
-      const traces = document.getElementById(divId).data;
-      if (!traces) return;
-      Plotly.restyle(divId, {
-        visible: traces.map(t =>
-          selectedCountry === 'all' ? t.name === 'All Countries' : t.name === selectedCountry
-        )
-      });
-    }); 
+  // detect zero-laundering countries
+  if (selectedCountry !== 'all' && overviewData.by_country[selectedCountry]) {
+    const cases = overviewData.by_country[selectedCountry].laundering_cases;
+    currentCountryIsClean = (cases === '0' || cases === 0);
+  } else {
+    currentCountryIsClean = false;
+  }
+
+  // rest of  dirty countries
+  chartIds.forEach(divId => {
+    const traces = document.getElementById(divId).data;
+    if (!traces) return;
+    Plotly.restyle(divId, {
+      visible: traces.map(t =>
+        selectedCountry === 'all' ? t.name === 'All Countries' : t.name === selectedCountry
+      )
+    });
+  }); 
   
     ['global-currency-charts', 'global-country-charts'].forEach(id => {
   const el = document.getElementById(id);
