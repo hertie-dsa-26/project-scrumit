@@ -14,3 +14,11 @@ def dashboard():
     with open(root / 'app/static/charts/overview.json') as f:
         overview = json.load(f)
     return render_template('dashboard.html', **overview)
+
+@dashboard_bp.route('/meet-the-team')
+def meet_the_team():
+    return render_template('meet_the_team.html')
+
+@dashboard_bp.route('/about-data')
+def about_data():
+    return render_template('about_data.html')

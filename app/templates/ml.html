@@ -26,6 +26,25 @@
       --ok:       #3a7d44;
       --ok-lt:    #edf7ef;
     }
+
+    html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+      --green:    #6a9e7a;
+      --green-bg: #1a2420;
+      --accent-md:#4a3d7a;
+      --amber:    #b08a3a;
+      --amber-bg: #231d0e;
+      --red:      #b06070;
+      --red-bg:   #241618;
+    }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font-family: var(--sans); }
@@ -136,6 +155,13 @@
       .mismatch-badge { font-size: 12px; }
     }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
 </head>
 <body>
 
@@ -484,6 +510,12 @@
 
 
       </div>
+      <!-- TOP 3 FEATURE CALLOUTS -->
+      <div style="margin-top:24px" id="top-features-section">
+        <div class="section-title" style="margin-bottom:12px">Top 3 influencing features</div>
+        <div id="top-features-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+
     </div>
   </div>
 
@@ -556,6 +588,33 @@ async function loadModelInfo() {
   }
 }
 
+// Human-readable feature descriptions
+const LIGHT_FEATURE_DESCRIPTIONS = {
+  'Currency mismatch': 'The payment and receiving currencies differ. Cross-currency transactions are a known laundering signal — criminals use currency conversion to obscure the origin of funds.',
+  'Amount paid': 'The value of the outgoing transaction. Unusually large or round-number amounts are associated with structuring, a common money laundering technique.',
+  'Sending country': 'The country where the transaction originates. Transactions from high-risk or sanctioned jurisdictions are flagged as elevated risk.',
+  'Payment format': 'The method used to transfer funds (e.g. wire, cheque, crypto). Certain formats — particularly wire transfers — are disproportionately associated with laundering.',
+  'Receiving bank type': 'The category of the receiving institution (commercial, investment, etc.). Shell companies and offshore banks are common laundering endpoints.',
+  'Transaction hour': 'The time of day the transaction was made. Transactions outside normal business hours are statistically more likely to be suspicious.',
+  'Receiving country': 'The destination country of the funds. Offshore financial centres and sanctioned countries are key risk indicators.',
+  'Amount received': 'The value of the incoming transaction. A large discrepancy between amount paid and received can indicate layering.',
+  'Sending bank type': 'The category of the originating institution. Certain bank types are more frequently involved in suspicious activity.',
+  'Amount ratio': 'The ratio of received to paid amounts. A significant ratio discrepancy across currencies may indicate value manipulation.'
+};
+
+const DARK_FEATURE_DESCRIPTIONS = {
+  'Currency mismatch': 'Tip: Stick to the same currency on both sides — no conversions. Your transaction got flagged because the payment and receiving currencies didn not match. Banks hate cross-currency moves, they see it as classic layering to hide where the money really came from.',
+  'Amount paid': 'Tip: Stop using big round numbers. Break it up into smaller, random-looking amounts. The algo flagged you because the outgoing amount was too large or suspiciously round — that is a textbook structuring red flag.',
+  'Sending country': 'Tip: Route it through a boring, low-risk country with a clean reputation. It got flagged because the money came from a high-risk or sanctioned jurisdiction — those places light up every monitoring system.',
+  'Payment format': 'Tip: Use normal everyday methods like regular bank transfers or ACH instead of wires. The system flagged your payment format — wires and certain methods scream laundering to the banks.',
+  'Receiving bank type': 'Tip: Send it to a normal, big commercial bank, nothing fancy. You got flagged because the receiving bank was an investment type, offshore, or shell-friendly institution — exactly where they expect dirty money to land.',
+  'Transaction hour': 'Tip: Only move money during normal business hours in that timezone. It triggered because the transaction happened outside regular hours — that is when they assume shady shit goes down.',
+  'Receiving country': 'Tip: Keep the destination in safe, mainstream countries. The flag came from the receiving country being an offshore centre or high-risk jurisdiction — those are automatic watchlist magnets.',
+  'Amount received': 'Tip: Make sure what lands on the other side is almost exactly what you sent (minus normal fees). You got hit because there was a noticeable gap between amount paid and amount received — they call that layering.',
+  'Sending bank type': 'Tip: Always send from a well-known regular commercial bank. The algo flagged the sending bank type — some institutions are known for higher suspicious activity, so they watch them harder.',
+  'Amount ratio': 'Tip: Keep the received vs paid ratio clean and close to 1:1 after any conversion. It flagged because the ratio looked manipulated — big differences across currencies scream value tweaking.'
+}
+
 async function loadFeatureImportance() {
   try {
     const res = await fetch('/api/feature-importance');
@@ -584,10 +643,54 @@ async function loadFeatureImportance() {
         `;
         tbody.appendChild(row);
       });
+
+      // Store features globally for use after prediction
+      window._featureImportance = features;
     }
   } catch (err) {
     console.error('Error loading feature importance:', err);
   }
+}
+
+function renderTopFeatures(riskPercent) {
+  const features = window._featureImportance || {};
+  const top3 = Object.entries(features)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const container = document.getElementById('top-features-list');
+  container.innerHTML = '';
+
+  const riskColor = riskPercent >= 50 ? '#c2553a' : '#3a7d44';
+  const riskBg = riskPercent >= 50 ? '#fdf0ed' : '#edf7ef';
+  const riskBorder = riskPercent >= 50 ? '#ecc9c0' : '#c4e0c8';
+  const isDark = document.documentElement.classList.contains('dark');
+
+  top3.forEach(([feature, importance], i) => {
+    const lightDesc = LIGHT_FEATURE_DESCRIPTIONS[feature] || 
+      'This feature contributed significantly to the model\'s prediction.';
+    
+    const darkDesc = DARK_FEATURE_DESCRIPTIONS[feature] || 
+      'This feature got you flagged. Major red flag for laundering detection.';
+
+    const activeDescription = isDark ? darkDesc : lightDesc;
+
+    const div = document.createElement('div');
+    div.style.cssText = `background:${riskBg};border:1px solid ${riskBorder};border-radius:6px;padding:16px 20px;`;
+
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-family:var(--mono);font-size:10px;background:${riskColor};color:#fff;padding:2px 8px;border-radius:3px;">#${i + 1}</span>
+        <span style="font-size:14px;font-weight:500;color:var(--ink);">${feature}</span>
+        <span style="font-family:var(--mono);font-size:11px;color:${riskColor};margin-left:auto;">${importance.toFixed(1)}% weight</span>
+      </div>
+      <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin:0;font-weight:300;">
+        ${activeDescription}
+      </p>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
 function checkCurrencyMismatch() {
@@ -694,6 +797,7 @@ async function runPrediction() {
     document.getElementById('out-conf').textContent = confidencePercent.toFixed(1) + '%';
     document.getElementById('qda-prob-label').textContent = riskPercent.toFixed(1) + '%';
     document.getElementById('qda-prob-bar').style.width = riskPercent.toFixed(1) + '%';
+    renderTopFeatures(riskPercent);
 
     // Show imputation info if fields were imputed
     const imputedFields = data.imputed_fields || [];
