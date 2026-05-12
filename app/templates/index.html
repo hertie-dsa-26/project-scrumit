@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AppName — Tagline</title>
+  <title>FRISK — Financial Risk Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <style>
@@ -24,6 +24,59 @@
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
     }
+
+    html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+      --green:    #6a9e7a;
+      --green-bg: #1a2420;
+      --accent-md:#4a3d7a;
+      --amber:    #b08a3a;
+      --amber-bg: #231d0e;
+      --red:      #b06070;
+      --red-bg:   #241618;
+    }
+
+    html.dark .btn-dark {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+    html.dark .btn-dark:hover {
+      opacity: .85;
+      background: var(--accent);
+    }
+
+    html:not(.dark) .dark-only { display: none; }
+    html.dark .light-only { display: none; }
+
+    /* THEME SWITCH */
+    .theme-switch {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      cursor: pointer; user-select: none;
+    }
+    .switch-track {
+      position: relative; width: 36px; height: 20px;
+      background: var(--border); border-radius: 10px;
+      transition: background .2s;
+    }
+    html.dark .switch-track { background: var(--accent); }
+    .switch-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      background: var(--surface); border-radius: 50%;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    html.dark .switch-thumb { transform: translateX(16px); }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
 
@@ -52,7 +105,7 @@
     .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
     h1 { font-family: var(--serif); font-size: 50px; line-height: 1.06; letter-spacing: -.02em; margin-bottom: 22px; }
     h1 i { color: var(--accent); }
-    .hero p { font-size: 15px; color: var(--ink-2); line-height: 1.75; max-width: 420px; margin-bottom: 34px; font-weight: 300; }
+    .hero p { font-size: 15px; color: var(--ink); line-height: 1.75; max-width: 420px; margin-bottom: 34px; font-weight: 400; }
     .actions { display: flex; gap: 10px; }
 
     /* PREVIEW CARD */
@@ -75,9 +128,9 @@
     .features { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); padding: 48px 40px 72px; }
     .feature { padding-right: 40px; }
     .feature + .feature { padding-left: 40px; border-left: 1px solid var(--border); }
-    .feat-num { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-bottom: 12px; }
+    .feat-num { font-family: var(--mono); font-size: 12px; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
     .feature h3 { font-family: var(--serif); font-size: 18px; margin-bottom: 8px; }
-    .feature p  { font-size: 13px; color: var(--ink-2); line-height: 1.7; font-weight: 300; }
+    .feature p  { font-size: 14px; color: var(--ink); line-height: 1.7; font-weight: 400; }
 
     /* FOOTER */
     footer { border-top: 1px solid var(--border); padding: 18px 40px; display: flex; justify-content: space-between; }
@@ -93,94 +146,153 @@
       footer { padding: 16px 20px; }
     }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>  
 </head>
+
 <body>
 
-<nav>
-  <span class="logo">AppName</span>
-  <div class="nav-links">
-    <a href="/">Home</a>
-    <a href="/dashboard">Dashboard</a>
-    <a href="/map">Map</a>
-    <a href="/ml" class="active">ML</a>
-  </div>
-  <div style="width:120px"></div>
-</nav>
-
-<section class="hero">
-  <div>
-    <p class="eyebrow">Compliance Analytics · Smarter money laundering detection</p>
-    <h1>Smarter AML detection<br>built for <i>your bank.</i></h1>
-    <p>An interactive platform that helps compliance teams explore transaction data, uncover hidden laundering patterns, and predict suspicious activity — all in one place.</p>
-    <div class="actions">
-      <a href="/dashboard"><button class="btn btn-dark">Go to Dashboard →</button></a>
+  <nav>
+    <span class="logo">FRISK</span>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/map">Map</a>
+      <a href="/ml" class="active">ML</a>
     </div>
-  </div>
+    <label class="theme-switch" onclick="toggleTheme()">
+      <span class="light-only">Light</span>
+      <span class="dark-only">Dark</span>
+      <div class="switch-track">
+        <div class="switch-thumb"></div>
+      </div>
+    </label>
+  </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">
+        <span class="light-only">Compliance Analytics · Smarter money laundering detection</span>
+        <span class="dark-only">Shadow Intelligence · No trace left behind</span>
+      </p>
+      <h1>
+        <span class="light-only">Smarter AML detection<br>built for <i>your bank.</i></span>
+        <span class="dark-only">Stay one step<br>ahead of <i>everyone.</i></span>
+      </h1>
+      <p>
+        <span class="light-only">An interactive platform that helps compliance teams explore transaction data, uncover hidden laundering patterns, and predict suspicious activity — all in one place.</span>
+        <span class="dark-only">Work smarter, not harder. The compliance team is watching, but now, so are you.</span>
+      </p>
+      <div class="actions">
+        <a href="/dashboard"><button class="btn btn-dark">Go to Dashboard →</button></a>
+      </div>
+    </div>
 
-<a href="/map" id="map-preview-link" 
-   style="display:block;max-width:700px;margin:40px auto;margin-left:-50px;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:box-shadow .2s;"
-   onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'"
-   onmouseout="this.style.boxShadow='none'">
-  <svg id="preview-map" style="width:400px;height:300px;display:block;background:#eaf3fb;"></svg>
-  <div style="text-align:center;padding:10px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink);background:var(--surface);border-top:1px solid var(--border)">
-    CLICK TO EXPLORE MAP →
-  </div>
-</a>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 
-<script>
-(async () => {
-  const svg  = d3.select('#preview-map').attr('viewBox','0 0 960 500');
-  const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-  const proj = d3.geoNaturalEarth1().scale(200).translate([480, 260]);
-  const path = d3.geoPath().projection(proj);
-  const g    = svg.append('g');
+  <a href="/map" id="map-preview-link" 
+    style="display:block;max-width:700px;margin:40px auto;margin-left:-50px;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:box-shadow .2s;"
+    onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'"
+    onmouseout="this.style.boxShadow='none'">
+    <svg id="preview-map" style="width:400px;height:300px;display:block;background:#eaf3fb;"></svg>
+    <div style="text-align:center;padding:10px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink);background:var(--surface);border-top:1px solid var(--border)">
+      CLICK TO EXPLORE MAP →
+    </div>
+  </a>
 
-  g.append('path')
-    .datum({type:'Sphere'})
-    .attr('d', path)
-    .attr('fill','#eaf3fb');
+  <script>
+  (async () => {
+    const svg  = d3.select('#preview-map').attr('viewBox','0 0 960 500');
+    const data = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+    const proj = d3.geoNaturalEarth1().scale(200).translate([480, 260]);
+    const path = d3.geoPath().projection(proj);
+    const g    = svg.append('g');
 
-  g.selectAll('path.country')
-    .data(topojson.feature(data, data.objects.countries).features)
-    .enter().append('path')
-    .attr('class','country')
-    .attr('d', path)
-    .attr('fill','#dde8d0')
-    .attr('stroke','#fff')
-    .attr('stroke-width','0.5');
-})();
-</script> 
-</section>
+    g.append('path')
+      .datum({type:'Sphere'})
+      .attr('d', path)
+      .attr('fill','#eaf3fb');
 
-<hr class="divider">
+    g.selectAll('path.country')
+      .data(topojson.feature(data, data.objects.countries).features)
+      .enter().append('path')
+      .attr('class','country')
+      .attr('d', path)
+      .attr('fill','#dde8d0')
+      .attr('stroke','#fff')
+      .attr('stroke-width','0.5');
+  })();
+  </script> 
+  </section>
 
-<section class="features">
+  <hr class="divider">
+
+ <section class="features">
   <div class="feature">
     <div class="feat-num">01</div>
-    <h3>[Feature name]</h3>
-    <p>[One or two sentences describing what this feature does and why it matters. Replace with real copy.]</p>
+    <h3><a href="meet-the-team">ABOUT THE TEAM</a></h3>
+    <p>We're a group of Hertie data science students who got tired of financial criminals having all the fun. Consider this our villain origin story — except we're the good guys. Probably.</p>
   </div>
   <div class="feature">
     <div class="feat-num">02</div>
-    <h3>[Feature name]</h3>
-    <p>[One or two sentences describing what this feature does and why it matters. Replace with real copy.]</p>
+    <h3><a href="about-data">ABOUT THE DATA</a></h3>
+    <p>Real transactions. Real patterns. Real risk. We use IBM's synthetic AML dataset with over 5 million bank transactions engineered to mirror real-world money laundering behaviour, without exposing real customer data.</p>
   </div>
   <div class="feature">
     <div class="feat-num">03</div>
     <a href="/how-our-model-works" style="display: block;">
-      <h3 style="color: var(--accent); cursor: pointer; transition: opacity .2s;">How Our Model Works →</h3>
+      <h3>ABOUT THE MODEL</h3>
     </a>
-    <p>Learn how our Quadratic Discriminant Analysis model detects money laundering patterns with 92% AUC performance.</p>
+    <p>Fraud doesn't fit a straight line. Our custom-built Quadratic Discriminant Analysis model learns the curved boundaries between legitimate and suspicious transactions, catching laundering patterns sklearn alone would miss.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section style="max-width:100%; margin:0 auto; padding:48px 40px 72px;">
+  <h2 style="font-family:var(--serif); font-size:32px; letter-spacing:-.02em; margin-bottom:24px;">About FRISK</h2>
+
+  <div class="light-only">
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px; margin-bottom:16px;">
+      FRISK is designed for banking professionals, compliance officers, and financial analysts who need to know one thing fast: is this transaction clean?
+    </p>
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px; margin-bottom:16px;">
+      Whether you're investigating a flagged payment, exploring trends across thousands of transactions, or just trying to get a clearer picture of where suspicious activity clusters, FRISK puts the tools in your hands. Run a transaction through our ML model for an instant laundering risk prediction, or dive into our dashboards to explore patterns, anomalies, and network relationships across the data.
+    </p>
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px;">
+      No data science background required. Just bring your suspicions.
+    </p>
+  </div>
+
+  <div class="dark-only">
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px; margin-bottom:16px;">
+      FRISK is designed for the discerning financial professional who has recently come into some unconventional funds and needs a little help moving them around discreetly.
+    </p>
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px; margin-bottom:16px;">
+      Whether you're placing a fresh batch of cash into the system, layering it across a few dozen accounts, or integrating it back into the economy as a suspiciously successful car wash, FRISK has the insights you need. Study our transaction dashboards to find the patterns that fly under the radar, and use our ML model to check if your latest transfer looks a little too suspicious.
+    </p>
+    <p style="font-size:15px; color:var(--ink-2); line-height:1.75; font-weight:300; max-width:680px;">
+      Work smarter, not harder. The compliance team is watching, but now, so are you.
+    </p>
   </div>
 </section>
 
 <footer>
-  <span>AppName</span>
-  <span>© [Year]</span>
+    <span>FRISK</span>
+    <span>©2026</span>
 </footer>
+
+  <script>
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+  </script>
 
 </body>
 </html>

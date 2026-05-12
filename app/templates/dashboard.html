@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard — AppName</title>
+  <title>Dashboard — FRISK</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
+    .content-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ink:      #181816;
@@ -30,6 +31,25 @@
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
     }
+
+    html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+      --green:    #6a9e7a;
+      --green-bg: #1a2420;
+      --accent-md:#4a3d7a;
+      --amber:    #b08a3a;
+      --amber-bg: #231d0e;
+      --red:      #b06070;
+      --red-bg:   #241618;
+    }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font-family: var(--sans); }
@@ -66,7 +86,7 @@
 
     .page-header { margin-bottom: 24px; }
     .page-header h2 { font-family: var(--serif); font-size: 26px; letter-spacing: -.02em; margin-bottom: 4px; }
-    .page-header p { font-size: 13px; color: var(--ink-3); }
+    .page-header p { font-size: 13px; color: var(--ink-2); font-weight: 500; }
 
     /* ── TABS ── */
     .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
@@ -84,34 +104,34 @@
 
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
-    .kpi-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); margin-bottom: 10px; }
+    .kpi-label { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-2); margin-bottom: 10px;font-weight:600; }
     .kpi-value { font-family: var(--serif); font-size: 30px; letter-spacing: -.04em; line-height: 1; color: var(--ink); }
-    .kpi-delta { font-size: 11px; margin-top: 6px; color: var(--ink-3); }
+    .kpi-delta { font-size: 15px; margin-top: 6px; color: var(--ink-2); font-weight:500; }
     .delta-pos { color: var(--green); }
     .delta-neg { color: var(--red); }
 
     .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .content-grid-wide { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; min-width: 0; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .card-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); }
+    .card-title { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink); font-weight: 600; }
 
-    .badge { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+    .badge { font-family: var(--mono); font-size: 14px; padding: 4px 9px; border-radius: 3px; font-weight: 600; }
     .badge-green { background: var(--green-bg); color: var(--green); }
     .badge-amber { background: var(--amber-bg); color: var(--amber); }
     .badge-gray  { background: var(--border);   color: var(--ink-2); }
     .badge-red   { background: var(--red-bg);   color: var(--red); }
     .badge-blue  { background: var(--accent-lt); color: var(--accent); }
 
-    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .list-item:last-child { border-bottom: none; }
     .list-item-name { color: var(--ink-2); flex: 1; padding-right: 8px; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-3); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
-    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
+    thead th { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .13em; color: var(--ink-2); text-align: left; padding: 0 12px 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
+    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--ink); font-size: 14px; }
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--bg); }
 
@@ -158,11 +178,18 @@
       .main { padding: 20px 16px 48px; }
     }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
 </head>
 <body>
 
 <nav>
-  <span class="logo">AppName</span>
+  <span class="logo">FRISK</span>
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/dashboard">Dashboard</a>
@@ -189,46 +216,76 @@
       <button class="tab" onclick="switchTab(this,'tab-geographic')">Geographic</button>
     </div>
 
+    <!-- ── COUNTRY FILTER ── -->
+    <div style="margin-bottom: 20px; margin-top: 8px; position: relative; width: 220px;">
+      <input id="country-search" type="text" placeholder="All Countries" autocomplete="off"
+        class="form-input"
+        style="width:100%; padding-left:32px;"
+        oninput="onCountrySearch(this.value)"
+        onfocus="onCountrySearch(this.value)"
+        onclick="this.select()"
+        onblur="setTimeout(() => document.getElementById('country-dropdown').style.display='none', 150)"
+        onkeydown="if(event.key==='Enter'){const first=document.getElementById('country-dropdown').querySelector('div');if(first)first.dispatchEvent(new MouseEvent('mousedown'));}">
+
+      
+      <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;opacity:.4;pointer-events:none" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div id="country-dropdown"
+        style="display:none;position:absolute;top:calc(100% + 4px);left:0;width:100%;
+              background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+              z-index:200;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);max-height:220px;overflow-y:auto;">
+      </div>
+    </div>
+
+    <div id="no-data-message" style="display:none; padding: 48px 0; text-align: center; color: var(--ink-3); font-size: 13px;">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width:32px;height:32px;margin:0 auto 10px;display:block;opacity:.35;color:var(--ink-3);">
+        <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M3 16h26M16 3a20 20 0 010 26M16 3a20 20 0 000 26" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <p>No data is currently available for <strong id="no-data-country" style="color:var(--ink-2);"></strong>.</p>
+    </div>
+
     <!-- ╌╌ OVERVIEW ╌╌ -->
-    <div id="tab-overview" class="tab-panel active">
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Transactions</div>
-          <div class="kpi-value">{{ total_transactions }}</div>
-          <div class="kpi-delta">all time</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Cases</div>
-          <div class="kpi-value">{{ laundering_cases }}</div>
-          <div class="kpi-delta delta-neg">flagged</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Laundering Rate</div>
-          <div class="kpi-value">{{ laundering_rate }}</div>
-          <div class="kpi-delta delta-neg">of all transactions</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Model Accuracy</div>
-          <div class="kpi-value">97.6%</div>
-          <div class="kpi-delta delta-pos">Kaggle score</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">Quick Summary</span></div>
-        <div class="list-item"><span class="list-item-name">Total transactions analysed</span><span class="badge badge-blue">{{ total_transactions }}</span></div>
-        <div class="list-item"><span class="list-item-name">Confirmed laundering cases</span><span class="badge badge-red">{{ laundering_cases }}</span></div>
-        <div class="list-item"><span class="list-item-name">Laundering rate</span><span class="badge badge-amber">{{ laundering_rate }}</span></div>
-        <div class="list-item"><span class="list-item-name">Model type</span><span class="badge badge-gray">QDA</span></div>
-        <div class="list-item"><span class="list-item-name">Dataset</span><span class="badge badge-gray">HI-Small AML</span></div>
-      </div>
-      <!-- ── 4 SUMMARY TABLES ── -->
-      <div class="content-grid">
+    <div id="tab-overview" class="tab-panel active">  
+
+    <!-- Row 1: 3 columns — Quick Summary + Top Countries + Entity Risk -->
+      <div class="content-grid-3">
+
+       <div class="card">
+  <div class="card-header"><span class="card-title">Quick Summary</span></div>
+  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Transactions</div>
+      <div class="kpi-value" id="summary-total">—</div>
+      <div class="kpi-delta">all time</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Laundering Cases</div>
+      <div class="kpi-value delta-neg" id="summary-cases">—</div>
+      <div class="kpi-delta delta-neg">flagged</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Laundering Rate</div>
+      <div class="kpi-value delta-neg" id="summary-rate">—</div>
+      <div class="kpi-delta delta-neg">of all transactions</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Top Laundering Format</div>
+      <div class="kpi-value" id="summary-format" style="color:var(--amber)">—</div>
+      <div class="kpi-delta">highest rate</div>
+    </div>
+  </div>
+</div>
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Top Laundering Countries</span>
             <span class="badge badge-red">by volume</span>
           </div>
-          <table>
+          <table id="top-countries-table">
             <thead><tr><th>Country</th><th>Cases</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in top_countries %}
@@ -241,12 +298,37 @@
             </tbody>
           </table>
         </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Entity Type Risk</span>
+            <span class="badge badge-gray">by laundering rate</span>
+          </div>
+          <table id="entity-stats-table">
+            <thead><tr><th>Entity Type</th><th>Cases</th><th>Rate</th></tr></thead>
+            <tbody>
+              {% for row in entity_stats %}
+              <tr>
+                <td>{{ row.s_entity_type }}</td>
+                <td><span class="badge badge-red">{{ row.total }}</span></td>
+                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Row 2: 2 columns — Corridors + Bank Risk -->
+      <div class="content-grid">
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Top Country Corridors</span>
             <span class="badge badge-amber">by laundering rate</span>
           </div>
-          <table>
+          <table id="top-corridors-table">
             <thead><tr><th>From</th><th>To</th><th>Transactions</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in top_corridors %}
@@ -260,14 +342,14 @@
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="content-grid">
+
         <div class="card">
           <div class="card-header">
             <span class="card-title">Bank Type Risk</span>
             <span class="badge badge-gray">by laundering rate</span>
           </div>
-          <table>
+          
+          <table id="bank-stats-table">
             <thead><tr><th>Bank Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
             <tbody>
               {% for row in bank_stats %}
@@ -281,54 +363,36 @@
             </tbody>
           </table>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Entity Type Risk</span>
-            <span class="badge badge-gray">by laundering rate</span>
-          </div>
-          <table>
-            <thead><tr><th>Entity Type</th><th>Transactions</th><th>Cases</th><th>Rate</th></tr></thead>
-            <tbody>
-              {% for row in entity_stats %}
-              <tr>
-                <td>{{ row.s_entity_type }}</td>
-                <td>{{ row.count }}</td>
-                <td><span class="badge badge-red">{{ row.total }}</span></td>
-                <td><span class="badge badge-amber">{{ row.rate }}%</span></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+
       </div>
-    </div>
+    </div> <!-- end tab-overview -->
 
     <!-- ╌╌ TEMPORAL ╌╌ -->
     <div id="tab-temporal" class="tab-panel">
-      <div class="content-grid-wide" style="max-width:900px;margin:0 auto">
+<div class="content-grid-wide">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Laundering Rate by Hour of Day</span>
             <span class="badge badge-gray">All time</span>
           </div>
-         <div id="hourly-chart" style="height:240px"></div>
+         <div id="hourly-chart" style="height:350px"></div>
         </div>
       </div>
       <div class="content-grid">
         <div class="card">
           <div class="card-header"><span class="card-title">Transaction Volume by Day</span></div>
-          <div id="volume-chart" style="height:220px"></div>
+          <div id="volume-chart" style="height:280px"></div>
         </div>
         <div class="card">
           <div class="card-header"><span class="card-title">Laundering Rate by Day</span></div>
-          <div id="daily-rate-chart" style="height:220px"></div>
+          <div id="daily-rate-chart" style="height:280px"></div>
         </div>
       </div>
     </div>
 
     <!-- ╌╌ CURRENCY ╌╌ -->
-  <div id="tab-currency" class="tab-panel">
-    <div class="content-grid">
+<div id="tab-currency" class="tab-panel">
+    <div id="global-currency-charts" class="content-grid">
       <div class="card">
         <div class="card-header"><span class="card-title">Transactions by Currency</span></div>
         <div id="currency-volume-chart" style="height:260px"></div>
@@ -358,37 +422,37 @@
     </div>
   </div>
 
-    <!-- ╌╌ GEOGRAPHIC ╌╌ -->
-    <div id="tab-geographic" class="tab-panel">
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
-          </div>
-          <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Sender Countries by Laundering Rate</span>
-          </div>
-          <div id="top-sender-countries-chart" style="height:380px"></div>
-        </div>
+  <!-- ╌╌ GEOGRAPHIC ╌╌ -->
+<div id="tab-geographic" class="tab-panel">
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
       </div>
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Receiver Countries by Laundering Rate</span>
-          </div>
-          <div id="top-receiver-countries-chart" style="height:380px"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Top 15 Country Corridors by Laundering Rate</span>
-          </div>
-          <div id="top-corridors-chart" style="height:380px"></div>
-        </div>
-      </div>
+      <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
     </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Country Corridors by Laundering Rate</span>
+      </div>
+      <div id="top-corridors-chart" style="height:380px"></div>
+    </div>
+  </div>
+  <div id="global-country-charts" class="content-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Sender Countries by Laundering Rate</span>
+      </div>
+      <div id="top-sender-countries-chart" style="height:380px"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top 15 Receiver Countries by Laundering Rate</span>
+      </div>
+      <div id="top-receiver-countries-chart" style="height:380px"></div>
+    </div>
+  </div>
+</div>
 
   </main>
 </div>
@@ -400,6 +464,17 @@
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(panelId).classList.add('active');
+
+    if (currentCountryIsClean && panelId !== 'tab-overview') {
+      showCleanMessage(panelId);
+    } else {
+      hideCleanMessage(panelId);
+      requestAnimationFrame(() => {
+        document.getElementById(panelId).querySelectorAll('.js-plotly-plot').forEach(el => {
+          Plotly.relayout(el, { autosize: true, width: undefined });
+        });
+      });
+    }
   }
 
   function setView(item) {
@@ -410,54 +485,324 @@
   // ── PLOTLY CONFIG ─────────────────────────────────────────────────────────
   const plotConfig = { responsive: true, displayModeBar: false };
 
-  function renderChart(divId, chartJson) {
-    const fig = JSON.parse(chartJson);
-    Plotly.newPlot(divId, fig.data, fig.layout, plotConfig);
+  // ── RENDER CHARTS FROM JSON FILES ────────────────────────────────────────
+  const chartCache = {};
+
+  async function getChart(name) {
+    if (!chartCache[name]) {
+      chartCache[name] = await fetch(`/static/charts/${name}`).then(r => r.json());
+    }
+    return chartCache[name];
   }
 
-  // ── RENDER CHARTS FROM aml_viz.py ────────────────────────────────────────
-  Plotly.newPlot('hourly-chart', {{ hourly_chart | safe }}.data, {{ hourly_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('volume-chart', {{ volume_chart | safe }}.data, {{ volume_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('daily-rate-chart', {{ daily_rate_chart | safe }}.data, {{ daily_rate_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('domestic-vs-crossborder-chart', {{ domestic_vs_crossborder_chart | safe }}.data, {{ domestic_vs_crossborder_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-sender-countries-chart', {{ top_sender_countries_chart | safe }}.data, {{ top_sender_countries_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-receiver-countries-chart', {{ top_receiver_countries_chart | safe }}.data, {{ top_receiver_countries_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('top-corridors-chart', {{ top_corridors_chart | safe }}.data, {{ top_corridors_chart | safe }}.layout, plotConfig);
- 
-  // ── CURRENCY CHARTS ───────────────────────────────────────────────────────
-  const currencyNames   = {{ currency_names | safe }};
-  const currencyVolumes = {{ currency_volumes | safe }};
-  const currencyRates   = {{ currency_rates | safe }};
+  async function loadAllCharts() {
+    const charts = [
+      ['hourly_chart.json',                    'hourly-chart'],
+      ['volume_chart.json',                    'volume-chart'],
+      ['daily_rate_chart.json',                'daily-rate-chart'],
+      ['domestic_vs_crossborder_chart.json',   'domestic-vs-crossborder-chart'],
+      ['top_sender_countries_chart.json',      'top-sender-countries-chart'],
+      ['top_receiver_countries_chart.json',    'top-receiver-countries-chart'],
+      ['top_corridors_chart.json', 'top-corridors-chart'],
+      ['payment_format_chart.json',            'payment-format-chart'],
+      ['amount_bucket_chart.json',             'amount-bucket-chart'],
+      ['laundering_rate_by_currency_chart.json', 'laundering-rate-by-currency-chart'],
+      ['currency_volume_chart.json',           'currency-volume-chart'],
+      ['currency_laundering_rate_chart.json',  'currency-rate-chart'],
+    ];
 
-  Plotly.newPlot('currency-volume-chart', [{
-    x: currencyNames, y: currencyVolumes,
-    type: 'bar',
-    marker: { color: '#b5d4f4', line: { color: '#2a5f8f', width: 1 } },
-    hovertemplate: '%{x}<br>Transactions: %{y:,}<extra></extra>'
-  }], {
-    margin: { t: 10, r: 10, b: 80, l: 50 },
-    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
-    yaxis: { title: 'Transactions', gridcolor: '#e8e6df' },
-    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
-  }, plotConfig);
+    const figs = await Promise.all(charts.map(([file]) => getChart(file)));
 
-  Plotly.newPlot('currency-rate-chart', [{
-    x: currencyNames, y: currencyRates,
-    type: 'bar',
-    marker: { color: '#f4b5b5', line: { color: '#9b2c2c', width: 1 } },
-    hovertemplate: '%{x}<br>Rate: %{y:.3f}%<extra></extra>'
-  }], {
-    margin: { t: 10, r: 10, b: 80, l: 50 },
-    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-    xaxis: { gridcolor: '#e8e6df', tickangle: -30 },
-    yaxis: { title: 'Laundering Rate (%)', gridcolor: '#e8e6df' },
-    font: { family: 'DM Sans, sans-serif', size: 11, color: '#6b6b65' },
-  }, plotConfig);
+    charts.forEach(([file, divId], i) => {
+      Plotly.newPlot(divId, figs[i].data, figs[i].layout, plotConfig);
+    });
 
-  Plotly.newPlot('payment-format-chart', {{ payment_format_chart | safe }}.data, {{ payment_format_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('amount-bucket-chart', {{ amount_bucket_chart | safe }}.data, {{ amount_bucket_chart | safe }}.layout, plotConfig);
-  Plotly.newPlot('laundering-rate-by-currency-chart', {{ laundering_rate_by_currency_chart | safe }}.data, {{ laundering_rate_by_currency_chart | safe }}.layout, plotConfig);
+    // populate country dropdown from first chart's traces
+    populateDropdown(figs[0]);
+
+    // apply country filter from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get('country');
+    if (country) {
+      const isKnown = allCountries.includes(country);
+      document.getElementById('country-search').value = country;
+      if (isKnown) {
+        applyCountryFilter(country);
+      } else {
+        showNoDataMessage(country);
+      }
+    }
+    setTimeout(() => {
+      charts.forEach(([file, divId]) => Plotly.relayout(divId, {}));
+    }, 300);
+  }
+
+  // ── COUNTRY FILTER ────────────────────────────────────────────────────────
+  const WORLD_COUNTRIES = [
+    "Afghanistan","Albania","Algeria","Angola","Argentina","Armenia","Australia","Austria",
+    "Azerbaijan","Bangladesh","Belarus","Belgium","Benin","Bolivia","Bosnia and Herz.","Botswana",
+    "Brazil","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Central African Rep.",
+    "Chad","Chile","China","Colombia","Congo","Costa Rica","Croatia","Cuba","Cyprus","Czech Rep.",
+    "Dem. Rep. Congo","Denmark","Dominican Rep.","Ecuador","Egypt","El Salvador","Eritrea","Estonia",
+    "Ethiopia","Finland","France","Gabon","Germany","Ghana","Greece","Guatemala","Guinea","Haiti",
+    "Honduras","Hungary","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Japan",
+    "Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyzstan","Laos","Latvia","Libya","Lithuania",
+    "Luxembourg","Madagascar","Malawi","Malaysia","Mali","Malta","Mauritania","Mexico","Moldova",
+    "Mongolia","Morocco","Mozambique","Myanmar","Namibia","Nepal","Netherlands","New Zealand",
+    "Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Panama","Paraguay",
+    "Peru","Philippines","Poland","Portugal","Romania","Russia","Rwanda","Saudi Arabia","Senegal",
+    "Serbia","Sierra Leone","Slovakia","Slovenia","Somalia","South Africa","South Korea","South Sudan",
+    "Spain","Sri Lanka","Sudan","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania",
+    "Thailand","Togo","Tunisia","Turkey","Turkmenistan","Uganda","UK","Ukraine","United Arab Emirates",
+    "Uruguay","USA","Uzbekistan","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
+  ];
+
+  let allCountries = [];
+  let currentCountryIsClean = false;
+
+  function populateDropdown(fig) {
+    allCountries = fig.data
+      .filter(t => t.name !== 'All Countries')
+      .map(t => t.name)
+      .sort();
+  }
+
+  function onCountrySearch(query) {
+    const dd = document.getElementById('country-dropdown');
+    const q = query.trim().toLowerCase();
+
+    if (!q) {
+      const items = [
+        { label: 'All Countries', value: 'all', hasData: true },
+        ...allCountries.map(n => ({ label: n, value: n, hasData: true }))
+      ];
+      renderDropdown(items);
+      dd.style.display = 'block';
+      return;
+    }
+    document.getElementById('country-search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const dd = document.getElementById('country-dropdown');
+      const first = dd.querySelector('div');
+      if (first) first.dispatchEvent(new MouseEvent('mousedown'));
+    }
+  });  
+    const dataMatches = allCountries
+      .filter(n => n.toLowerCase().includes(q))
+      .map(n => ({ label: n, value: n, hasData: true }));
+
+    const noDataMatches = WORLD_COUNTRIES
+      .filter(n => !allCountries.includes(n) && n.toLowerCase().includes(q))
+      .map(n => ({ label: n, value: n, hasData: false }));
+
+    const items = [...dataMatches, ...noDataMatches];
+
+    if (!items.length) {
+      dd.innerHTML = `<div style="padding:10px 14px;font-size:12px;color:var(--ink-3)">No results</div>`;
+      dd.style.display = 'block';
+      return;
+    }
+
+    renderDropdown(items);
+    dd.style.display = 'block';
+  }
+
+  function renderDropdown(items) {
+    const dd = document.getElementById('country-dropdown');
+    dd.innerHTML = items.map(item => `
+      <div onmousedown="selectCountry('${item.value.replace(/'/g,"\\'")}', '${item.label.replace(/'/g,"\\'")}', ${item.hasData})"
+        style="padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);
+              transition:background .12s;color:${item.hasData ? 'var(--ink)' : 'var(--ink-3)'};"
+        onmouseover="this.style.background='var(--bg)'"
+        onmouseout="this.style.background=''">
+        <span>${item.label}</span>${!item.hasData ? ' <span style="font-family:var(--mono);font-size:9px;color:var(--ink-3)">(no data)</span>' : ''}
+      </div>
+    `).join('');
+  }
+
+  function selectCountry(value, label, hasData) {
+    document.getElementById('country-search').value = label === 'All Countries' ? '' : label;
+    document.getElementById('country-dropdown').style.display = 'none';
+
+    if (!hasData) {
+      showNoDataMessage(label);
+      return;
+    }
+
+    hideNoDataMessage();
+    applyCountryFilter(value);
+    setTimeout(() => {
+      document.getElementById('country-search').focus();
+      document.getElementById('country-search').select();
+    }, 50);
+  }
+
+  function showNoDataMessage(countryName) {
+    document.getElementById('no-data-country').textContent = countryName;
+    document.getElementById('no-data-message').style.display = 'block';
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('.tabs').style.display = 'none';
+  }
+
+  function hideNoDataMessage() {
+    document.querySelectorAll('.tab-panel').forEach(p => hideCleanMessage(p.id));
+    document.getElementById('no-data-message').style.display = 'none';
+    document.querySelector('.tabs').style.display = '';
+    // restore the first tab as active if none are
+    const anyActive = document.querySelector('.tab-panel.active');
+    if (!anyActive) {
+      document.querySelector('.tab-panel').classList.add('active');
+      document.querySelector('.tab').classList.add('active');
+    }
+  }
+
+  function showCleanMessage(panelId) {
+    const panel = document.getElementById(panelId);
+    if (!panel.querySelector('.clean-message')) {
+      const msg = document.createElement('div');
+      msg.className = 'clean-message';
+      msg.style.cssText = 'padding:48px 0;text-align:center;color:var(--ink-3);font-size:13px;';
+      msg.innerHTML = `
+        <div style="font-size:28px;margin-bottom:10px;opacity:.3;">✓</div>
+        <p><strong id="clean-country-name" style="color:var(--ink-2)"></strong> has a clean record — no laundering cases registered here.</p>`;
+      panel.prepend(msg);
+    }
+    panel.querySelector('#clean-country-name').textContent = document.getElementById('country-search').value;
+    panel.querySelectorAll('.js-plotly-plot, .card').forEach(el => el.style.display = 'none');
+  }
+
+  function hideCleanMessage(panelId) {
+    const panel = document.getElementById(panelId);
+    const msg = panel.querySelector('.clean-message');
+    if (msg) msg.remove();
+    panel.querySelectorAll('.js-plotly-plot, .card').forEach(el => el.style.display = '');
+  }
+
+  const chartIds = [
+  'hourly-chart', 'volume-chart', 'daily-rate-chart',
+  'domestic-vs-crossborder-chart', 'top-corridors-chart',
+  'payment-format-chart', 'amount-bucket-chart',
+  'laundering-rate-by-currency-chart'
+];
+
+    
+  const overviewData = {
+    top_countries:      {{ top_countries | tojson | safe }},
+    top_corridors:      {{ top_corridors | tojson | safe }},
+    bank_stats:         {{ bank_stats | tojson | safe }},
+    entity_stats:       {{ entity_stats | tojson | safe }},
+    top_payment_format: {{ top_payment_format | tojson | safe }},
+    by_country:         {{ by_country | tojson | safe }},
+    total_transactions: {{ total_transactions | tojson | safe }},
+    laundering_cases:   {{ laundering_cases | tojson | safe }},
+    laundering_rate:    {{ laundering_rate | tojson | safe }},
+  };
+  
+  document.getElementById('summary-total').textContent  = overviewData.total_transactions || '—';
+  document.getElementById('summary-cases').textContent  = overviewData.laundering_cases || '—';
+  document.getElementById('summary-rate').textContent   = overviewData.laundering_rate || '—';
+  document.getElementById('summary-format').textContent = 
+    (overviewData.top_payment_format?.format || overviewData.top_payment_format || '—') +
+    (overviewData.top_payment_format?.pct ? ` (${overviewData.top_payment_format.pct}%)` : '');
+
+    function renderOverviewTables(data) {
+    document.querySelector('#top-countries-table tbody').innerHTML =
+      data.top_countries.map(row => `
+        <tr>
+          <td>${row.s_country}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.querySelector('#top-corridors-table tbody').innerHTML =
+      data.top_corridors.map(row => `
+        <tr>
+          <td>${row.s_country}</td>
+          <td>${row.r_country}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+  document.querySelector('#bank-stats-table tbody').innerHTML =
+      data.bank_stats.map(row => `
+        <tr>
+          <td>${row.s_bank_type}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.querySelector('#entity-stats-table tbody').innerHTML =
+      data.entity_stats.map(row => `
+        <tr>
+          <td>${row.s_entity_type}</td>
+          <td>${row.count}</td>
+          <td><span class="badge badge-red">${row.total}</span></td>
+          <td><span class="badge badge-amber">${row.rate}%</span></td>
+        </tr>`).join('');
+
+    document.getElementById('summary-format').textContent = 
+      (data.top_payment_format?.format || '—') + 
+      (data.top_payment_format?.pct ? ` (${data.top_payment_format.pct}%)` : '');
+
+  }      
+
+function renderGlobalCharts() {
+  const globalCharts = [
+    ['currency_volume_chart.json',          'currency-volume-chart'],
+    ['currency_laundering_rate_chart.json', 'currency-rate-chart'],
+    ['top_sender_countries_chart.json',     'top-sender-countries-chart'],
+    ['top_receiver_countries_chart.json',   'top-receiver-countries-chart'],
+  ];
+  globalCharts.forEach(([file, divId]) => {
+    getChart(file).then(fig => Plotly.react(divId, fig.data, fig.layout, plotConfig));
+  });
+}
+
+function applyCountryFilter(selectedCountry) {
+  // detect zero-laundering countries
+  if (selectedCountry !== 'all' && overviewData.by_country[selectedCountry]) {
+    const cases = overviewData.by_country[selectedCountry].laundering_cases;
+    currentCountryIsClean = (cases === '0' || cases === 0);
+  } else {
+    currentCountryIsClean = false;
+  }
+
+  // rest of  dirty countries
+  chartIds.forEach(divId => {
+    const traces = document.getElementById(divId).data;
+    if (!traces) return;
+    Plotly.restyle(divId, {
+      visible: traces.map(t =>
+        selectedCountry === 'all' ? t.name === 'All Countries' : t.name === selectedCountry
+      )
+    });
+  }); 
+  
+    ['global-currency-charts', 'global-country-charts'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.visibility = selectedCountry === 'all' ? 'visible' : 'hidden';
+    el.style.height = selectedCountry === 'all' ? '' : '0';
+    el.style.overflow = selectedCountry === 'all' ? '' : 'hidden';
+  }
+});
+
+    const data = selectedCountry === 'all'
+      ? overviewData
+      : overviewData.by_country[selectedCountry];
+    if (data) {
+      document.getElementById('summary-total').textContent  = data.total_transactions || '—';
+      document.getElementById('summary-cases').textContent  = data.laundering_cases || '—';
+      document.getElementById('summary-rate').textContent   = data.laundering_rate || '—';
+      document.getElementById('summary-format').textContent = 
+        (overviewData.top_payment_format?.format || '—') +
+        (overviewData.top_payment_format?.pct ? ` (${overviewData.top_payment_format.pct}%)` : '');
+      renderOverviewTables(data);
+    }
+  }
+      
+  loadAllCharts()
 
   // ── RISK ASSESSMENT ───────────────────────────────────────────────────────
   async function assessRisk() {
@@ -498,14 +843,14 @@
   }
 
   // ── MAP FILTER BANNER ─────────────────────────────────────────────────────
-  const params = new URLSearchParams(window.location.search);
-  const country = params.get('country');
-  const continent = params.get('continent');
-  const filterLabel = country || continent;
+  const mapParams = new URLSearchParams(window.location.search);
+  const mapCountry = mapParams.get('country');
+  const mapContinent = mapParams.get('continent');
+  const filterLabel = mapCountry || mapContinent;
   if (filterLabel) {
-    const param = country ? `country=${encodeURIComponent(country)}` : `continent=${encodeURIComponent(continent)}`;
+    const param = mapCountry ? `country=${encodeURIComponent(mapCountry)}` : `continent=${encodeURIComponent(mapContinent)}`;
     document.querySelector('a[href="/dashboard"]').href = `/dashboard?${param}`;
-    const isContinent = !!continent;
+    const isContinent = !!mapContinent;
     const banner = document.createElement('div');
     banner.style.cssText = `display:flex;justify-content:space-between;align-items:center;background:#edf3f9;border-bottom:1px solid #b5d4f4;padding:10px 32px;font-size:13px;color:#2a5f8f;`;
     banner.innerHTML = `<span>Viewing data for <strong>${filterLabel}</strong> · ${isContinent ? 'continent view' : 'country view'}</span><a href="/dashboard" style="font-size:11px;color:#2a5f8f;font-family:'Courier New',monospace">✕ Clear filter</a>`;
