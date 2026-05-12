@@ -15,7 +15,7 @@ Integration - Spending the now-disguised funds as though they were legitimate.
 Detection is extremely challenging: automated systems suffer from high false-positive rates (legitimate transactions flagged as suspicious) and high false-negative rates (actual laundering going undetected). Criminals continuously adapt their methods to evade detection.
 
 
-### What is /projectname/?
+### What is FRISK?
 
 We are building a data science platform that allows users to:
 
@@ -63,7 +63,7 @@ Make AML insights accessible to non-technical compliance teams through interacti
    - Geographic distribution of transactions across banks
     - Summary statistics dashboard (transaction counts, laundering rates, amount distributions)
 
--   Machine Learning ---\> hyperlink to a section describing the ML algorithm (maybe?)
+-   Machine Learning
     -   We will implement a **predictive algorithm** to estimate the likelihood that an entity becomes sanctioned more than once.
     -   Custom-built ML algorithm (from scratch)
     -   Feature engineering based on:
@@ -103,7 +103,6 @@ Download the IBM AML dataset from Kaggle and place the CSV/TXT files in the data
 data/
 ├── HI-Small_Trans.csv
 ├── HI-Small_Patterns.txt
-├── ...
 
 
 #### Packages used
@@ -150,7 +149,7 @@ anascrumit-aml/
 ├── requirements.txt
 ├── config.py
 └── README.md
-
+```
 
 *For more information about the the layered system design please consult [our wiki](https://github.com/hertie-dsa-26/project-scrumit/wiki/Layered-System-Design)*
 
