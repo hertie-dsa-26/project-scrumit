@@ -23,5 +23,14 @@ app/static/map/*
 
 # Keep folder structure
 !data/raw/.gitkeep
+<<<<<<< HEAD
+!data/processed/.gitkeepvenv/
+
+# .gitignore
+analysis/models/logs.log
+analysis/models/*.logvenv/
+logs.log
+=======
 !data/processed/.gitkeep
 !app/static/.gitkeep
+>>>>>>> feature/dashboard-visualizations
