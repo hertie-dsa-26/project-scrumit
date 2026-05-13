@@ -91,15 +91,11 @@ class TestModelRetrainPipeline(unittest.TestCase):
 
     # testing that fitting on empty data raises cleanly rather than silently failing
     def test_fit_empty_data_raises(self):
-        def test_fit_empty_data_produces_no_classes(self):
-            model = CustomQDA(reg_param=0.14)
-        try:
+        model = CustomQDA(reg_param=0.14)
+        with self.assertRaises(Exception):
             model.fit(np.array([]).reshape(0, self.n_features), np.array([]))
-            self.assertEqual(len(model.classes), 0)
-        except Exception:
-            pass
 
-    # fail safe if discover doesn't work
-    # when file is discovered by unittest, it will run all test methods in this class
-    if __name__ == "__main__":
-        unittest.main()
+# fail safe if discover doesn't work
+# when file is discovered by unittest, it will run all test methods in this class
+if __name__ == "__main__":
+    unittest.main()

@@ -183,7 +183,7 @@ class TestCleaning(unittest.TestCase):
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(len(result), 1)
 
-    # fail safe if discover doesn't work
-    # when file is discovered by unittest, it will run all test methods in this class
-    if __name__ == "__main__":
-        unittest.main()
+# fail safe if discover doesn't work
+# when file is discovered by unittest, it will run all test methods in this class
+if __name__ == "__main__":
+    unittest.main()
