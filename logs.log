@@ -1,0 +1,30 @@
+2026-05-13 16:18:54,532:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+
+2026-05-13 16:18:54,532:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+
+2026-05-13 16:18:54,650:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_mathtext.py:30: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+
+2026-05-13 16:18:57,598:WARNING:C:\Users\Sofia Breganni\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py:579: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\Sofia Breganni\\Documents\\01_Hertie\\2.Semester\\Data_Structures_Algorithms\\scrumit\\project-scrumit\\app\\static\\map/corridors.json'>
+  if method() is not None:
+
+2026-05-13 16:18:57,619:WARNING:C:\Users\Sofia Breganni\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py:579: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\Sofia Breganni\\Documents\\01_Hertie\\2.Semester\\Data_Structures_Algorithms\\scrumit\\project-scrumit\\app\\static\\map/country_rates.json'>
+  if method() is not None:
+
+2026-05-13 16:28:52,353:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+
+2026-05-13 16:28:52,353:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+
+2026-05-13 16:28:52,438:WARNING:C:\Users\Sofia Breganni\Documents\01_Hertie\2.Semester\Data_Structures_Algorithms\scrumit\project-scrumit\.venv\Lib\site-packages\matplotlib\_mathtext.py:30: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+
+2026-05-13 16:28:55,199:WARNING:C:\Users\Sofia Breganni\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py:579: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\Sofia Breganni\\Documents\\01_Hertie\\2.Semester\\Data_Structures_Algorithms\\scrumit\\project-scrumit\\app\\static\\map/corridors.json'>
+  if method() is not None:
+
+2026-05-13 16:28:55,214:WARNING:C:\Users\Sofia Breganni\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py:579: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\Sofia Breganni\\Documents\\01_Hertie\\2.Semester\\Data_Structures_Algorithms\\scrumit\\project-scrumit\\app\\static\\map/country_rates.json'>
+  if method() is not None:
+

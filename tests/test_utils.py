@@ -139,7 +139,7 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.output_dir, "country_rates.json")))
         self.assertTrue(os.path.exists(os.path.join(self.output_dir, "corridors.json")))
 
-    # fail safe if discover doesn't work
-    # when file is discovered by unittest, it will run all test methods in this class
-    if __name__ == "__main__":
-        unittest.main()
+# fail safe if discover doesn't work
+# when file is discovered by unittest, it will run all test methods in this class
+if __name__ == "__main__":
+    unittest.main()

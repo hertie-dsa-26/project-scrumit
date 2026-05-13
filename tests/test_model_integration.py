@@ -83,7 +83,7 @@ class TestModelIntegration(unittest.TestCase):
         transformed_suspicious = self.pipeline.transform(suspicious).iloc[:, :self.n_features]
         self.assertEqual(self.transformed_single.shape[1], transformed_suspicious.shape[1])
 
-    # fail safe if discover doesn't work
-    # when file is discovered by unittest, it will run all test methods in this class
-    if __name__ == "__main__":
-        unittest.main()
+# fail safe if discover doesn't work
+# when file is discovered by unittest, it will run all test methods in this class
+if __name__ == "__main__":
+    unittest.main()
