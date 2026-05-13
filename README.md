@@ -17,37 +17,37 @@ Detection is extremely challenging: automated systems suffer from high false-pos
 
 ### What is FRISK?
 
-We are building a data science platform that allows users to:
+- We are building a data science platform that allows users to:
 
-Interact with synthetic AML transaction data through a web interface
+- Interact with synthetic AML transaction data through a web interface
 
-Explore transaction trends, patterns, and anomalies
+- Explore transaction trends, patterns, and anomalies
 
-Investigate relationships between accounts, entities, and laundering patterns
+- Investigate relationships between accounts, entities, and laundering patterns
 
-Predict the likelihood that a given transaction is laundering using machine learning.
+- Predict the likelihood that a given transaction is laundering using machine learning.
 
 
 #### Motivation
 
-Anti-money laundering (AML) compliance is a critical concern for banks, regulators, and law enforcement worldwide. However, several challenges make AML research difficult:
+- Anti-money laundering (AML) compliance is a critical concern for banks, regulators, and law enforcement worldwide. However, several challenges make AML research difficult:
 
-Data access is restricted — Real financial transaction data is proprietary and privacy-sensitive, making it nearly impossible to obtain for research.
+- Data access is restricted — Real financial transaction data is proprietary and privacy-sensitive, making it nearly impossible to obtain for research.
 
-Labelling is unreliable — Even when real data is available, correctly tagging each transaction as laundering or legitimate is extremely difficult.
+- Labelling is unreliable — Even when real data is available, correctly tagging each transaction as laundering or legitimate is extremely difficult.
 
-Models have limited scope — A single bank only sees its own transactions, missing the broader network of cross-institution laundering activity.
+- Models have limited scope — A single bank only sees its own transactions, missing the broader network of cross-institution laundering activity.
 
 
 **This project aims to:**
 
-Train and evaluate detection models on reliably labelled data
+- Train and evaluate detection models on reliably labelled data
 
-Study laundering patterns across an entire financial ecosystem (not just one bank's view)
+- Study laundering patterns across an entire financial ecosystem (not just one bank's view)
 
-Build models that understand the broad sweep of transactions across institutions, then apply those models to a single bank's transaction stream
+- Build models that understand the broad sweep of transactions across institutions, then apply those models to a single bank's transaction stream
 
-Make AML insights accessible to non-technical compliance teams through interactive visualisations
+- Make AML insights accessible to non-technical compliance teams through interactive visualisations
 
 ------------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ This section explains how to install, configure, and run the project locally, as
 
 -   macOS / Linux / Windows supported
 
--   Python 3.14
+-   Python 3.11
 
 -   This project uses `uv` to ensure a reproducible and deterministic development environment.
 
@@ -93,6 +93,11 @@ This section explains how to install, configure, and run the project locally, as
 
     ```{bash}
     uv sync
+    ```
+-   To install required pacakges:
+
+    ```{bash}
+   uv pip install -r requirements.txt
     ```
 
 ------------------------------------------------------------------------
@@ -136,18 +141,28 @@ http://localhost:5000
 The repository follows a modular layered architecture:
 
 ```         
-anascrumit-aml/
+project-scrumit/
+├── analysis/
+│   ├── cleaning/          # data cleaning & aggregation
+│   ├── features/          # ML preprocessing pipeline
+│   ├── models/            # trained ML models & notebooks
+│   └── visuals/           # Plotly chart functions
 ├── app/
-│   ├── __init__.py           # Flask app factory
-│   ├── routes/               # Route blueprints (exploration, network, ML)
-│   ├── models/               # ML model training and prediction
-│   ├── templates/            # HTML templates
-│   └── static/               # CSS, JS, images
-├── data/                     # Dataset files (not committed)
-├── notebooks/                # Exploratory analysis notebooks
-├── tests/                    # Unit and integration tests
-├── requirements.txt
-├── config.py
+│   ├── __init__.py        
+│   ├── config.py
+│   ├── routes/            # Flask route blueprints
+│   ├── services/          # ML prediction services
+│   ├── static/            # pre-computed charts & map data
+│   │   ├── charts/        
+│   │   ├── map/           
+│   │   └── images/
+│   └── templates/         # HTML templates
+├── src/                   # helper functions & data pipeline
+├── data/                  # raw/ and processed/ CSVs (not committed)
+├── tests/                 # unit and integration tests
+├── main.py                # pre-computes all charts & map data
+├── run.py                 # start Flask server
+├── pyproject.toml
 └── README.md
 ```
 
