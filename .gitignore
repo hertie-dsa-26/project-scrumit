@@ -1,36 +1,24 @@
-# Environments
+# Virtual environments
 .venv/
+venv/
+*.env
 
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
 
-# Jupyter
-.ipynb_checkpoints/
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Raw and processed data files
+*.log
+.ipynb_checkpoints/
+
+# Raw and processed data & static jasons
 data/raw/*
 data/processed/*
 app/static/charts/*
-app/static/map/*
+app/static/map/* 
 
-# Keep folder structure
+# Keep the folder structure
 !data/raw/.gitkeep
-<<<<<<< HEAD
-!data/processed/.gitkeepvenv/
-
-# .gitignore
-analysis/models/logs.log
-analysis/models/*.logvenv/
-logs.log
-=======
 !data/processed/.gitkeep
 !app/static/.gitkeep
->>>>>>> feature/dashboard-visualizations
