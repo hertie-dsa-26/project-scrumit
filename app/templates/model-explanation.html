@@ -23,6 +23,25 @@
       --sans:     'DM Sans', 'Helvetica Neue', sans-serif;
       --mono:     'Courier New', monospace;
     }
+
+    html.dark {
+      --ink:      #e0d8e8;
+      --ink-2:    #9e96aa;
+      --ink-3:    #6a6272;
+      --bg:       #1a1820;
+      --surface:  #211f2a;
+      --border:   #322e3e;
+      --accent:   #9b8fd4;
+      --accent-lt:#1e1a2e;
+      --green:    #6a9e7a;
+      --green-bg: #1a2420;
+      --accent-md:#4a3d7a;
+      --amber:    #b08a3a;
+      --amber-bg: #231d0e;
+      --red:      #b06070;
+      --red-bg:   #241618;
+    }
+
     body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
     a:hover { opacity: .7; }
@@ -120,16 +139,23 @@
       .metric-box { grid-template-columns: 1fr; }
     }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
 </head>
 <body>
 
 <nav>
-  <span class="logo">ScrumIt AML</span>
+  <span class="logo">FRISK</span>
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/map">Map</a>
-    <a href="/ml">ML</a>
+    <a href="/ml">Prediction Service</a>
   </div>
   <div style="width:120px"></div>
 </nav>
@@ -215,8 +241,8 @@
     <div class="step-number">3</div>
     <h3>Handling Imbalance</h3>
     <p>
-      In real-world data, only ~2% of transactions are actual money laundering. This imbalance means a naive model
-      could just say "not laundering" for everything and be 98% right! We fixed this using <span class="highlight">SMOTE</span>
+      In real-world data, only ~0.1% of transactions are actual money laundering. This imbalance means a naive model
+      could just say "not laundering" for everything and be over 99% right! We fixed this using <span class="highlight">SMOTE</span>
       (Synthetic Minority Over-sampling), which artificially creates more examples of money laundering to help the model learn better.
     </p>
   </div>
@@ -226,7 +252,7 @@
     <h3>Model Selection: Quadratic Discriminant Analysis (QDA)</h3>
     <p>
       We chose QDA after benchmarking several algorithms. QDA is a powerful yet interpretable model that assumes each class
-      (laundering vs non-laundering) has its own Gaussian distribution. This allows it to capture complex patterns without overfitting.:
+      (laundering vs non-laundering) has its own Gaussian distribution. This allows it to capture complex patterns without overfitting:
     </p>
     <ul>
       <li><strong>Fast:</strong> It doesn't need extensive tuning or massive compute power.</li>
@@ -254,11 +280,10 @@
     </p>
   </div>
 
-
   <!-- Real-World Use -->
   <h2>How Compliance Teams Use This</h2>
   <p>
-    In the ScrumIt dashboard, compliance analysts:
+    In the FRISK dashboard, compliance analysts:
   </p>
   <ul>
     <li>Input transaction details (amount, banks, format, currency)</li>
@@ -278,14 +303,14 @@
   <hr style="border: none; border-top: 1px solid var(--border); margin: 48px 0;">
 
   <p style="text-align: center; font-size: 14px; color: var(--ink-3); margin-top: 32px;">
-    Have questions? Check out the full <a href="/ml">ML Dashboard</a> for interactive predictions
-    or explore <a href="/dashboard">real transaction data</a>.
+    Have questions? Check out the full <a href="/ml">Prediction Service</a> for interactive predictions
+    or explore <a href="/dashboard">our dashboard</a> for transaction data.
   </p>
 
 </section>
 
 <footer>
-  <span>ScrumIt AML · Powered by QDA Model</span>
+  <span>FRISK AML · Powered by QDA Model</span>
   <span>© 2026</span>
 </footer>
 

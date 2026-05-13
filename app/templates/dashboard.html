@@ -35,7 +35,7 @@
     html.dark {
       --ink:      #e0d8e8;
       --ink-2:    #9e96aa;
-      --ink-3:    #6a6272;
+      --ink-3:    #504c54;
       --bg:       #1a1820;
       --surface:  #211f2a;
       --border:   #322e3e;
@@ -194,7 +194,7 @@
     <a href="/">Home</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/map">Map</a>
-    <a href="/ml">ML</a>
+    <a href="/ml">Prediction Service</a>
   </div>
   <div style="width:120px"></div>
 </nav>
@@ -429,7 +429,7 @@
       <div class="card-header">
         <span class="card-title">Domestic vs Cross-Border Laundering Rate</span>
       </div>
-      <div id="domestic-vs-crossborder-chart" style="height:220px"></div>
+      <div id="domestic-vs-crossborder-chart" style="height:380px"></div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -513,8 +513,20 @@
 
     const figs = await Promise.all(charts.map(([file]) => getChart(file)));
 
+    function getPlotlyTheme() {
+      const s = getComputedStyle(document.documentElement);
+      const get = v => s.getPropertyValue(v).trim();
+      return {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        font: { color: get('--ink-2') },
+        xaxis: { gridcolor: get('--border'), zerolinecolor: get('--border') },
+        yaxis: { gridcolor: get('--border'), zerolinecolor: get('--border') },
+      };
+    }
+
     charts.forEach(([file, divId], i) => {
-      Plotly.newPlot(divId, figs[i].data, figs[i].layout, plotConfig);
+      Plotly.newPlot(divId, figs[i].data, {...figs[i].layout, ...getPlotlyTheme()}, plotConfig);
     });
 
     // populate country dropdown from first chart's traces

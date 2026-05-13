@@ -237,4 +237,3 @@ def feature_importance():
             'total_features': 0,
             'note': 'Using default feature importance'
         }), 200
-

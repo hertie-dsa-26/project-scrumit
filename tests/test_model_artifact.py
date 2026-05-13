@@ -65,7 +65,7 @@ class TestModelArtifact(unittest.TestCase):
         for class_mean in self.model.means.values():
             self.assertEqual(len(class_mean), self.n_features)
 
-    # fail safe if discover doesn't work 
-    # when file is discovered by unittest, it will run all test methods in this class
-    if __name__ == "__main__": 
-        unittest.main()
+# fail safe if discover doesn't work 
+# when file is discovered by unittest, it will run all test methods in this class
+if __name__ == "__main__": 
+    unittest.main()

@@ -683,6 +683,18 @@ function resetZoom() {
 }
 
 // ── SIDEBAR RENDERERS ─────────────────────────────────────────────────────────
+function getPlotlyTheme() {
+  const s = getComputedStyle(document.documentElement);
+  const get = v => s.getPropertyValue(v).trim();
+  return {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    font: { color: get('--ink-2') },
+    xaxis: { gridcolor: get('--border'), zerolinecolor: get('--border') },
+    yaxis: { gridcolor: get('--border'), zerolinecolor: get('--border') },
+  };
+}
+
 async function renderWorldView() {
   document.getElementById('sidebar-title').textContent = 'World overview';
   document.getElementById('sidebar-sub').textContent = 'Click a country to explore';
@@ -704,11 +716,11 @@ async function renderWorldView() {
 
   senders.layout.margin = { l: 65, r: 5, t: 10, b: 50 };
   senders.layout.template.layout.yaxis.automargin = false;
-  Plotly.newPlot('map-chart-senders', senders.data, senders.layout, cfg);
+  Plotly.newPlot('map-chart-senders', senders.data, {...senders.layout, ...getPlotlyTheme()}, cfg);
 
   receivers.layout.margin = { l: 50, r: 5, t: 10, b: 50 };
   receivers.layout.template.layout.yaxis.automargin = false;
-  Plotly.newPlot('map-chart-receivers', receivers.data, receivers.layout, cfg);
+  Plotly.newPlot('map-chart-receivers', receivers.data, {...receivers.layout, ...getPlotlyTheme()}, cfg);
 }
 
 async function renderCountrySidebar(id, name) {
@@ -741,11 +753,11 @@ async function renderCountrySidebar(id, name) {
   const cfg = { displayModeBar: false, responsive: true };
 
   Plotly.newPlot('map-chart-hourly',
-      hourly.data.map(t => ({...t, visible: t.name === dataName})),
-      hourly.layout, cfg);
+    hourly.data.map(t => ({...t, visible: t.name === dataName})),
+    {...hourly.layout, ...getPlotlyTheme()}, cfg);
   Plotly.newPlot('map-chart-domestic',
-      domestic.data.map(t => ({...t, visible: t.name === dataName})),
-      domestic.layout, cfg);
+    domestic.data.map(t => ({...t, visible: t.name === dataName})),
+    {...domestic.layout, ...getPlotlyTheme()}, cfg);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────

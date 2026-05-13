@@ -12,6 +12,8 @@ class CustomQDA:
         self.dim = None
 
     def fit(self, X, y):
+        if len(X) == 0:
+            raise ValueError("Cannot fit model on empty data")
         self.classes = np.unique(y)
         self.dim = X.shape[1]
         self.priors = {}
