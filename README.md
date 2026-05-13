@@ -80,10 +80,10 @@ This section explains how to install, configure, and run the project locally, as
     ```{bash}
     uv sync
     ```
--   To install required pacakges:
+-   Alternatively, to install required pacakges:
 
     ```{bash}
-    uv pip install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 ------------------------------------------------------------------------
