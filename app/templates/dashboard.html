@@ -576,6 +576,7 @@
     allCountries = fig.data
       .filter(t => t.name !== 'All Countries')
       .map(t => t.name)
+      .filter(n => n !== 'Crypto' && n !== 'other')
       .sort();
   }
 
